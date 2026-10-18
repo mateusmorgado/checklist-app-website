@@ -48,6 +48,7 @@
 
   // ---------- video ----------
   const box = $('#video-box'), vid = $('#ad');
+  if (window.VIDEO_SRC && window.VIDEO_SRC !== 'video/ad-720p.mp4') { $('#ad source').src = window.VIDEO_SRC; vid.load(); }
   const missing = () => box.classList.add('missing');
   $('#ad source').addEventListener('error', missing);
   vid.addEventListener('error', missing);
