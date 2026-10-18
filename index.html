@@ -59,6 +59,7 @@
     <a href="#video">Video</a><a href="#ideas">Ideas</a><a href="#flows">Flows</a><a href="#looks">Looks</a>
   </nav>
   <div class="nav-cta">
+    <button class="btn white icon lang" id="lang-toggle" type="button" data-no-i18n aria-label="Auf Deutsch wechseln">DE</button>
     <button class="btn white icon" id="sound-toggle" type="button" aria-pressed="true" aria-label="Click sounds: on. Press to turn off."><svg viewBox="0 0 24 24" aria-hidden="true"><path class="sp" d="M4 9v6h4l5 4V5L8 9z"/><path class="on-w" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/><path class="off-x" d="M16 9l5 6M21 9l-5 6"/></svg></button>
     <button class="btn white" id="open-journey" type="button" aria-label="How it was made: the work tree"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v8m0 0a3 3 0 1 0 0 6a3 3 0 0 0 0-6Zm0-8a2 2 0 1 0 0 .01M18 4v4a4 4 0 0 1-4 4h-2"/></svg><span>How it was made</span></button>
     <a class="btn yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Open the app</a>
@@ -174,7 +175,7 @@
             <button type="button" id="t-squat" aria-pressed="false" disabled>Squat day? <b>No</b></button>
           </div>
         </div>
-        <p class="d-hint" id="d-hint">Answer once before you start. A Yes adds its items, a No leaves them out.</p>
+        <p class="d-hint" id="d-hint">Answer once before you start. A Yes adds its items, a No leaves them out. <b class="d-try">Tap the buttons to try it.</b></p>
       </article>
     </div>
   </div>
@@ -288,6 +289,7 @@
     <button class="btn white" id="close-journey" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Close</span></button>
   </div>
   <div class="journey-scroll" id="journey-scroll" tabindex="-1">
+    <p class="journey-note de-only" lang="de">Die Zitate in diesem Baum sind im englischen Original geblieben.</p>
     <p class="journey-intro">How ChecklistPro was made, idea by idea. Built in one conversation, with <b>Mateus</b> steering and Claude Code building. The line in the middle is what shipped. Branches are ideas tried, parked or dropped.</p>
     <div class="legend" id="legend"></div>
     <div class="tree" id="tree"><svg class="tree-svg" id="tree-svg" aria-hidden="true"></svg><ol class="rows" id="tree-rows"></ol></div>
@@ -297,6 +299,8 @@
 <script src="js/config.js"></script>
 <script src="js/frames.js"></script>
 <script src="js/journey.js"></script>
+<script src="js/i18n-data.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/site.js"></script>
 </body>
 </html>

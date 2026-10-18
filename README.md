@@ -47,3 +47,9 @@ Import this repository in Vercel as a new project (Framework: Other, no build co
 
 - Animations stop under the system's reduced-motion setting.
 - The app can be embedded in a chosen look with `?design=modern&palette=red&mode=light`.
+
+## Language and colours
+
+- The **DE / EN** button in the nav switches the page to German. English text in the HTML is the key; `js/i18n-data.js` holds the German strings, `js/i18n.js` swaps them in the browser (also for text the page writes itself). Add a line to `i18n-data.js` when you add English text. German is picked on first visit when the browser language is German. User quotes in the work tree stay in English.
+- The four dots at the bottom switch the page colours (red, blue, mint, cream). The phones keep showing the Bold red look. `?palette=blue&lang=de` also works.
+- The hero phone swipes through all eight looks by itself; drag it to swipe by hand.

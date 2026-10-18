@@ -243,10 +243,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* the Pro part */
 .ideas-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: start; }
-.ideas-small { display: grid; gap: 32px; }
+.ideas-small { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
 .idea { background: var(--white); color: var(--ink); border: var(--b) solid var(--ink); border-radius: 16px; box-shadow: -8px -8px 0 var(--mint); padding: 20px 22px 22px; }
 .ideas-small .idea:nth-child(2) { box-shadow: -8px -8px 0 var(--pink); rotate: .6deg; } .ideas-small .idea:nth-child(1) { rotate: -.8deg; }
-.idea h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font: 800 26px/1 var(--display); text-transform: uppercase; letter-spacing: -.01em; }
+.idea h3 { display: flex; align-items: center; gap: 10px; min-width: 0; overflow-wrap: anywhere; margin: 0 0 14px; font: 800 26px/1 var(--display); text-transform: uppercase; letter-spacing: -.01em; }
 .idea .ic { flex: none; width: 46px; height: 46px; border: var(--b) solid var(--ink); border-radius: 12px; display: grid; place-items: center; background: var(--c, var(--yellow)); }
 .idea .ic svg { width: 26px; height: 26px; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .mini { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -283,7 +283,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .d-toggles button { min-height: 48px; padding: 0 14px; font: 800 17px var(--display); background: var(--white); border: var(--b) solid var(--ink); border-radius: 10px; box-shadow: -4px -4px 0 var(--ink); }
 .d-toggles button[aria-pressed="true"] { background: var(--mint); } .d-toggles button:disabled { opacity: .55; cursor: default; }
 .d-toggles b { background: var(--ink); color: var(--white); border-radius: 5px; padding: 1px 7px; margin-left: 4px; font-size: 14px; }
-.d-hint { margin: 14px 0 0; font-weight: 600; font-size: 16px; } .d-hint.done::after { content: ' Tap the buttons to try it.'; font-weight: 800; }
+.d-hint { margin: 14px 0 0; font-weight: 600; font-size: 16px; } .d-try { display: none; font-weight: 800; } .d-hint.done .d-try { display: inline; }
+.de-only { display: none; } :root[data-lang="de"] .de-only { display: block; } .journey-note { max-width: 40em; text-align: left; font-weight: 600; font-size: 15px; opacity: .8; margin: 0 auto 10px; }
+.btn.lang { min-width: 52px; font-family: var(--display); font-weight: 800; }
 @media (max-width: 900px) { .ideas-grid { grid-template-columns: 1fr; } .d-stage { min-height: 340px; } .d-ic { width: 60px; height: 60px; } .d-ic svg { width: 38px; height: 38px; } }
 @media (prefers-reduced-motion: reduce) { .d-list li, .d-ask, .d-cursor { transition: none; } .d-list li.add.in, .d-count.bump { animation: none; } }
 
