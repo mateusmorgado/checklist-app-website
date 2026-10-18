@@ -111,7 +111,7 @@
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;
     // the text, buttons, arrow and colour chips wait until the headline has landed
-    document.body.classList.remove('typing'); document.body.classList.add('intro'); if (run === 1) document.body.classList.add('intro-first');
+    document.body.classList.remove('typing'); document.body.classList.add('intro'); document.documentElement.classList.remove('booting'); if (run === 1) document.body.classList.add('intro-first');
     unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone', 'hit', 'broke'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
     if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); if (canPark()) park(); else lines.slice(0, 2).forEach(l => l.classList.add('gone')); ($$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')), document.body.classList.remove('intro', 'intro-first')); return; }
     centerLines(true);

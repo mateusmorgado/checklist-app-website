@@ -1032,3 +1032,10 @@ body:not(.typing) .hero .sub-type { display: none; }
 .insp .cite { font-size: 15px; }
 .insp-t { margin: 0; flex: 1 1 280px; font: 700 clamp(16px, 1.6vw, 20px)/1.35 var(--body); }
 .b-cover b { font-size: 10.5px; overflow-wrap: normal; word-break: normal; hyphens: manual; }
+/* the first line shoots up from the very bottom of the screen */
+.line.l1:not(.show) { transform: translateY(100vh) rotate(-4deg); opacity: 1; }
+.line.l1.show { transition: transform .5s cubic-bezier(.15, 1.25, .35, 1), opacity .1s; }
+.hero .sub { background: #ececec; }
+@media (prefers-reduced-motion: reduce) { .line.l1:not(.show) { transform: none; } }
+.line.l1:not(.show) { transition: none; }
+html.booting .nav, html.booting .swatches, html.booting .hero .sub, html.booting .hero .cta-row, html.booting .hero-down { opacity: 0 !important; transition: none !important; }
