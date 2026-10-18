@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ChecklistPro: the checklist prompt app</title>
+<meta name="description" content="Not a to-do app. Not a habits app. ChecklistPro is a checklist prompt app: build a list once, run it whenever you need it, with one thumb.">
+<meta name="theme-color" content="#ff4a4a">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Space+Grotesk:wght@400..700&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<meta property="og:title" content="ChecklistPro: this is a checklist prompt app">
+<meta property="og:description" content="Not a to-do app. Not a habits app. Build a list once, run it whenever you need it.">
+<meta property="og:image" content="img/og.png">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="top">
+  <a class="brand" href="#top" aria-label="ChecklistPro, back to top">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2.5" y="2.5" width="27" height="27" rx="6"/><path d="M9 17l5.2 5.2L23.5 10.5"/></svg>
+    <span>Checklist<b>Pro</b></span>
+  </a>
+  <nav class="nav-links" aria-label="Sections">
+    <a href="#video">Video</a><a href="#ideas">Ideas</a><a href="#flows">Flows</a><a href="#looks">Looks</a>
+  </nav>
+  <div class="nav-cta">
+    <button class="btn white" id="open-journey" type="button" aria-label="How it was made: the work tree"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v8m0 0a3 3 0 1 0 0 6a3 3 0 0 0 0-6Zm0-8a2 2 0 1 0 0 .01M18 4v4a4 4 0 0 1-4 4h-2"/></svg><span>How it was made</span></button>
+    <a class="btn yellow" data-app href="#">Open the app</a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" id="hero" aria-labelledby="hero-title">
+  <div class="stickers" aria-hidden="true">
+    <svg class="stk k1" viewBox="0 0 48 48"><path d="M24 3C26 16 32 22 45 24C32 26 26 32 24 45C22 32 16 26 3 24C16 22 22 16 24 3Z"/></svg>
+    <svg class="stk k2" viewBox="0 0 48 48"><path class="o" d="M8 26l11 11L40 11"/><path class="i" d="M8 26l11 11L40 11"/></svg>
+    <svg class="stk k3" viewBox="0 0 48 48"><path d="M24 3C26 16 32 22 45 24C32 26 26 32 24 45C22 32 16 26 3 24C16 22 22 16 24 3Z"/></svg>
+    <svg class="stk k4" viewBox="0 0 48 48"><path d="M8 6L40 22L26 26L22 40Z"/></svg>
+    <svg class="stk k5" viewBox="0 0 48 48"><path class="line" d="M4 24q5-12 10 0t10 0t10 0t10 0"/></svg>
+    <svg class="stk k6" viewBox="0 0 48 48"><path d="M24 4l4 6 7-3 1 7 7 1-3 7 6 4-6 4 3 7-7 1-1 7-7-3-4 6-4-6-7 3-1-7-7-1 3-7-6-4 6-4-3-7 7-1 1-7 7 3z"/><circle cx="24" cy="24" r="5"/></svg>
+  </div>
+  <div class="hero-in">
+    <p class="eyebrow"><span>ChecklistPro</span> · one-handed · built for your thumb</p>
+    <h1 id="hero-title" class="sr-only">This is not a to-do app. This is not a habits app. This is a checklist prompt app.</h1>
+    <div class="lines" aria-hidden="true">
+      <div class="line l1"><span class="w">This is not a</span> <span class="chip"><span class="t">To-Do</span><i class="strike"></i></span> <span class="w">app</span></div>
+      <div class="line l2"><span class="w">This is not a</span> <span class="chip"><span class="t">Habits</span><i class="strike"></i></span> <span class="w">app</span></div>
+      <div class="line l3"><span class="w">This is a</span><span class="big"><span class="hl">Checklist prompt</span> <span class="hl hl2">app</span></span></div>
+    </div>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+    <p class="sub reveal">Build a list once. Run it whenever you need it. The way pilots and surgeons do, now in your pocket.</p>
+    <div class="cta-row reveal">
+      <a class="btn big yellow" data-app href="#">Open the app</a>
+      <a class="btn big white" href="#video">Watch the video</a>
+      <button class="replay" id="replay" type="button" aria-label="Replay the intro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
+    </div>
+  </div>
+  <div class="hero-phone" aria-hidden="true"><div class="phone tilt" style="--pw:250px"><div class="screen"><img src="img/frames/hero-run.webp" alt="" width="780" height="1688"></div></div></div>
+</section>
+
+<div class="ticker" aria-hidden="true"><div class="ticker-in">
+  <span>Check ✓</span><span>Run ✓</span><span>Done ✓</span><span>Check ✓</span><span>Run ✓</span><span>Done ✓</span>
+  <span>Check ✓</span><span>Run ✓</span><span>Done ✓</span><span>Check ✓</span><span>Run ✓</span><span>Done ✓</span>
+</div></div>
+
+<!-- VIDEO -->
+<section class="section" id="video" aria-labelledby="video-title">
+  <div class="wrap">
+    <h2 id="video-title" class="mega reveal"><span>45 seconds.</span> <span class="ink">No fluff.</span></h2>
+    <div class="win reveal">
+      <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">checklistpro-ad.mp4</span><span class="win-btns" aria-hidden="true">_ ▢ ✕</span></div>
+      <div class="video-box" id="video-box">
+        <video id="ad" controls playsinline preload="metadata" poster="img/poster.webp" width="1280" height="720">
+          <source src="video/ad-720p.mp4" type="video/mp4">
+        </video>
+        <div class="video-missing" id="video-missing">
+          <div class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></div>
+          <p><b>The ad lands here.</b><br>Drop a 720p file at <code>video/ad-720p.mp4</code>.</p>
+        </div>
+      </div>
+    </div>
+    <p class="cap reveal">1280 × 720 · 45 s · cockpit, operating room, then your pocket.</p>
+  </div>
+</section>
+
+<!-- IDEAS -->
+<section class="section dark" id="ideas" aria-labelledby="ideas-title">
+  <div class="wrap">
+    <h2 id="ideas-title" class="mega reveal"><span>What will you</span> <span class="hl">check?</span></h2>
+    <p class="lead reveal">Anything you do more than once and cannot afford to forget.</p>
+    <ul class="cards" id="cards"></ul>
+  </div>
+</section>
+
+<!-- FLOWS -->
+<section class="section" id="flows" aria-labelledby="flows-title">
+  <div class="wrap">
+    <h2 id="flows-title" class="mega reveal"><span>See how</span> <span class="ink">it flows.</span></h2>
+    <div class="flow-grid">
+      <div class="flow-phone"><div class="phone tilt" id="flow-phone" style="--pw:min(300px, 72vw)">
+        <div class="screen" id="flow-screen"></div><i class="tap" id="flow-tap" aria-hidden="true"></i>
+      </div></div>
+      <div class="flow-side">
+        <div class="tabs" role="tablist" aria-label="Flows" id="flow-tabs"></div>
+        <ol class="steps" id="flow-steps" aria-live="polite"></ol>
+        <p class="hint-line">Tap a step to jump to it. The phone plays on its own.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOOKS -->
+<section class="section red2" id="looks" aria-labelledby="looks-title">
+  <div class="wrap">
+    <h2 id="looks-title" class="mega reveal"><span>Make it</span> <span class="hl">yours.</span></h2>
+    <p class="lead reveal">Three designs, three cockpit styles and four colour sets. Same app, a different mood.</p>
+    <div class="looks-grid">
+      <div class="flow-phone"><div class="phone tilt" id="looks-phone" style="--pw:min(300px, 72vw)"><div class="screen" id="looks-screen"></div></div></div>
+      <div class="look-side">
+        <div class="chips" id="look-chips" role="tablist" aria-label="Looks"></div>
+        <dl class="look-notes" id="look-note"></dl>
+        <div class="stats" id="stats"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE -->
+<section class="section dark" id="live" aria-labelledby="live-title">
+  <div class="wrap live">
+    <div class="live-text">
+      <h2 id="live-title" class="mega reveal"><span>Try the</span> <span class="hl">real thing.</span></h2>
+      <p class="lead reveal">This is the actual app, running right here. Tick things, add a list, switch the look in Settings.</p>
+      <p class="muted-line reveal">Your changes stay in this window. Voice quick list works in the real app, not in this preview.</p>
+      <button class="btn big yellow" id="load-live" type="button">Load the live app</button>
+    </div>
+    <div class="flow-phone"><div class="phone tilt" style="--pw:min(310px, 76vw)"><div class="screen" id="live-screen">
+      <div class="live-ph"><p>Tap “Load the live app”</p></div>
+    </div></div></div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="section" id="why" aria-labelledby="why-title">
+  <div class="wrap why">
+    <h2 id="why-title" class="mega reveal"><span>From cockpits</span> <span class="ink">to your pocket.</span></h2>
+    <div class="why-cards">
+      <article class="card reveal"><h3>Born in the cockpit</h3><p>In 1935 a new bomber crashed on take-off, because it was too complex to remember. Pilots answered with a short list, and aviation never stopped using one.</p></article>
+      <article class="card reveal"><h3>Proven in the operating room</h3><p>Hospitals borrowed the idea, and surgical and intensive-care checklists have been studied for the lives they help protect.</p></article>
+      <article class="card reveal"><h3>Made for ordinary days</h3><p>Packing, leaving home, the gym bag, launch day. The same trick, built for one thumb.</p></article>
+    </div>
+    <div class="center reveal"><button class="btn big white" id="open-journey-2" type="button">See how this was made</button> <a class="btn big yellow" data-app href="#">Open the app</a></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-big">Check it.<br>Run it.<br><span class="hl">Done.</span></p>
+    <div class="foot-row">
+      <p>Designed and coded by <b>Mateus Morgado</b> with Claude Code.<br>Plain React in a single file. No build step.</p>
+      <p class="small">The 1935 and hospital stories come from Gawande (2009), Pronovost et al. (2006) and Haynes et al. (2009). Full sources are in the app’s Manifesto.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- JOURNEY OVERLAY -->
+<div class="journey" id="journey" role="dialog" aria-modal="true" aria-labelledby="journey-title" hidden>
+  <div class="journey-bar">
+    <h2 id="journey-title">The work tree</h2>
+    <div class="filters" id="journey-filters" role="group" aria-label="Filter the tree"></div>
+    <button class="btn white" id="close-journey" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Close</span></button>
+  </div>
+  <div class="journey-scroll" id="journey-scroll" tabindex="-1">
+    <p class="journey-intro">How ChecklistPro was made, idea by idea. Built in one conversation, with <b>Mateus</b> steering and Claude Code building. The line in the middle is what shipped. Branches are ideas tried, parked or dropped.</p>
+    <div class="legend" id="legend"></div>
+    <div class="tree" id="tree"><svg class="tree-svg" id="tree-svg" aria-hidden="true"></svg><ol class="rows" id="tree-rows"></ol></div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/frames.js"></script>
+<script src="js/journey.js"></script>
+<script src="js/site.js"></script>
+</body>
+</html>
