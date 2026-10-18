@@ -979,3 +979,9 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
   input[type=email], input[type=text], textarea { cursor: text !important; }
   button:disabled { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M5%203l20%2011.5-8.6%202.2%205.2%209.3-4.2%202.3-5.2-9.4L6%2025z%22%20fill%3D%22%23111%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.2%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E") 5 3, not-allowed; }
 }
+
+/* film credits under the video */
+.credits { max-width: 720px; margin: 22px auto 0; display: grid; gap: 6px; font: 500 14px/1.45 var(--body); }
+.credits p { margin: 0; display: flex; gap: 12px; align-items: baseline; }
+.cr-k { flex: none; width: 58px; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .14em; text-align: center; padding: 2px 8px; border: 2px solid currentColor; border-radius: 99px; }
+@media (max-width: 520px) { .credits { font-size: 13px; } }

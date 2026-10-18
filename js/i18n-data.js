@@ -1,6 +1,10 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Film": "Film",
+"Cast": "Besetzung",
+"Made by Mateus Morgado with the Gemini Omni 1.1 API in Google Flow.": "Gemacht von Mateus Morgado mit der Gemini Omni 1.1 API in Google Flow.",
+"Every face is an AI avatar based on me and people I know.": "Alle Gesichter sind KI-Avatare nach meinem Vorbild und dem von Menschen, die ich kenne.",
 "Hero": "Hero",
 "Middle section": "Mittelteil",
 "Whole page": "Ganze Seite",
