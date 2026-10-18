@@ -7,7 +7,7 @@
   };
   const BRANCHES = {
     rn: { lane: 3, end: 'dead' }, ai: { lane: 1, end: 'merge' }, num: { lane: 2, end: 'open' }, sound: { lane: 3, end: 'merge' },
-    timer: { lane: 3, end: 'dead' }, agents: { lane: 3, end: 'dead' }, apk: { lane: 3, end: 'merge' }, future: { lane: 1, end: 'open' },
+    timer: { lane: 3, end: 'dead' }, wstats: { lane: 2, end: 'dead' }, wvideo: { lane: 1, end: 'merge' }, wflows: { lane: 3, end: 'dead' }, agents: { lane: 3, end: 'dead' }, apk: { lane: 3, end: 'merge' }, future: { lane: 1, end: 'open' },
   };
   const R = (type, title, text, says, branch) => ({ type, title, text, says, branch });
   const ROWS = [
@@ -57,13 +57,44 @@
     R('idea', 'Voice challenge and response', 'Read each item aloud and answer by voice, like a two-pilot check.', null, 'future'),
   ];
 
+
+  // the website's own story
+  const WEB_ROWS = [
+    R('idea', 'A site to promote the app', 'Built on the app’s Modern look: bold red, big type, iPhone mockups and real flows.', 'Now I need a cool website based on the modern design to promote my app.'),
+    R('decision', 'A separate project', 'Its own repository and its own Vercel project. Plain HTML, CSS and JavaScript, no build step.', 'Create a separate project for this.'),
+    R('feature', 'It starts with what it is not', 'Not a to-do app, not a habits app, both struck through. Then: a checklist prompt app.', 'It starts with what the app is not.'),
+    R('bug', 'The phone covered the logo', 'The screenshots were taken again so the iPhone no longer hides the ChecklistPro logo.', 'The iPhone mockup covers the logo.'),
+    R('feature', 'Lists that ask first', 'The ideas section got short and focused on the Pro part: a gym bag that asks “Sauna?” and “Squat day?”.', 'Focus on the Pro feature of conditionals.'),
+    R('feature', 'A row of counters', 'Designs, colour sets, sounds, one HTML file. Counted, then cut.', 'Remove this.', 'wstats'),
+    R('feature', 'Report a bug', 'A small contact form that emails the report, through a Vercel function and Resend.', 'Add a bug report link that is a contact form to my email.'),
+    R('idea', 'Where should the video live?', 'YouTube would show the channel, GitHub is not made for video.', 'Video is too big. Where can I host it?', 'wvideo'),
+    R('decision', 'A Google Cloud bucket', 'A public bucket served the ad for a while, until the video was small enough to ship with the site.', 'Google cloud bucket.', 'wvideo'),
+    R('feature', 'A silent teaser', 'A short loop of scenes plays without sound until someone presses Play, then the ad starts from the beginning.', 'Can a little trailer with no audio keep playing in loop until someone presses play?'),
+    R('feature', 'Flows on a phone', 'Real screenshots played as flows on an iPhone. Later replaced by the Pro powers.', null, 'wflows'),
+    R('feature', 'The same click as the app', 'Every button makes the app’s click sound, with a toggle in the header.', 'Add the same button click sound to the website.'),
+    R('bug', 'No preview image on WhatsApp', 'Share tags now use full addresses. Vercel’s login wall also kept the preview bots out.', 'When I share through WhatsApp there is no little image.'),
+    R('feature', 'Four colour sets and German', 'The page switches colours like the app does, and the whole site speaks German.', 'Add the design toggle between the colours, add translation to German.'),
+    R('feature', 'Lines that fall', 'The struck lines get knocked aside, wait at the edges and fall with gravity when you scroll. Three patterns, a new one on each visit.', 'Each refresh triggers a different one.'),
+    R('feature', 'A co-pilot robot', 'A cartoon pilot reads every power back, gets thrown off by the buzz, and falls into the phone to show your data stays there.', 'Make a little robot dressed as a pilot.'),
+    R('idea', 'Why a checklist?', 'A big WHY? turns into the answer: keep the thinking for things that matter (Forte, 2022).', 'A checklist is not for people who can’t remember.'),
+    R('feature', 'Buttons you can press', 'Every button sinks into its shadow like a real key.', 'The button goes to the shadows.'),
+    R('feature', 'Install, Impressum and a game', 'Install steps for every device, an Impressum, and Touchdown Checkbot, a landing game that opens on Play.', 'Add a cute but little play the game section.'),
+    R('feature', 'This film', 'Eight seconds of back and forth while the app grows from a plain list to today.', 'Make an animation with the amount of back and forth with Claude.'),
+    R('ship', 'Live on Vercel', 'checklist-app-website.vercel.app, pushed from main.', null),
+  ];
+
   function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-  const J = { built: false };
+  const J = { built: false, set: 'app' };
   J.build = function () {
     if (J.built) return; J.built = true;
+    J.fill('app');
+  };
+  J.fill = function (set) {
+    J.set = set; const DATA = set === 'web' ? WEB_ROWS : ROWS;
     const rows = document.getElementById('tree-rows'), legend = document.getElementById('legend'), filters = document.getElementById('journey-filters');
+    rows.innerHTML = ''; legend.innerHTML = ''; filters.innerHTML = '';
     // legend + filters
     Object.entries(TYPES).forEach(([k, [name, c]]) => { const s = el('span', null, '<i style="--c:' + c + '"></i>' + name); legend.appendChild(s); });
     const all = el('button', 'fchip', 'All'); all.type = 'button'; all.setAttribute('aria-pressed', 'true'); filters.appendChild(all);
@@ -76,7 +107,7 @@
       rows.querySelectorAll('.row').forEach(r => r.classList.toggle('dim', !!t && r.dataset.type !== t));
     }));
     // rows
-    ROWS.forEach((r, i) => {
+    DATA.forEach((r, i) => {
       const lane = r.branch ? BRANCHES[r.branch].lane : 0, [name, color] = TYPES[r.type];
       const li = el('li', 'row ' + r.type); li.dataset.type = r.type; li.dataset.lane = lane; li.dataset.branch = r.branch || ''; li.style.setProperty('--c', color);
       const lanes = el('div', 'lanes'); const node = el('i', 'node' + (r.type === 'ship' ? ' big' : '')); node.style.left = 'calc(var(--lane-w) * ' + (lane + .5) + ')'; lanes.appendChild(node);
@@ -95,9 +126,11 @@
   J.draw = function (animate) {
     const tree = document.getElementById('tree'), svg = document.getElementById('tree-svg');
     if (!tree || !J.built) return;
+    tree.classList.add('measuring'); void tree.offsetWidth;
     const T = tree.getBoundingClientRect();
     const rowEls = [...document.querySelectorAll('#tree-rows .row')];
     const pts = rowEls.map(r => { const n = r.querySelector('.node').getBoundingClientRect(); return { x: n.left + n.width / 2 - T.left, y: n.top + n.height / 2 - T.top, lane: +r.dataset.lane, branch: r.dataset.branch }; });
+    tree.classList.remove('measuring');
     svg.setAttribute('viewBox', '0 0 ' + T.width + ' ' + T.height); svg.innerHTML = '';
     const NS = 'http://www.w3.org/2000/svg', paths = [];
     const add = (d, cls) => { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); if (cls) p.setAttribute('class', cls); svg.appendChild(p); paths.push(p); return p; };

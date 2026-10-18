@@ -268,18 +268,26 @@
       g.animate([box(a, fromRad, { color: text ? 'var(--ink)' : 'transparent', transform: 'rotate(0deg)' }), box(mid, '18px', { color: 'transparent', transform: 'rotate(-12deg)', offset: .5 }), box(b, toRad, { color: 'transparent', transform: 'rotate(0deg)' })],
         { duration: 650, easing: 'cubic-bezier(.6, 0, .3, 1)', fill: 'forwards' }).onfinish = () => { g.remove(); if (ghost === g) ghost = null; done(); };
     }
+    // the footer button only ever appears by the corner icon flying into it, and turns back into the icon when you scroll up
+    let landed = false;
+    const land = () => { landed = true; foot.classList.remove('wait', 'bump'); void foot.offsetWidth; foot.classList.add('bump'); };
     function update() {
+      heroGone = cta.getBoundingClientRect().bottom < 80;
+      if (foot && footIn && !landed) {
+        shown = false; const a = fabRect(); fab.classList.remove('show', 'hint');
+        if (reduce) land(); else fly(a, foot.getBoundingClientRect(), '', '18px', '18px', () => { if (footIn) land(); else update(); });
+        return;
+      }
+      if (foot && !footIn && landed) {
+        landed = false; foot.classList.add('wait');
+        if (heroGone) { shown = true; if (!reduce) fly(foot.getBoundingClientRect(), fabRect(), '', '18px', '18px', () => {}); setTimeout(() => { if (shown && !footIn) fab.classList.add('show'); }, reduce ? 0 : 660); return; }
+      }
       const want = heroGone && !footIn;
       if (want && !shown) {
         shown = true;
         const hint = () => { if (shown) { fab.classList.add('show', 'hint'); setTimeout(() => fab.classList.remove('hint'), 2200); } };
         if (reduce) fab.classList.add('show'); else if (cta.getBoundingClientRect().bottom < 120) fly(cta.getBoundingClientRect(), fabRect(), cta.textContent, '14px', '18px', hint); else hint();
-      } else if (!want && shown) {
-        shown = false;
-        if (footIn && foot && !reduce) { const a = fabRect(); fab.classList.remove('show', 'hint'); fly(a, foot.getBoundingClientRect(), '', '18px', '18px', () => { foot.classList.remove('wait'); foot.classList.remove('bump'); void foot.offsetWidth; foot.classList.add('bump'); }); }
-        else { fab.classList.remove('show', 'hint'); if (ghost) { ghost.remove(); ghost = null; } }
-      }
-      if (footIn && foot && (!ghost || reduce)) foot.classList.remove('wait');
+      } else if (!want && shown) { shown = false; fab.classList.remove('show', 'hint'); }
     }
     new IntersectionObserver(es => es.forEach(e => { heroGone = !e.isIntersecting && e.boundingClientRect.top < 0; update(); }), { threshold: 0, rootMargin: '-80px 0px 0px 0px' }).observe(cta);
     if (foot) new IntersectionObserver(es => es.forEach(e => { footIn = e.isIntersecting; update(); }), { threshold: .6 }).observe(foot);
@@ -672,6 +680,13 @@
     if (push !== false && location.hash !== '#journey') history.pushState(null, '', '#journey');
   }
   function closeJourney(push) { film.stop(); ov.classList.remove('open'); document.body.classList.remove('lock'); setTimeout(() => { ov.hidden = true; }, 450); if (lastFocus) lastFocus.focus(); if (push !== false && location.hash === '#journey') history.pushState(null, '', location.pathname + location.search); }
+  // switch the tree between the app's story and this website's story
+  $$('.jt-opt').forEach(b => b.addEventListener('click', () => {
+    const set = b.dataset.set; if (window.Journey.set === set) return;
+    $$('.jt-opt').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    ov.classList.toggle('web', set === 'web'); if (set === 'web') film.stop(); else film.start();
+    window.Journey.fill(set); $('#journey-scroll').scrollTop = 0; setTimeout(() => window.Journey.draw(true), 60);
+  }));
   $('#open-journey').addEventListener('click', () => openJourney()); $('#open-journey-2').addEventListener('click', () => openJourney()); $('#close-journey').addEventListener('click', () => closeJourney());
   addEventListener('keydown', e => {
     if (!ov.classList.contains('open')) return;
