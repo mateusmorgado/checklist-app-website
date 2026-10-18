@@ -152,12 +152,36 @@
   let lVis = false; if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { lVis = e.isIntersecting; }), { threshold: .3 }).observe($('#looks-phone'));
   setInterval(() => { if (lVis && !reduce && Date.now() > lHold) pickLook((look + 1) % F.looks.length); }, 2400);
 
-  // ---------- live app ----------
-  $('#load-live').addEventListener('click', () => {
-    const box = $('#live-screen'); box.innerHTML = '<div class="live-ph"><p>Loading…</p></div>';
-    const f = document.createElement('iframe'); f.title = 'ChecklistPro, live'; f.src = window.APP_LIVE; f.setAttribute('sandbox', 'allow-scripts allow-forms'); f.loading = 'lazy';
-    f.addEventListener('load', () => { const p = $('.live-ph', box); if (p) p.remove(); }); box.appendChild(f); $('#load-live').textContent = 'Reload';
-  });
+  // ---------- live app link: a pulsing finger-tap where to press ----------
+  (function () { const ring = $('#live-ring'); const t = (window.FRAMES && window.FRAMES.run && window.FRAMES.run[0].tap) || [.6, .85]; ring.style.left = (t[0] * 100) + '%'; ring.style.top = (t[1] * 100) + '%'; })();
+
+  // ---------- button click sound: the same quiet, physical click as the app's Modern design ----------
+  let clickCtx = null, clickNoise = null, soundOn = true;
+  try { soundOn = localStorage.getItem('cp-sound') !== 'off'; } catch (e) {}
+  function playClick() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+      if (!clickCtx || clickCtx.state === 'closed') { clickCtx = new AC(); clickNoise = null; }
+      const c = clickCtx; if (c.state !== 'running' && c.resume) { const p = c.resume(); if (p && p.catch) p.catch(() => {}); }
+      if (!clickNoise) { clickNoise = c.createBuffer(1, Math.ceil(c.sampleRate * 0.08), c.sampleRate); const d = clickNoise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+      const t = c.currentTime + 0.003, master = c.createGain(); master.gain.value = 0.085; master.connect(c.destination); const nodes = [master];
+      const snap = (at, freq, q, peak, len) => { const src = c.createBufferSource(), bp = c.createBiquadFilter(), g = c.createGain(); src.buffer = clickNoise; bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = q;
+        g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(peak, at + 0.0008); g.gain.exponentialRampToValueAtTime(0.0001, at + len); src.connect(bp); bp.connect(g); g.connect(master); src.start(at, 0, len + 0.01); nodes.push(src, bp, g); };
+      snap(t, 2600, 1.4, 0.9, 0.012); snap(t + 0.052, 4000, 2, 0.28, 0.007);
+      const osc = c.createOscillator(), og = c.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(210, t); osc.frequency.exponentialRampToValueAtTime(95, t + 0.05);
+      og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.55, t + 0.002); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.055); osc.connect(og); og.connect(master); osc.start(t); osc.stop(t + 0.07); nodes.push(osc, og);
+      osc.onended = () => { nodes.forEach(n => { try { n.disconnect(); } catch (e) {} }); };
+    } catch (e) {}
+  }
+  window.__playClick = playClick;
+  const sbtn = $('#sound-toggle');
+  function paintSound() { sbtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false'); sbtn.setAttribute('aria-label', 'Click sounds: ' + (soundOn ? 'on. Press to turn off.' : 'off. Press to turn on.')); sbtn.classList.toggle('off', !soundOn); }
+  paintSound();
+  sbtn.addEventListener('click', () => { soundOn = !soundOn; try { localStorage.setItem('cp-sound', soundOn ? 'on' : 'off'); } catch (e) {} paintSound(); if (soundOn) playClick(); });
+  document.addEventListener('click', e => {
+    const t = e.target && e.target.closest ? e.target.closest('button, a.btn, a.phone-link, [role="tab"], .fchip, .tab, .chip-b') : null;
+    if (t && !t.disabled && t.id !== 'sound-toggle' && soundOn) playClick();
+  }, true);
 
   // ---------- report a bug ----------
   const rep = $('#report'), rform = $('#report-form'), rstat = $('#r-status'); let rLast = null;

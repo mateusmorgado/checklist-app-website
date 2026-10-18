@@ -118,12 +118,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .cap { text-align: center; margin-top: 32px; font-weight: 700; }
 
 /* iPhone */
-.phone { --pw: 300px; position: relative; width: var(--pw); aspect-ratio: 390 / 844; padding: calc(var(--pw) * .036); background: #0b0b0d; border-radius: calc(var(--pw) * .17); box-shadow: 0 0 0 2px #3a3a3f, 0 0 0 calc(var(--pw) * .012 + 2px) #0b0b0d, -14px -14px 0 var(--ink), 0 30px 60px rgba(0, 0, 0, .35); transform-style: preserve-3d; transition: transform .2s ease-out; }
+.phone { --pw: 300px; position: relative; width: var(--pw); aspect-ratio: 390 / 844; padding: calc(var(--pw) * .036); background: #0b0b0d; border-radius: calc(var(--pw) * .17); box-shadow: 0 0 0 2px #3a3a3f, 0 0 0 calc(var(--pw) * .012 + 2px) #0b0b0d, 0 28px 50px -10px rgba(0, 0, 0, .45); transform-style: preserve-3d; transition: transform .2s ease-out; }
 .phone::before { content: ''; position: absolute; left: calc(var(--pw) * -.014); top: 22%; width: calc(var(--pw) * .014); height: 9%; background: #2b2b30; border-radius: 3px 0 0 3px; box-shadow: 0 calc(var(--pw) * .2) 0 #2b2b30; }
 .phone::after { content: ''; position: absolute; right: calc(var(--pw) * -.014); top: 28%; width: calc(var(--pw) * .014); height: 13%; background: #2b2b30; border-radius: 0 3px 3px 0; }
 .phone .screen { position: relative; width: 100%; height: 100%; border-radius: calc(var(--pw) * .135); overflow: hidden; background: var(--red); }
 .phone .screen::before { content: ''; position: absolute; z-index: 6; left: 50%; top: calc(var(--pw) * .028); width: 30%; height: calc(var(--pw) * .085); transform: translateX(-50%); background: #000; border-radius: 99px; pointer-events: none; }
-.phone .screen::after { content: ''; position: absolute; z-index: 7; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255, 255, 255, .16) 0, rgba(255, 255, 255, 0) 32%); }
 .screen img, .screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
 .screen img { object-fit: cover; opacity: 0; transform: translateY(6%) scale(.98); transition: opacity .45s, transform .55s cubic-bezier(.2, .8, .2, 1); }
 .screen img.on { opacity: 1; transform: none; z-index: 2; }
@@ -315,3 +314,20 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* the video section is wider than the rest on big screens */
 .wrap.wide { max-width: 1760px; padding: 0 clamp(16px, 3.5vw, 64px); }
 @media (min-width: 1100px) { .wrap.wide .win { box-shadow: -14px -14px 0 var(--ink); } }
+
+/* sound toggle */
+.btn.icon { padding: 0; width: 44px; justify-content: center; }
+.btn.icon .off-x { display: none; } .btn.icon.off .off-x { display: inline; } .btn.icon.off .on-w { display: none; }
+.btn.icon svg { width: 22px; height: 22px; }
+
+/* the live link: the whole phone is the button */
+.phone-link { position: relative; display: block; text-decoration: none; color: inherit; border-radius: 40px; }
+.phone-link:hover .phone { transform: translate(-4px, -6px) rotate(-1.2deg); }
+.phone-link:focus-visible { outline-offset: 10px; outline-color: var(--yellow); }
+.tap-ring { position: absolute; z-index: 9; width: calc(min(310px, 76vw) * .2); aspect-ratio: 1; margin: calc(min(310px, 76vw) * -.1) 0 0 calc(min(310px, 76vw) * -.1); border-radius: 50%; background: rgba(255, 255, 255, .5); border: 3px solid var(--ink); pointer-events: none; animation: ringpulse 1.9s ease-out infinite; }
+@keyframes ringpulse { 0% { opacity: 0; transform: scale(1.8); } 25% { opacity: 1; transform: scale(1); } 55% { opacity: 1; transform: scale(.8); } 100% { opacity: 0; transform: scale(1.3); } }
+.press-hint { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%) rotate(-2deg); display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; background: var(--yellow); color: var(--ink); border: var(--b) solid var(--ink); border-radius: 12px; box-shadow: -5px -5px 0 var(--ink); padding: 8px 16px; font: 800 18px var(--display); animation: nudge 1.6s ease-in-out infinite; z-index: 12; }
+.press-hint svg { width: 24px; height: 24px; fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes nudge { 50% { transform: translateX(-50%) rotate(-2deg) translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .tap-ring, .press-hint { animation: none; } .tap-ring { opacity: 1; } }
+.live .flow-phone { padding-bottom: 50px; }
