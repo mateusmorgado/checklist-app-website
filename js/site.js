@@ -53,31 +53,45 @@
   vid.addEventListener('error', missing);
   setTimeout(() => { if (vid.networkState === 3 || vid.error) missing(); }, 2500);
 
-  // ---------- idea cards ----------
-  const CARDS = [
-    ['Trip packing', 'Never again the charger left on the bed.', '#ffe14d', 'M4 8h16v11H4zM9 8V5h6v3M4 13h16', ['Passport', 'Charger', 'Toothbrush']],
-    ['Gym bag', 'Shoes, towel, water. Sauna? Then a flip-flops question.', '#6df5b9', 'M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12', ['Shoes', 'Water bottle', 'Towel']],
-    ['Leaving home', 'The ten-second check at the door.', '#ffc2c2', 'M4 11l8-7 8 7M6 10v9h12v-9M10 19v-5h4v5', ['Keys', 'Wallet', 'Stove off']],
-    ['Preflight', 'Borrow the pilots’ own habit for anything risky.', '#6db7ff', 'M21 15l-8-3V5a1 1 0 0 0-2 0v7l-8 3v2l8-1v4l-2 1v1l3-.5 3 .5v-1l-2-1v-4l8 1z', ['Check fuel', 'Check flaps', 'Check lights']],
-    ['Groceries by voice', 'Say it in 17 seconds. It becomes a list.', '#ffb347', 'M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3ZM6 11a6 6 0 0 0 12 0M12 17v4', ['Milk', 'Eggs', 'Bread']],
-    ['Launch day', 'A release, a talk, an event. Same steps, every time.', '#ffe14d', 'M12 3c3 2 5 6 5 10l-2 3H9l-2-3c0-4 2-8 5-10zM9 19l-1 3 4-2 4 2-1-3', ['Tests green', 'Notes written', 'Ship it']],
-    ['Morning routine', 'Start the day without thinking about it.', '#6df5b9', 'M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8zM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2', ['Water', 'Stretch', 'Plan the day']],
-    ['School bag', 'For kids, and for the parents who pack it.', '#ffc2c2', 'M8 6a4 4 0 0 1 8 0M6 8h12v12H6zM9 14h6', ['Lunch', 'Homework', 'Gym kit']],
-    ['Camping', 'Rain? A yes adds the umbrella to the run.', '#6db7ff', 'M2 20L12 4l10 16zM12 4v16M9 20l3-6 3 6', ['Tent', 'Stove', 'Rain jacket']],
-    ['Moving day', 'Boxes, keys, meters, goodbyes.', '#ffb347', 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10', ['Meters read', 'Keys back', 'Mail forwarded']],
-  ];
-  const cards = $('#cards');
-  CARDS.forEach(([t, d, c, icon, items]) => {
-    const li = document.createElement('li'); li.className = 'reveal'; li.style.setProperty('--ink-2', c);
-    li.innerHTML = '<h3><span class="ic" style="--c:' + c + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + icon + '"/></svg></span>' + t + '</h3><p>' + d + '</p><ul class="mini">' + items.map(i => '<li><span>' + i + '</span><i class="bx"></i></li>').join('') + '</ul>';
-    cards.appendChild(li); if (io) io.observe(li); else li.classList.add('in');
-  });
+  // ---------- idea cards: small ones tick themselves ----------
   async function tickCard(li) {
     const its = $$('.mini li', li); its.forEach(x => x.classList.remove('on'));
     if (reduce) { its.forEach(x => x.classList.add('on')); return; }
     for (const x of its) { await wait(520); x.classList.add('on'); }
   }
-  if ('IntersectionObserver' in window) { const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { setTimeout(() => tickCard(e.target), 500); io2.unobserve(e.target); } }), { threshold: .6 }); $$('#cards li').forEach(li => { io2.observe(li); li.addEventListener('pointerenter', () => tickCard(li)); }); }
+  if ('IntersectionObserver' in window) { const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { setTimeout(() => tickCard(e.target), 500); io2.unobserve(e.target); } }), { threshold: .6 }); $$('[data-tick]').forEach(li => { io2.observe(li); li.addEventListener('pointerenter', () => tickCard(li)); }); }
+  else $$('[data-tick]').forEach(li => $$('.mini li', li).forEach(x => x.classList.add('on')));
+
+  // ---------- the Pro part: yes/no questions add items ----------
+  const ICON_SAUNA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2.5c-1.6 2 1.6 3 0 5.5M12 2.5c-1.6 2 1.6 3 0 5.5M17 2.5c-1.6 2 1.6 3 0 5.5M3 14h18M5 14v6M19 14v6M3 20h18M8 14v-2h8v2"/></svg>';
+  const ICON_BAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 10v4M4.5 7v10M7.5 9.5v5M16.5 9.5v5M19.5 7v10M22.5 10v4M7.5 12h9"/></svg>';
+  const stage = $('#d-stage'), ask = $('#d-ask'), cur = $('#d-cursor'), dq = $('#d-q'), dic = $('#d-ic'), count = $('#d-count'), hint = $('#d-hint');
+  const tg = { sauna: $('#t-sauna'), squat: $('#t-squat') }, addLi = $$('#d-list .add'); let demoRun = 0;
+  function setAnswer(key, yes, silent) {
+    addLi.filter(li => li.dataset.if === key).forEach((li, i) => { setTimeout(() => li.classList.toggle('in', yes), silent || reduce ? 0 : i * 380); });
+    tg[key].setAttribute('aria-pressed', yes ? 'true' : 'false'); $('b', tg[key]).textContent = yes ? 'Yes' : 'No';
+    setTimeout(() => { const n = 3 + addLi.filter(li => li.classList.contains('in')).length; count.textContent = n + ' items'; count.classList.remove('bump'); void count.offsetWidth; count.classList.add('bump'); }, silent || reduce ? 10 : 900);
+  }
+  function point(el, pressed) { const s = stage.getBoundingClientRect(), r = el.getBoundingClientRect(); cur.style.left = (r.left - s.left + r.width * .62) + 'px'; cur.style.top = (r.top - s.top + r.height * .55) + 'px'; }
+  async function demo() {
+    const run = ++demoRun, ok = () => run === demoRun;
+    Object.values(tg).forEach(b => { b.disabled = true; b.setAttribute('aria-pressed', 'false'); $('b', b).textContent = 'No'; });
+    addLi.forEach(li => li.classList.remove('in')); count.textContent = '3 items'; ask.classList.remove('show'); cur.classList.remove('show', 'press'); hint.classList.remove('done');
+    if (reduce) { setAnswer('sauna', true, true); setAnswer('squat', true, true); Object.values(tg).forEach(b => { b.disabled = false; }); hint.classList.add('done'); return; }
+    cur.style.left = '86%'; cur.style.top = '96%'; await wait(700); if (!ok()) return;
+    for (const [key, text, icon, color] of [['sauna', 'Sauna?', ICON_SAUNA, '#ffe14d'], ['squat', 'Squat day?', ICON_BAR, '#ffc2c2']]) {
+      dq.textContent = text; dic.innerHTML = icon; dic.style.background = color; $('#d-yes').classList.remove('picked'); ask.classList.add('show'); cur.classList.add('show');
+      await wait(800); if (!ok()) return; point($('#d-yes')); await wait(900); if (!ok()) return;
+      cur.classList.add('press'); $('#d-yes').classList.add('picked'); await wait(280); if (!ok()) return; cur.classList.remove('press'); await wait(260); if (!ok()) return;
+      ask.classList.remove('show'); await wait(420); if (!ok()) return; setAnswer(key, true); await wait(key === 'sauna' ? 400 : 1200); if (!ok()) return;
+    }
+    cur.classList.remove('show'); await wait(900); if (!ok()) return;
+    Object.values(tg).forEach(b => { b.disabled = false; }); hint.classList.add('done');
+  }
+  tg.sauna.addEventListener('click', () => setAnswer('sauna', tg.sauna.getAttribute('aria-pressed') !== 'true'));
+  tg.squat.addEventListener('click', () => setAnswer('squat', tg.squat.getAttribute('aria-pressed') !== 'true'));
+  $('#demo-replay').addEventListener('click', demo);
+  if ('IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); demo(); } }), { threshold: .45 }).observe($('#cond-demo')); else demo();
 
   // ---------- flows ----------
   const F = window.FRAMES, FLOWS = [['run', 'Run it'], ['ask', 'Ask once'], ['voice', 'Say it'], ['build', 'Build it']];
@@ -123,16 +137,37 @@
   let lVis = false; if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { lVis = e.isIntersecting; }), { threshold: .3 }).observe($('#looks-phone'));
   setInterval(() => { if (lVis && !reduce && Date.now() > lHold) pickLook((look + 1) % F.looks.length); }, 2400);
 
-  // ---------- counters ----------
-  const STATS = [[3, 'designs'], [4, 'colour sets'], [3, 'cockpit styles'], [6, 'sounds'], [1, 'HTML file']];
-  const stats = $('#stats'); STATS.forEach(([n, l]) => { const d = document.createElement('div'); d.className = 'stat'; d.innerHTML = '<b data-n="' + n + '">' + (reduce ? n : 0) + '</b><span>' + l + '</span>'; stats.appendChild(d); });
-  if (!reduce && 'IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (!e.isIntersecting) return; o.unobserve(e.target); $$('b', e.target).forEach(b => { const n = +b.dataset.n; let c = 0; const t = setInterval(() => { c++; b.textContent = c; if (c >= n) clearInterval(t); }, 220); }); }), { threshold: .5 }).observe(stats);
-
   // ---------- live app ----------
   $('#load-live').addEventListener('click', () => {
     const box = $('#live-screen'); box.innerHTML = '<div class="live-ph"><p>Loading…</p></div>';
     const f = document.createElement('iframe'); f.title = 'ChecklistPro, live'; f.src = window.APP_LIVE; f.setAttribute('sandbox', 'allow-scripts allow-forms'); f.loading = 'lazy';
     f.addEventListener('load', () => { const p = $('.live-ph', box); if (p) p.remove(); }); box.appendChild(f); $('#load-live').textContent = 'Reload';
+  });
+
+  // ---------- report a bug ----------
+  const rep = $('#report'), rform = $('#report-form'), rstat = $('#r-status'); let rLast = null;
+  function openReport() { rLast = document.activeElement; rep.hidden = false; document.body.classList.add('lock'); rstat.textContent = ''; rstat.className = 'r-status'; requestAnimationFrame(() => { rep.classList.add('open'); $('#r-msg').focus(); }); }
+  function closeReport() { rep.classList.remove('open'); document.body.classList.remove('lock'); setTimeout(() => { rep.hidden = true; }, 300); if (rLast) rLast.focus(); }
+  $('#open-report').addEventListener('click', openReport); $('#close-report').addEventListener('click', closeReport);
+  rep.addEventListener('pointerdown', e => { if (e.target === rep) closeReport(); });
+  addEventListener('keydown', e => { if (!rep.classList.contains('open')) return; if (e.key === 'Escape') closeReport();
+    if (e.key === 'Tab') { const f = $$('button, input:not(.hp), textarea', rep).filter(x => !x.disabled); const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } } });
+  rform.addEventListener('submit', async e => {
+    e.preventDefault(); const msg = $('#r-msg').value.trim(), email = $('#r-email').value.trim(), send = $('#r-send');
+    const say = (t, bad) => { rstat.textContent = t; rstat.className = 'r-status ' + (bad ? 'bad' : 'good'); };
+    if (msg.length < 5) { say('Please write a few words about it.', true); $('#r-msg').focus(); return; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { say('That email does not look right. Leave it empty if you prefer.', true); $('#r-email').focus(); return; }
+    send.disabled = true; say('Sending…');
+    try {
+      const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        kind: (rform.elements.kind.value || 'Bug'), message: msg, email, website: rform.elements.website.value,
+        context: { page: location.href.split('#')[0], screen: innerWidth + 'x' + innerHeight, dpr: devicePixelRatio, lang: navigator.language, ua: navigator.userAgent } }) });
+      if (res.ok) { say('Sent. Thank you!'); rform.reset(); setTimeout(closeReport, 1800); }
+      else if (res.status === 429) say('That is a lot of reports for today. Please try again tomorrow.', true);
+      else if (res.status === 503 || res.status === 404 || res.status === 405) say('The form is not connected yet. Please try again later.', true);
+      else say('That did not send. Please try again in a moment.', true);
+    } catch (err) { say('That did not send. Check your connection and try again.', true); }
+    send.disabled = false;
   });
 
   // ---------- journey overlay ----------

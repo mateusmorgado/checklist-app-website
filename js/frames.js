@@ -4,8 +4,8 @@ window.FRAMES = {
   {
    "img": "run-0",
    "tap": [
-    0.589,
-    0.861
+    0.595,
+    0.85
    ],
    "note": "Pick a checklist"
   },
@@ -13,7 +13,7 @@ window.FRAMES = {
    "img": "run-1",
    "tap": [
     0.656,
-    0.838
+    0.826
    ],
    "note": "Tick items from the bottom up"
   },
@@ -21,7 +21,7 @@ window.FRAMES = {
    "img": "run-2",
    "tap": [
     0.642,
-    0.77
+    0.758
    ],
    "note": "The bar fills as you go"
   },
@@ -29,7 +29,7 @@ window.FRAMES = {
    "img": "run-3",
    "tap": [
     0.636,
-    0.604
+    0.592
    ],
    "note": "One more"
   },
@@ -43,8 +43,8 @@ window.FRAMES = {
   {
    "img": "ask-0",
    "tap": [
-    0.589,
-    0.613
+    0.595,
+    0.601
    ],
    "note": "Start a list with a question"
   },
@@ -52,7 +52,7 @@ window.FRAMES = {
    "img": "ask-1",
    "tap": [
     0.835,
-    0.943
+    0.931
    ],
    "note": "Answer Yes or No once"
   },
@@ -60,7 +60,7 @@ window.FRAMES = {
    "img": "ask-2",
    "tap": [
     0.713,
-    0.686
+    0.674
    ],
    "note": "A Yes adds the towel"
   },
@@ -75,7 +75,7 @@ window.FRAMES = {
    "img": "voice-0",
    "tap": [
     0.265,
-    0.943
+    0.931
    ],
    "note": "Tap the bolt"
   },
@@ -83,7 +83,7 @@ window.FRAMES = {
    "img": "voice-1",
    "tap": [
     0.819,
-    0.943
+    0.931
    ],
    "note": "Say your list out loud"
   },
@@ -91,7 +91,7 @@ window.FRAMES = {
    "img": "voice-2",
    "tap": [
     0.57,
-    0.943
+    0.931
    ],
    "note": "Up to 17 seconds"
   },
@@ -99,7 +99,7 @@ window.FRAMES = {
    "img": "voice-3",
    "tap": [
     0.593,
-    0.948
+    0.936
    ],
    "note": "It becomes a list"
   },
@@ -114,7 +114,7 @@ window.FRAMES = {
    "img": "build-0",
    "tap": [
     0.838,
-    0.943
+    0.931
    ],
    "note": "Create your own"
   },
@@ -122,7 +122,7 @@ window.FRAMES = {
    "img": "build-1",
    "tap": [
     0.822,
-    0.943
+    0.931
    ],
    "note": "Name it"
   },
@@ -130,7 +130,7 @@ window.FRAMES = {
    "img": "build-2",
    "tap": [
     0.822,
-    0.943
+    0.931
    ],
    "note": "Pick your cues"
   },
@@ -138,7 +138,7 @@ window.FRAMES = {
    "img": "build-3",
    "tap": [
     0.47,
-    0.943
+    0.931
    ],
    "note": "Add items, drag to reorder"
   },
