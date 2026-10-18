@@ -20,11 +20,12 @@
   }
   let introRun = 0;
   // The two struck lines are shoved to the left edge by the big line and wait there. They fall like gravity when the page is scrolled.
-  const hero = $('.hero'), heroIn = $('.hero-in'), canPark = () => innerWidth >= 900;
+  const hero = $('.hero'), canPark = () => innerWidth >= 900;
+  const lot = document.createElement('div'); lot.className = 'lines parking'; lot.setAttribute('aria-hidden', 'true'); hero.appendChild(lot);
   let parked = [], dropArm = null;
   function unpark() {
     if (dropArm) { removeEventListener('scroll', dropArm); dropArm = null; }
-    parked.forEach(p => { p.ph.parentNode.insertBefore(p.l, p.ph); p.ph.remove(); }); parked = [];
+    parked.forEach(p => { p.ph.parentNode.insertBefore(p.l, p.ph); p.ph.remove(); }); parked = []; $$('.falling').forEach(f => f.remove());
     lines.slice(0, 2).forEach(l => { l.classList.remove('parked', 'dropping', 'dropped'); l.removeAttribute('style'); });
   }
   function park() {
@@ -32,12 +33,12 @@
     f.forEach(({ l, r }, i) => {
       const ph = document.createElement('div'); ph.className = 'line-ph'; ph.style.height = r.height + 'px'; ph.style.marginBottom = getComputedStyle(l).marginBottom; l.parentNode.insertBefore(ph, l);
       l.style.cssText = 'position:absolute;z-index:4;margin:0;left:' + (r.left - hr.left) + 'px;top:' + (r.top - hr.top) + 'px;white-space:nowrap;transform-origin:0 0;transition:none';
-      hero.appendChild(l); parked.push({ l, ph });
+      lot.appendChild(l); parked.push({ l, ph });
     });
     void hero.offsetHeight;
     f.forEach(({ l }, i) => {
       const right = i === 1, cw = document.documentElement.clientWidth;
-      l.classList.add('parked'); l.style.transition = ''; l.style.fontSize = '24px';
+      l.classList.add('parked'); l.style.transition = ''; l.style.fontSize = '28px';
       l.style.setProperty('--rot', right ? '90deg' : '-90deg'); l.style.setProperty('--end', right ? '150deg' : '-150deg'); l.style.setProperty('--dx', right ? '.12' : '-.12');
       if (right) { l.style.left = (cw - 16) + 'px'; l.style.top = '130px'; l.style.transform = 'rotate(90deg)'; }
       else { l.style.left = '12px'; l.style.top = (Math.min(hero.offsetHeight, innerHeight) - 80) + 'px'; l.style.transform = 'rotate(-90deg)'; }
@@ -45,12 +46,21 @@
     });
     parked.forEach(({ ph }) => { ph.style.height = '0px'; ph.style.marginBottom = '0px'; });
     if (reduce) return;
-    dropArm = () => { if (scrollY < 40) return; removeEventListener('scroll', dropArm); dropArm = null; drop(); };
-    setTimeout(() => { if (dropArm) { addEventListener('scroll', dropArm, { passive: true }); dropArm(); } }, 1100);
+    // only a scroll down after the lines have landed lets them go
+    let y0 = null;
+    dropArm = () => { if (y0 == null || scrollY - y0 < 40) return; removeEventListener('scroll', dropArm); dropArm = null; drop(); };
+    addEventListener('scroll', dropArm, { passive: true });
+    setTimeout(() => { y0 = scrollY; }, 1000);
   }
   function drop() {
-    const away = hero.offsetHeight + 400;
-    parked.forEach(({ l }, i) => { l.style.transitionDelay = ''; l.classList.add('dropping'); l.style.setProperty('--away', away + 'px'); l.style.animationDelay = (i * 160) + 'ms'; l.addEventListener('animationend', () => l.classList.add('dropped'), { once: true }); });
+    // the lines move to a fixed layer, so they fall through the screen while the page scrolls
+    const fall = document.createElement('div'); fall.className = 'lines falling'; fall.setAttribute('aria-hidden', 'true'); document.body.appendChild(fall);
+    const hr = hero.getBoundingClientRect(), away = innerHeight + 700;
+    parked.forEach(({ l }, i) => {
+      l.style.left = (parseFloat(l.style.left) + hr.left) + 'px'; l.style.top = (parseFloat(l.style.top) + hr.top) + 'px'; l.style.transitionDelay = '';
+      fall.appendChild(l); l.classList.add('dropping'); l.style.setProperty('--away', away + 'px'); l.style.animationDelay = (i * 160) + 'ms';
+      l.addEventListener('animationend', () => { l.classList.add('dropped'); if (parked.every(p => p.l.classList.contains('dropped'))) parked.forEach(p => lot.appendChild(p.l)), fall.remove(); }, { once: true });
+    });
   }
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;

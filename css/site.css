@@ -88,10 +88,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .swipe-name { font: 800 16px var(--display); background: var(--yellow); color: var(--ink); border: 3px solid var(--ink); border-radius: 10px; padding: 3px 12px; box-shadow: -3px -3px 0 var(--ink); }
 .swipe-dots { display: inline-flex; gap: 6px; } .swipe-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--ink); opacity: .3; transition: opacity .3s, transform .3s; } .swipe-dots i.on { opacity: 1; transform: scale(1.35); }
 /* parked on the left edge, then gravity */
+.parking { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.falling { position: fixed; inset: 0; z-index: 45; pointer-events: none; overflow: hidden; }
+.parking .line, .falling .line { letter-spacing: 0; }
 .line-ph { transition: height .7s cubic-bezier(.6, 0, .2, 1), margin .7s; }
 .line.parked { z-index: 4; transition: left .8s cubic-bezier(.3, 1.5, .5, 1), top .8s cubic-bezier(.3, 1.5, .5, 1), font-size .8s, transform .8s cubic-bezier(.3, 1.5, .5, 1); }
 .line.parked .chip { box-shadow: -3px -3px 0 var(--ink); border-width: 3px; border-radius: 8px; }
-.line.dropping { animation: gravity 1.15s cubic-bezier(.5, 0, 1, .55) both; transition: none; }
+.line.dropping { animation: gravity 1.5s cubic-bezier(.45, 0, .9, .5) both; transition: none; }
 .line.dropped { visibility: hidden; }
 @keyframes gravity { 0% { transform: translate(0, 0) rotate(var(--rot)); } 10% { transform: translate(0, -8px) rotate(calc(var(--rot) * 1.02)); } 100% { transform: translate(calc(var(--away) * var(--dx)), var(--away)) rotate(var(--end)); } }
 /* the first two lines fall off to the left and the rest moves up */
