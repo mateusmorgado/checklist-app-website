@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Touchdown Checkbot: Final Approach</title>
+  <link rel="stylesheet" href="tw.css">
+  <script src="three.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Share+Tech+Mono&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --coral: #FF5A5F;
+      --navy: #1E2D5E;
+      --yellow: #FFD13B;
+      --mint: #4DFFB5;
+      --offwhite: #F8F9FA;
+      --ink: #111520;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--navy);
+      font-family: 'Fredoka', sans-serif;
+      touch-action: none;
+    }
+
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .neo-box {
+      border: 4px solid var(--ink);
+      box-shadow: 6px 6px 0px var(--ink);
+      border-radius: 18px;
+    }
+
+    .neo-btn {
+      border: 3.5px solid var(--ink);
+      box-shadow: 4px 4px 0px var(--ink);
+      border-radius: 12px;
+      font-weight: 700;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.15s ease;
+      cursor: pointer;
+    }
+
+    .neo-btn:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 5px 5px 0px var(--ink);
+    }
+
+    .neo-btn:active, .neo-btn.active-press {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0px var(--ink);
+    }
+
+    .mono-readout {
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .checklist-panel {
+      background: var(--offwhite);
+      border: 4px solid var(--ink);
+      box-shadow: 7px 8px 0px var(--ink);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    @keyframes pulseDanger {
+      0%, 100% { background-color: #FF5A5F; color: #FFFFFF; transform: scale(1); }
+      50% { background-color: #FFD13B; color: #111520; transform: scale(1.04); }
+    }
+
+    .gpws-alert {
+      animation: pulseDanger 0.45s infinite;
+    }
+
+    /* Custom Range Slider for Throttle */
+    input[type=range].throttle-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 120px;
+      height: 14px;
+      background: #111520;
+      border-radius: 8px;
+      border: 2px solid #4DFFB5;
+      outline: none;
+    }
+    input[type=range].throttle-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 26px;
+      border-radius: 6px;
+      background: #FF5A5F;
+      border: 3px solid #111520;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #111520;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D Three.js Flight Viewport -->
+  <div id="canvas-container"></div>
+
+  <!-- Lightning Flash Overlay for Level 3 -->
+  <div id="lightning-flash" class="fixed inset-0 z-10 bg-white pointer-events-none opacity-0 transition-opacity duration-150"></div>
+
+  <!-- START / TITLE SCREEN MODAL OVERLAY -->
+  <div id="start-screen" class="fixed inset-0 z-50 bg-[#111520]/65 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="neo-box bg-[#F8F9FA] max-w-lg w-full overflow-hidden">
+      <!-- Top Coral Banner -->
+      <div class="bg-[#FF5A5F] border-b-4 border-[#111520] px-6 py-4 flex items-center justify-between">
+        <div>
+          <span class="inline-block bg-[#FFD13B] text-[#111520] border-2 border-[#111520] px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0_#111520]">
+            3D FLIGHT SIM & CHECKLIST
+          </span>
+          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1 drop-shadow-[2px_2px_0_#111520]" style="font-family: 'Space Grotesk', sans-serif;">
+            TOUCHDOWN CHECKBOT
+          </h1>
+          <div class="text-xs font-extrabold text-[#FFD13B] tracking-widest uppercase">FINAL APPROACH EDITION</div>
+        </div>
+
+        <!-- Pilot Bot Graphic SVG -->
+        <div class="w-20 h-20 rounded-2xl bg-[#1E2D5E] border-3 border-[#111520] shadow-[4px_4px_0_#111520] flex items-center justify-center shrink-0" style="border: 3px solid #111520;">
+          <svg viewBox="0 0 100 100" class="w-16 h-16">
+            <!-- Antenna -->
+            <line x1="50" y1="6" x2="50" y2="18" stroke="#111520" stroke-width="4" />
+            <circle cx="50" cy="6" r="5" fill="#FF5A5F" stroke="#111520" stroke-width="3" />
+            <!-- Pilot Cap -->
+            <path d="M22 28 C25 14, 75 14, 78 28 Z" fill="#1E2D5E" stroke="#111520" stroke-width="3.5" />
+            <rect x="20" y="25" width="60" height="6" rx="3" fill="#FFD13B" stroke="#111520" stroke-width="3" />
+            <circle cx="50" cy="21" r="3.5" fill="#FFD13B" stroke="#111520" stroke-width="2" />
+            <!-- Headphones -->
+            <rect x="11" y="40" width="9" height="24" rx="4" fill="#FFD13B" stroke="#111520" stroke-width="3" />
+            <rect x="80" y="40" width="9" height="24" rx="4" fill="#FFD13B" stroke="#111520" stroke-width="3" />
+            <!-- Robot Head Housing -->
+            <rect x="20" y="31" width="60" height="44" rx="12" fill="#F8F9FA" stroke="#111520" stroke-width="3.5" />
+            <!-- Screen Face -->
+            <rect x="26" y="37" width="48" height="32" rx="8" fill="#111520" />
+            <!-- Glowing Mint Eyes & Smile -->
+            <circle cx="39" cy="50" r="5.5" fill="#4DFFB5" />
+            <circle cx="61" cy="50" r="5.5" fill="#4DFFB5" />
+            <circle cx="41" cy="48" r="1.8" fill="#FFFFFF" />
+            <circle cx="63" cy="48" r="1.8" fill="#FFFFFF" />
+            <ellipse cx="31" cy="58" rx="3.5" ry="2" fill="#FF8DA1" />
+            <ellipse cx="69" cy="58" rx="3.5" ry="2" fill="#FF8DA1" />
+            <path d="M44 57 Q50 64 56 57" fill="none" stroke="#4DFFB5" stroke-width="3.5" stroke-linecap="round" />
+            <!-- Navy Uniform Collar & Tie -->
+            <path d="M30 75 L70 75 L76 96 L24 96 Z" fill="#1E2D5E" stroke="#111520" stroke-width="3.5" />
+            <polygon points="46,75 54,75 53,90 50,94 47,90" fill="#111520" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Body Content -->
+      <div class="p-5 sm:p-6 space-y-4">
+        <!-- Prominent Creator & Gemini 4 Argon Badge -->
+        <div class="bg-[#FFD13B] border-3 border-[#111520] rounded-xl p-3 shadow-[4px_4px_0_#111520] flex items-center justify-between gap-2" style="border: 3px solid #111520;">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-lg bg-[#1E2D5E] text-[#4DFFB5] border-2 border-[#111520] flex items-center justify-center font-black text-base">✦</span>
+            <div>
+              <div class="text-[10px] font-extrabold uppercase tracking-wider text-[#1E2D5E]">OFFICIAL FLIGHT BUILD</div>
+              <div class="text-xs sm:text-sm font-black text-[#111520]">
+                Created by <span class="underline decoration-2 decoration-[#FF5A5F]">Mateus Morgado</span> with <span class="bg-[#111520] text-[#4DFFB5] px-1.5 py-0.5 rounded">Gemini 4 Argon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Flight Briefing Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+          <div class="bg-white border-2 border-[#111520] rounded-xl p-2.5 shadow-[3px_3px_0_#111520]">
+            <div class="font-black text-[#1E2D5E] mb-1">🕹️ FLIGHT CONTROLS</div>
+            <ul class="space-y-0.5 text-gray-700 font-bold text-[11px]">
+              <li>• <span class="text-[#111520]">W/S or ▲/▼</span> : Pitch Nose</li>
+              <li>• <span class="text-[#111520]">A/D or ◀/▶</span> : Bank / Align</li>
+              <li>• <span class="text-[#111520]">SHIFT/CTRL or Q/E</span> : Throttle</li>
+              <li>• <span class="text-[#111520]">SPACEBAR</span> : Wheel Brakes</li>
+            </ul>
+          </div>
+          <div class="bg-white border-2 border-[#111520] rounded-xl p-2.5 shadow-[3px_3px_0_#111520]">
+            <div class="font-black text-[#FF5A5F] mb-1">📋 LANDING CHECKLIST</div>
+            <ul class="space-y-0.5 text-gray-700 font-bold text-[11px]">
+              <li>• <span class="text-[#111520]">[G]</span> Lower Landing Gear</li>
+              <li>• <span class="text-[#111520]">[F]</span> Extend Flaps to 30°</li>
+              <li>• <span class="text-[#111520]">[B]</span> Arm Auto-Brakes</li>
+              <li>• <span class="text-[#111520]">[R]</span> Tune Tower 118.7 MHz</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Scenario Selector on Start Screen -->
+        <div class="flex items-center justify-between bg-[#1E2D5E] text-white px-3.5 py-2.5 rounded-xl border-3 border-[#111520]" style="border: 3px solid #111520;">
+          <span class="text-xs font-extrabold text-[#4DFFB5]">SELECT APPROACH:</span>
+          <div class="flex gap-1.5">
+            <button onclick="sim.selectStartScenario(1)" id="start-scen-1" class="neo-btn px-2.5 py-1 text-xs bg-[#FFD13B] text-[#111520]">LVL 1: CLEAR</button>
+            <button onclick="sim.selectStartScenario(2)" id="start-scen-2" class="neo-btn px-2.5 py-1 text-xs bg-white text-[#111520]">LVL 2: WIND</button>
+            <button onclick="sim.selectStartScenario(3)" id="start-scen-3" class="neo-btn px-2.5 py-1 text-xs bg-white text-[#111520]">LVL 3: STORM</button>
+          </div>
+        </div>
+
+        <!-- Start Flight CTA Button -->
+        <button onclick="sim.startGame()" class="w-full neo-btn bg-[#4DFFB5] text-[#111520] py-3.5 text-base sm:text-lg font-black tracking-wide flex items-center justify-center gap-2 shadow-[5px_5px_0_#111520]">
+          <span>🛫 START FLIGHT APPROACH</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP HUD BAR -->
+  <header class="fixed top-2.5 left-2.5 right-2.5 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+    <!-- Left: Brand, Creator Credit, Level Selector & Camera View Switch -->
+    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 pointer-events-auto">
+      <button onclick="sim.openStartScreen()" class="neo-box bg-[#FF5A5F] text-white px-3 py-1.5 flex items-center gap-1.5 cursor-pointer hover:brightness-105" title="Open Title Screen">
+        <span class="text-lg">🛬</span>
+        <div class="text-left leading-none">
+          <div class="font-extrabold tracking-tight text-xs sm:text-sm" style="font-family: 'Space Grotesk', sans-serif;">TOUCHDOWN CHECKBOT</div>
+          <div class="text-[9px] font-bold text-[#FFD13B]">by Mateus Morgado • Gemini 4 Argon</div>
+        </div>
+      </button>
+
+      <div class="flex gap-1 bg-[#1E2D5E] p-1 rounded-xl border-3 border-[#111520]" style="border: 3px solid #111520; box-shadow: 3px 3px 0 #111520;">
+        <button onclick="sim.loadScenario(1)" id="scen-btn-1" class="neo-btn px-2.5 py-1 text-xs bg-[#FFD13B] text-[#111520]">LVL 1</button>
+        <button onclick="sim.loadScenario(2)" id="scen-btn-2" class="neo-btn px-2.5 py-1 text-xs bg-white text-[#111520]">LVL 2</button>
+        <button onclick="sim.loadScenario(3)" id="scen-btn-3" class="neo-btn px-2.5 py-1 text-xs bg-white text-[#111520]">LVL 3</button>
+      </div>
+
+      <button onclick="sim.toggleCameraView()" id="cam-toggle-btn" class="neo-btn bg-[#4DFFB5] text-[#111520] px-3 py-1.5 text-xs sm:text-sm flex items-center gap-1.5">
+        <span>🎥</span>
+        <span id="cam-label">VIEW: CHASE 3D</span>
+      </button>
+    </div>
+
+    <!-- Center: Primary Flight Instruments Telemetry Bar -->
+    <div class="pointer-events-auto bg-[#111520] border-4 border-[#2B3758] px-3 sm:px-4 py-1.5 rounded-2xl shadow-[0_5px_0_#090C12] flex items-center gap-3 sm:gap-5 text-[#4DFFB5] mono-readout">
+      <div>
+        <div class="text-[10px] text-gray-400">SPD (130-150)</div>
+        <div id="hud-spd" class="text-base sm:text-xl font-bold">142 KT</div>
+      </div>
+      <div class="border-l border-gray-700 h-7"></div>
+      <div>
+        <div class="text-[10px] text-gray-400">ALTITUDE</div>
+        <div id="hud-alt" class="text-base sm:text-xl font-bold">950 FT</div>
+      </div>
+      <div class="border-l border-gray-700 h-7"></div>
+      <div>
+        <div class="text-[10px] text-gray-400">V/S SINK</div>
+        <div id="hud-vs" class="text-base sm:text-xl font-bold">-450 FPM</div>
+      </div>
+      <div class="border-l border-gray-700 h-7 hidden sm:block"></div>
+      <div class="hidden sm:block">
+        <div class="text-[10px] text-gray-400">RWY DIST</div>
+        <div id="hud-dist" class="text-base sm:text-xl font-bold">2.4 NM</div>
+      </div>
+    </div>
+
+    <!-- Right: Audio & Retry -->
+    <div class="flex items-center gap-1.5 pointer-events-auto">
+      <button onclick="audio.toggleMute()" id="sfx-btn" class="neo-btn bg-[#FFD13B] text-[#111520] px-2.5 py-1.5 text-xs sm:text-sm">
+        🔊 SFX
+      </button>
+      <button onclick="sim.resetApproach()" class="neo-btn bg-white text-[#111520] px-2.5 py-1.5 text-xs sm:text-sm">
+        ↻ RETRY
+      </button>
+    </div>
+  </header>
+
+  <!-- LEFT OVERLAY: CO-PILOT BOT LIVE MONITOR & GPWS CALLOUTS -->
+  <div class="fixed left-2.5 sm:left-4 top-20 z-20 w-[220px] sm:w-[265px] pointer-events-none flex flex-col gap-2">
+    <div class="neo-box bg-[#F8F9FA] p-2.5 sm:p-3 pointer-events-auto">
+      <div class="flex items-center gap-2.5">
+        <!-- 2D Live Avatar Canvas synced with 3D Bot -->
+        <canvas id="bot-hud-canvas" width="76" height="64" class="rounded-xl border-3 border-[#111520] bg-[#111520] shrink-0" style="border:3px solid #111520;"></canvas>
+        <div class="leading-tight">
+          <div class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-[#4DFFB5] border border-[#111520]"></span>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#FF5A5F]" id="scenario-tag">CLEAR APPROACH</span>
+          </div>
+          <p id="bot-callout-text" class="text-xs sm:text-sm font-bold text-[#111520] mt-0.5">
+            "Fly through the mint rings & complete the checklist!"
+          </p>
+        </div>
+      </div>
+
+      <!-- GPWS Warning Banner -->
+      <div id="gpws-banner" class="mt-2 px-2.5 py-1 rounded-lg border-2 border-[#111520] bg-[#1E2D5E] text-[#4DFFB5] text-center font-extrabold text-xs tracking-wider mono-readout">
+        GLIDE SLOPE: ON TARGET
+      </div>
+
+      <!-- Wind Indicator -->
+      <div class="mt-1.5 flex items-center justify-between text-[11px] font-bold text-[#1E2D5E] px-1">
+        <span id="wind-label">🌬️ WIND: CALM (0 KT)</span>
+        <span id="rings-label" class="text-[#111520]">RINGS: 0/4</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT OVERLAY: INTERACTIVE LANDING CHECKLIST CARD -->
+  <aside class="fixed right-2.5 sm:right-4 top-20 z-20 w-[210px] sm:w-[270px] pointer-events-auto">
+    <div class="checklist-panel">
+      <div class="bg-[#FF5A5F] border-b-4 border-[#111520] px-3 py-2 text-center">
+        <div class="text-[10px] font-extrabold uppercase tracking-widest text-[#FFD13B]">BEFORE TOUCHDOWN</div>
+        <h2 class="text-base sm:text-xl font-black text-[#111520] leading-none" style="font-family: 'Space Grotesk', sans-serif;">
+          LANDING CHECKLIST
+        </h2>
+      </div>
+
+      <div class="p-2.5 sm:p-3 space-y-2 bg-[#F8F9FA]">
+        <!-- [G] Landing Gear -->
+        <button onclick="sim.toggleGear()" id="chk-btn-gear" class="w-full neo-btn bg-white p-2 flex items-center justify-between text-left">
+          <div class="flex items-center gap-2">
+            <span id="chk-box-gear" class="w-6 h-6 rounded-md border-2 border-[#111520] bg-white flex items-center justify-center font-black text-sm"></span>
+            <div>
+              <div class="text-xs sm:text-sm font-extrabold text-[#111520]">LANDING GEAR</div>
+              <div id="chk-sub-gear" class="text-[10px] sm:text-xs font-bold text-gray-500">UP (Press [G])</div>
+            </div>
+          </div>
+          <span class="px-1.5 py-0.5 text-[10px] font-black bg-[#FFD13B] border-2 border-[#111520] rounded">G</span>
+        </button>
+
+        <!-- [F] Flaps 30° -->
+        <button onclick="sim.cycleFlaps()" id="chk-btn-flaps" class="w-full neo-btn bg-white p-2 flex items-center justify-between text-left">
+          <div class="flex items-center gap-2">
+            <span id="chk-box-flaps" class="w-6 h-6 rounded-md border-2 border-[#111520] bg-white flex items-center justify-center font-black text-sm"></span>
+            <div>
+              <div class="text-xs sm:text-sm font-extrabold text-[#111520]">FLAPS 30°</div>
+              <div id="chk-sub-flaps" class="text-[10px] sm:text-xs font-bold text-gray-500">Currently 0° ([F])</div>
+            </div>
+          </div>
+          <span class="px-1.5 py-0.5 text-[10px] font-black bg-[#FFD13B] border-2 border-[#111520] rounded">F</span>
+        </button>
+
+        <!-- [B] Auto-Brakes / Spoilers -->
+        <button onclick="sim.toggleSpoilers()" id="chk-btn-spoilers" class="w-full neo-btn bg-white p-2 flex items-center justify-between text-left">
+          <div class="flex items-center gap-2">
+            <span id="chk-box-spoilers" class="w-6 h-6 rounded-md border-2 border-[#111520] bg-white flex items-center justify-center font-black text-sm"></span>
+            <div>
+              <div class="text-xs sm:text-sm font-extrabold text-[#111520]">AUTO-BRAKES</div>
+              <div id="chk-sub-spoilers" class="text-[10px] sm:text-xs font-bold text-gray-500">DISARMED ([B])</div>
+            </div>
+          </div>
+          <span class="px-1.5 py-0.5 text-[10px] font-black bg-[#FFD13B] border-2 border-[#111520] rounded">B</span>
+        </button>
+
+        <!-- [R] Tower Frequency 118.7 -->
+        <button onclick="sim.stepRadio()" id="chk-btn-radio" class="w-full neo-btn bg-white p-2 flex items-center justify-between text-left">
+          <div class="flex items-center gap-2">
+            <span id="chk-box-radio" class="w-6 h-6 rounded-md border-2 border-[#111520] bg-white flex items-center justify-center font-black text-sm"></span>
+            <div>
+              <div class="text-xs sm:text-sm font-extrabold text-[#111520]">TOWER 118.7</div>
+              <div id="chk-sub-radio" class="text-[10px] sm:text-xs font-bold text-gray-500">118.1 MHz ([R])</div>
+            </div>
+          </div>
+          <span class="px-1.5 py-0.5 text-[10px] font-black bg-[#FFD13B] border-2 border-[#111520] rounded">R</span>
+        </button>
+      </div>
+
+      <div id="chk-footer" class="px-3 py-2 bg-[#FFD13B] border-t-4 border-[#111520] flex items-center justify-between">
+        <span id="chk-progress" class="text-xs font-extrabold text-[#111520]">0 / 4 CONFIGURED</span>
+        <span id="chk-badge" class="text-[10px] font-black px-2 py-0.5 rounded bg-[#111520] text-[#FF5A5F]">NOT READY</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- BOTTOM FLIGHT DECK CONTROLS (Touch + Mouse + Keyboard Indicator) -->
+  <div class="fixed bottom-2.5 left-2.5 right-2.5 z-20 pointer-events-none flex flex-wrap items-end justify-between gap-2">
+    <!-- Left: On-Screen Flight Yoke Pad (Pitch & Roll) -->
+    <div class="pointer-events-auto neo-box bg-[#1E2D5E]/95 p-2 flex flex-col items-center gap-1">
+      <div class="text-[10px] font-extrabold text-[#4DFFB5] tracking-wider">FLIGHT YOKE (W/A/S/D or ARROWS)</div>
+      <div class="grid grid-cols-3 gap-1">
+        <div></div>
+        <button id="btn-pitch-down" class="neo-btn bg-white text-[#111520] w-10 h-9 text-xs font-black">▲<br/><span class="text-[8px]">NOSE DN</span></button>
+        <div></div>
+        <button id="btn-roll-left" class="neo-btn bg-white text-[#111520] w-10 h-9 text-xs font-black">◀ L</button>
+        <button onclick="sim.levelWings()" class="neo-btn bg-[#FFD13B] text-[#111520] w-10 h-9 text-[9px] font-black">LVL</button>
+        <button id="btn-roll-right" class="neo-btn bg-white text-[#111520] w-10 h-9 text-xs font-black">R ▶</button>
+        <div></div>
+        <button id="btn-pitch-up" class="neo-btn bg-white text-[#111520] w-10 h-9 text-xs font-black">▼<br/><span class="text-[8px]">FLARE UP</span></button>
+        <div></div>
+      </div>
+    </div>
+
+    <!-- Center: Wheel Brakes Button [SPACEBAR] -->
+    <div class="pointer-events-auto flex flex-col items-center gap-1">
+      <button id="brake-btn" class="neo-btn bg-[#FF5A5F] text-white px-5 py-2.5 text-xs sm:text-sm font-black tracking-wide flex items-center gap-2">
+        <span>🛑 HOLD [SPACE] WHEEL BRAKES</span>
+      </button>
+    </div>
+
+    <!-- Right: Throttle Control Slider -->
+    <div class="pointer-events-auto neo-box bg-[#1E2D5E]/95 px-3 py-2 flex flex-col items-center gap-1">
+      <div class="flex items-center justify-between w-full text-[10px] font-extrabold text-[#FFD13B]">
+        <span>THROTTLE (SHIFT/CTRL)</span>
+        <span id="throttle-pct" class="mono-readout text-[#4DFFB5]">55%</span>
+      </div>
+      <input id="throttle-slider" type="range" min="0" max="100" value="55" class="throttle-slider" />
+    </div>
+  </div>
+
+  <!-- LANDING EVALUATION / DEBRIEF MODAL -->
+  <div id="debrief-modal" class="fixed inset-0 z-40 bg-[#111520]/80 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="neo-box bg-[#F8F9FA] max-w-md w-full overflow-hidden">
+      <div id="debrief-header" class="bg-[#4DFFB5] border-b-4 border-[#111520] px-6 py-4 text-center">
+        <div id="debrief-emoji" class="text-4xl mb-1">🧈</div>
+        <h2 id="debrief-title" class="text-2xl sm:text-3xl font-black text-[#111520]" style="font-family: 'Space Grotesk', sans-serif;">BUTTER TOUCHDOWN!</h2>
+        <div id="debrief-subtitle" class="text-xs font-extrabold uppercase tracking-wider text-[#1E2D5E] mt-0.5">CAPTAIN CHECKBOT SALUTES YOU</div>
+      </div>
+
+      <div class="p-5 space-y-3">
+        <!-- Breakdown Metrics -->
+        <div class="bg-white border-3 border-[#111520] rounded-xl p-3 space-y-2 text-xs sm:text-sm font-bold" style="border: 3px solid #111520;">
+          <div class="flex justify-between">
+            <span class="text-gray-600">TOUCHDOWN SINK RATE:</span>
+            <span id="stat-sink" class="mono-readout font-extrabold text-[#111520]">-180 FPM</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">TOUCHDOWN SPEED:</span>
+            <span id="stat-speed" class="mono-readout font-extrabold text-[#111520]">138 KTS</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">CENTERLINE OFFSET:</span>
+            <span id="stat-center" class="mono-readout font-extrabold text-[#111520]">1.2 M</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">CHECKLIST CONFIG:</span>
+            <span id="stat-checklist" class="mono-readout font-extrabold text-[#111520]">4 / 4 COMPLETE</span>
+          </div>
+          <div class="border-t-2 border-gray-200 pt-2 flex justify-between text-base">
+            <span class="font-black text-[#1E2D5E]">FINAL SCORE:</span>
+            <span id="stat-score" class="font-black text-[#FF5A5F]">96 / 100 (★★★)</span>
+          </div>
+        </div>
+
+        <p id="debrief-bot-quote" class="text-xs sm:text-sm font-bold text-center text-[#1E2D5E] italic">
+          "Passengers didn't even spill their coffee! Incredible flying!"
+        </p>
+
+        <div class="flex gap-3 justify-center pt-1">
+          <button onclick="sim.resetApproach()" class="neo-btn bg-white text-[#111520] px-5 py-2.5 text-xs sm:text-sm">↻ FLY AGAIN</button>
+          <button id="debrief-next-btn" onclick="sim.nextScenario()" class="neo-btn bg-[#FFD13B] text-[#111520] px-6 py-2.5 text-xs sm:text-sm">NEXT APPROACH →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /********************************************************************
+     * 1. WEB AUDIO SYNTHESIZER (Jet Turbine, GPWS Callouts, Screech, Chimes)
+     ********************************************************************/
+    class FlightAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+        this.engineOsc = null;
+        this.engineGain = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+
+          // Continuous subtle jet turbine hum
+          this.engineOsc = this.ctx.createOscillator();
+          this.engineGain = this.ctx.createGain();
+          this.engineOsc.type = 'sawtooth';
+          this.engineOsc.frequency.value = 65;
+          this.engineGain.gain.value = 0.03;
+
+          // Lowpass filter for warm engine rumble
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 180;
+
+          this.engineOsc.connect(filter);
+          filter.connect(this.engineGain);
+          this.engineGain.connect(this.ctx.destination);
+          this.engineOsc.start();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      updateEnginePitch(throttlePct, airspeed, active) {
+        if (!this.ctx || !this.engineOsc) return;
+        if (this.muted || !active) {
+          this.engineGain.gain.setTargetAtTime(0.0, this.ctx.currentTime, 0.1);
+          return;
+        }
+        const targetFreq = 48 + (throttlePct * 0.75) + (airspeed * 0.15);
+        this.engineOsc.frequency.setTargetAtTime(targetFreq, this.ctx.currentTime, 0.08);
+        this.engineGain.gain.setTargetAtTime(0.035, this.ctx.currentTime, 0.1);
+      }
+
+      toggleMute() {
+        this.init();
+        this.muted = !this.muted;
+        const btn = document.getElementById('sfx-btn');
+        btn.textContent = this.muted ? '🔇 MUTED' : '🔊 SFX';
+        btn.style.backgroundColor = this.muted ? '#F8F9FA' : '#FFD13B';
+      }
+
+      playMechanicalClunk(high = false) {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(high ? 320 : 140, now);
+        osc.frequency.exponentialRampToValueAtTime(high ? 580 : 75, now + 0.12);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.14);
+      }
+
+      playRingPass() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        [523.25, 659.25, 783.99].forEach((f, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, now + i * 0.05);
+          gain.gain.setValueAtTime(0.16, now + i * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.22);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.05);
+          osc.stop(now + i * 0.05 + 0.24);
+        });
+      }
+
+      playGPWSBeep() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(660, now + 0.08);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.19);
+      }
+
+      playTireScreech() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(920, now);
+        osc.frequency.exponentialRampToValueAtTime(340, now + 0.35);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+
+      playFanfare(success = true) {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const notes = success ? [440, 554.37, 659.25, 880] : [220, 196, 164.81];
+        notes.forEach((f, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, now + idx * 0.1);
+          gain.gain.setValueAtTime(0.2, now + idx * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.35);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.1);
+          osc.stop(now + idx * 0.1 + 0.38);
+        });
+      }
+    }
+
+    const audio = new FlightAudioEngine();
+
+    /********************************************************************
+     * 2. TOON PALETTE & INVERTED-HULL BLACK OUTLINE BUILDER
+     ********************************************************************/
+    const COLORS = {
+      coral: 0xFF5A5F,
+      navy: 0x1E2D5E,
+      navyDark: 0x131D3D,
+      yellow: 0xFFD13B,
+      mint: 0x4DFFB5,
+      offwhite: 0xF8F9FA,
+      charcoal: 0x262C3A,
+      asphalt: 0x353E50,
+      ink: 0x111520,
+      waterDay: 0x3A9EF5,
+      grassDay: 0x5CD685
+    };
+
+    const toonGradData = new Uint8Array([150, 210, 255]);
+    const toonGradTex = new THREE.DataTexture(toonGradData, 3, 1, THREE.LuminanceFormat);
+    toonGradTex.minFilter = THREE.NearestFilter;
+    toonGradTex.magFilter = THREE.NearestFilter;
+    toonGradTex.needsUpdate = true;
+
+    function makeToonMat(colorHex, emissiveHex = 0x000000, emissiveIntensity = 0) {
+      return new THREE.MeshToonMaterial({
+        color: colorHex,
+        gradientMap: toonGradTex,
+        emissive: emissiveHex,
+        emissiveIntensity: emissiveIntensity
+      });
+    }
+
+    const outlineMat = new THREE.MeshBasicMaterial({
+      color: COLORS.ink,
+      side: THREE.BackSide
+    });
+
+    function createOutlinedMesh(geo, mat, outlineScale = 1.06) {
+      const grp = new THREE.Group();
+      const mesh = new THREE.Mesh(geo, mat);
+      const out = new THREE.Mesh(geo, outlineMat);
+      out.scale.setScalar(outlineScale);
+      grp.add(mesh, out);
+      grp.userData.mainMesh = mesh;
+      return grp;
+    }
+
+    /********************************************************************
+     * 3. THREE.JS WORLD, RUNWAY, PAPI LIGHTS & GLIDE SLOPE RINGS
+     ********************************************************************/
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x6AC1FF);
+    scene.fog = new THREE.FogExp2(0x6AC1FF, 0.00045);
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.2, 3500);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xfff8e7, 0.95);
+    sunLight.position.set(120, 300, 180);
+    scene.add(sunLight);
+
+    const worldGroup = new THREE.Group();
+    scene.add(worldGroup);
+
+    let waterMesh, islandMesh;
+    const approachRings = [];
+    const papiLights = [];
+    const cloudGroups = [];
+
+    // Runway coordinates:
+    // Threshold starts at Z = 0 and extends down to Z = -950. Width = 46.
+    function buildAirportWorld() {
+      // Stylized Ocean Surface
+      const waterGeo = new THREE.PlaneGeometry(8000, 8000);
+      waterMesh = new THREE.Mesh(waterGeo, new THREE.MeshBasicMaterial({ color: COLORS.waterDay }));
+      waterMesh.rotation.x = -Math.PI / 2;
+      waterMesh.position.y = -2.5;
+      worldGroup.add(waterMesh);
+
+      // Stylized Island Grass Pad surrounding the Runway
+      const islandGeo = new THREE.BoxGeometry(360, 4, 1450);
+      islandMesh = createOutlinedMesh(islandGeo, makeToonMat(COLORS.grassDay), 1.015);
+      islandMesh.position.set(0, -2.0, -450);
+      worldGroup.add(islandMesh);
+
+      // Runway Asphalt Strip (Z = +40 to Z = -1020)
+      const rwyGeo = new THREE.BoxGeometry(48, 0.6, 1060);
+      const rwyMesh = createOutlinedMesh(rwyGeo, makeToonMat(COLORS.asphalt), 1.015);
+      rwyMesh.position.set(0, -0.2, -490);
+      worldGroup.add(rwyMesh);
+
+      // Coral & Yellow Neo-Brutalist Control Tower beside Runway
+      const towerGroup = new THREE.Group();
+      towerGroup.position.set(-68, 0, -280);
+      const towerBase = createOutlinedMesh(new THREE.BoxGeometry(18, 48, 18), makeToonMat(COLORS.offwhite), 1.05);
+      towerBase.position.y = 24;
+      const towerCab = createOutlinedMesh(new THREE.BoxGeometry(26, 14, 26), makeToonMat(COLORS.coral), 1.05);
+      towerCab.position.y = 54;
+      const towerGlass = new THREE.Mesh(
+        new THREE.BoxGeometry(27, 7, 27),
+        new THREE.MeshBasicMaterial({ color: COLORS.mint })
+      );
+      towerGlass.position.y = 54;
+      const towerSpire = createOutlinedMesh(new THREE.CylinderGeometry(1, 1.5, 18, 8), makeToonMat(COLORS.yellow), 1.08);
+      towerSpire.position.y = 69;
+      towerGroup.add(towerBase, towerCab, towerGlass, towerSpire);
+      worldGroup.add(towerGroup);
+
+      // Runway Threshold Piano Keys & Touchdown Zone Markings
+      const whiteMat = new THREE.MeshBasicMaterial({ color: COLORS.offwhite });
+      const yellowMat = new THREE.MeshBasicMaterial({ color: COLORS.yellow });
+      const coralMat = new THREE.MeshBasicMaterial({ color: COLORS.coral });
+
+      for (let x = -18; x <= 18; x += 6) {
+        const piano = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 24), whiteMat);
+        piano.rotation.x = -Math.PI / 2;
+        piano.position.set(x, 0.15, -18);
+        worldGroup.add(piano);
+      }
+
+      // Target Touchdown Zone Boxes (Mint/Yellow Aiming Point at Z = -110 to -220)
+      [-12, 12].forEach((xPos) => {
+        const tdBox = new THREE.Mesh(new THREE.PlaneGeometry(6, 55), yellowMat);
+        tdBox.rotation.x = -Math.PI / 2;
+        tdBox.position.set(xPos, 0.16, -135);
+        worldGroup.add(tdBox);
+      });
+
+      // Centerline Dashes along entire runway
+      for (let z = -55; z > -960; z -= 38) {
+        const dash = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 20), whiteMat);
+        dash.rotation.x = -Math.PI / 2;
+        dash.position.set(0, 0.16, z);
+        worldGroup.add(dash);
+      }
+
+      // Glowing Approach Pier Lights leading to threshold (Z = +200 down to +20)
+      for (let z = 220; z >= 25; z -= 38) {
+        const bar = new THREE.Mesh(
+          new THREE.BoxGeometry(16, 0.8, 1.2),
+          new THREE.MeshBasicMaterial({ color: COLORS.mint })
+        );
+        bar.position.set(0, 0.5, z);
+        worldGroup.add(bar);
+      }
+
+      // Runway Edge Glowing Lights
+      for (let z = 10; z >= -960; z -= 45) {
+        [-23, 23].forEach((xEdge) => {
+          const orb = new THREE.Mesh(
+            new THREE.SphereGeometry(0.9, 8, 8),
+            new THREE.MeshBasicMaterial({ color: z < -750 ? COLORS.coral : COLORS.yellow })
+          );
+          orb.position.set(xEdge, 0.8, z);
+          worldGroup.add(orb);
+        });
+      }
+
+      // 4 PAPI Slope Indicator Lights on Left of Touchdown Zone (Z = -120)
+      for (let i = 0; i < 4; i++) {
+        const papiMat = new THREE.MeshBasicMaterial({ color: i < 2 ? COLORS.offwhite : COLORS.coral });
+        const papi = new THREE.Mesh(new THREE.SphereGeometry(2.2, 12, 12), papiMat);
+        papi.position.set(-32 - i * 6, 1.8, -120);
+        worldGroup.add(papi);
+        papiLights.push(papi);
+      }
+
+      // 4 Floating Glowing Mint Glide-Slope Rings along the ideal 3.2° approach path
+      const ringPositions = [
+        { z: 850, y: 92 },
+        { z: 620, y: 68 },
+        { z: 390, y: 44 },
+        { z: 170, y: 21 }
+      ];
+      ringPositions.forEach((rp, idx) => {
+        const torusGeo = new THREE.TorusGeometry(19, 1.35, 12, 32);
+        const ringMat = new THREE.MeshBasicMaterial({ color: COLORS.mint });
+        const ring = new THREE.Mesh(torusGeo, ringMat);
+        const ringOutline = new THREE.Mesh(torusGeo, outlineMat);
+        ringOutline.scale.setScalar(1.06);
+        ring.add(ringOutline);
+
+        ring.position.set(0, rp.y, rp.z);
+        ring.userData = { index: idx, passed: false, baseZ: rp.z, baseY: rp.y };
+        worldGroup.add(ring);
+        approachRings.push(ring);
+      });
+
+      // Chunky Toon 3D Clouds
+      for (let i = 0; i < 18; i++) {
+        const cg = new THREE.Group();
+        const cMat = makeToonMat(COLORS.offwhite);
+        const s1 = createOutlinedMesh(new THREE.SphereGeometry(16, 12, 12), cMat, 1.05);
+        const s2 = createOutlinedMesh(new THREE.SphereGeometry(12, 12, 12), cMat, 1.05);
+        s2.position.set(14, -2, 2);
+        const s3 = createOutlinedMesh(new THREE.SphereGeometry(13, 12, 12), cMat, 1.05);
+        s3.position.set(-14, -3, -2);
+        cg.add(s1, s2, s3);
+        cg.position.set(
+          (Math.random() - 0.5) * 900,
+          95 + Math.random() * 140,
+          800 - i * 110
+        );
+        worldGroup.add(cg);
+        cloudGroups.push(cg);
+      }
+    }
+    buildAirportWorld();
+
+    /********************************************************************
+     * 4. BUILD CHUNKY 3D CEL-SHADED AIRPLANE + COCKPIT INTERIOR & BOT
+     ********************************************************************/
+    const aircraftGroup = new THREE.Group();
+    scene.add(aircraftGroup);
+
+    // Sub-groups for Chase Model vs Cockpit Interior
+    const chasePlaneModel = new THREE.Group();
+    const cockpitInteriorGroup = new THREE.Group();
+    aircraftGroup.add(chasePlaneModel);
+    aircraftGroup.add(cockpitInteriorGroup);
+
+    let gearStrutsGroup, flapSurfacesLeft, flapSurfacesRight, spoilerSurfacesGroup;
+    let propBlades;
+    let yoke3DMesh, throttle3DMesh, gear3DHandle;
+
+    function buildChaseAirplane() {
+      // Chunky Toon Fuselage
+      const body = createOutlinedMesh(
+        new THREE.BoxGeometry(3.4, 3.2, 12.5),
+        makeToonMat(COLORS.offwhite),
+        1.05
+      );
+      chasePlaneModel.add(body);
+
+      // Coral Red Nose Cone & Stripe
+      const nose = createOutlinedMesh(
+        new THREE.BoxGeometry(2.8, 2.2, 3.0),
+        makeToonMat(COLORS.coral),
+        1.06
+      );
+      nose.position.set(0, -0.3, -7.2);
+      chasePlaneModel.add(nose);
+
+      // Cockpit Canopy Glass (Glowing Mint/Navy)
+      const canopy = createOutlinedMesh(
+        new THREE.BoxGeometry(3.0, 1.5, 4.2),
+        makeToonMat(COLORS.navy),
+        1.05
+      );
+      canopy.position.set(0, 1.5, -2.5);
+      chasePlaneModel.add(canopy);
+
+      // Main Swept Wings (Navy Blue with Yellow Tips)
+      const mainWing = createOutlinedMesh(
+        new THREE.BoxGeometry(22.0, 0.45, 3.4),
+        makeToonMat(COLORS.navy),
+        1.04
+      );
+      mainWing.position.set(0, 0.2, -0.5);
+      chasePlaneModel.add(mainWing);
+
+      [-11.2, 11.2].forEach((wx) => {
+        const winglet = createOutlinedMesh(
+          new THREE.BoxGeometry(0.6, 2.2, 2.4),
+          makeToonMat(COLORS.yellow),
+          1.08
+        );
+        winglet.position.set(wx, 1.1, -0.5);
+        chasePlaneModel.add(winglet);
+      });
+
+      // Animated Trailing-Edge Flaps (Coral Red)
+      flapSurfacesLeft = createOutlinedMesh(
+        new THREE.BoxGeometry(6.5, 0.28, 1.1),
+        makeToonMat(COLORS.coral),
+        1.07
+      );
+      flapSurfacesLeft.position.set(-5.5, 0.0, 1.3);
+      chasePlaneModel.add(flapSurfacesLeft);
+
+      flapSurfacesRight = flapSurfacesLeft.clone();
+      flapSurfacesRight.position.x = 5.5;
+      chasePlaneModel.add(flapSurfacesRight);
+
+      // Animated Top-Wing Spoilers / Speedbrakes (Yellow)
+      spoilerSurfacesGroup = new THREE.Group();
+      [-4.8, 4.8].forEach((sx) => {
+        const sp = createOutlinedMesh(
+          new THREE.BoxGeometry(4.2, 0.18, 0.85),
+          makeToonMat(COLORS.yellow),
+          1.08
+        );
+        sp.position.set(sx, 0.5, 0.2);
+        spoilerSurfacesGroup.add(sp);
+      });
+      chasePlaneModel.add(spoilerSurfacesGroup);
+
+      // Tail Fin & Horizontal Stabilizer
+      const vTail = createOutlinedMesh(
+        new THREE.BoxGeometry(0.6, 4.4, 3.4),
+        makeToonMat(COLORS.coral),
+        1.05
+      );
+      vTail.position.set(0, 3.2, 4.6);
+      chasePlaneModel.add(vTail);
+
+      const hTail = createOutlinedMesh(
+        new THREE.BoxGeometry(8.5, 0.4, 2.2),
+        makeToonMat(COLORS.navy),
+        1.05
+      );
+      hTail.position.set(0, 1.2, 5.0);
+      chasePlaneModel.add(hTail);
+
+      // Spinning Nose Propeller
+      propBlades = new THREE.Group();
+      propBlades.position.set(0, -0.3, -8.8);
+      const b1 = createOutlinedMesh(new THREE.BoxGeometry(4.2, 0.42, 0.15), makeToonMat(COLORS.yellow), 1.08);
+      const b2 = createOutlinedMesh(new THREE.BoxGeometry(0.42, 4.2, 0.15), makeToonMat(COLORS.yellow), 1.08);
+      propBlades.add(b1, b2);
+      chasePlaneModel.add(propBlades);
+
+      // Retractable Landing Gear Group
+      gearStrutsGroup = new THREE.Group();
+      const wheelMat = makeToonMat(COLORS.ink);
+      const strutMat = makeToonMat(COLORS.offwhite);
+
+      const wheelPositions = [
+        { x: 0, z: -5.5 },
+        { x: -3.2, z: 0.4 },
+        { x: 3.2, z: 0.4 }
+      ];
+      wheelPositions.forEach((wp) => {
+        const strut = createOutlinedMesh(new THREE.CylinderGeometry(0.18, 0.18, 2.2, 8), strutMat, 1.1);
+        strut.position.set(wp.x, -2.0, wp.z);
+        const tire = createOutlinedMesh(new THREE.CylinderGeometry(0.75, 0.75, 0.55, 14), wheelMat, 1.1);
+        tire.rotation.z = Math.PI / 2;
+        tire.position.set(wp.x, -3.0, wp.z);
+        gearStrutsGroup.add(strut, tire);
+      });
+      // Start retracted inside fuselage
+      gearStrutsGroup.scale.y = 0.01;
+      chasePlaneModel.add(gearStrutsGroup);
+    }
+    buildChaseAirplane();
+
+    // 2D Canvas Face for Pilot Bot (Shared by HUD & 3D Cockpit Bot)
+    const botFaceCanvas = document.createElement('canvas');
+    botFaceCanvas.width = 160;
+    botFaceCanvas.height = 120;
+    const botFaceCtx = botFaceCanvas.getContext('2d');
+    const botFaceTex = new THREE.CanvasTexture(botFaceCanvas);
+
+    function drawBotFaceExpression(mood = 'happy') {
+      const ctx = botFaceCtx;
+      ctx.fillStyle = '#111520';
+      ctx.fillRect(0, 0, 160, 120);
+
+      ctx.strokeStyle = '#4DFFB5';
+      ctx.fillStyle = '#4DFFB5';
+      ctx.lineWidth = 7;
+      ctx.lineCap = 'round';
+
+      if (mood === 'panic' || mood === 'warning') {
+        // > < warning eyes
+        ctx.beginPath();
+        ctx.moveTo(32, 34); ctx.lineTo(56, 48); ctx.lineTo(32, 62);
+        ctx.moveTo(128, 34); ctx.lineTo(104, 48); ctx.lineTo(128, 62);
+        ctx.stroke();
+
+        // Worried mouth
+        ctx.beginPath();
+        ctx.arc(80, 92, 13, Math.PI, 0, false);
+        ctx.stroke();
+      } else if (mood === 'butter') {
+        // Happy ^ ^ arches
+        ctx.beginPath();
+        ctx.arc(48, 52, 15, Math.PI, 0, false);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(112, 52, 15, Math.PI, 0, false);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(80, 72, 16, 0, Math.PI, false);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        // Cute round mint eyes with white specular dot
+        ctx.beginPath();
+        ctx.arc(48, 46, 14, 0, Math.PI * 2);
+        ctx.arc(112, 46, 14, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(53, 41, 4.5, 0, Math.PI * 2);
+        ctx.arc(117, 41, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#4DFFB5';
+        ctx.beginPath();
+        ctx.arc(80, 76, 12, 0, Math.PI, false);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Pink cheeks
+      ctx.fillStyle = '#FF8DA1';
+      ctx.beginPath();
+      ctx.ellipse(24, 72, 9, 5, 0, 0, Math.PI * 2);
+      ctx.ellipse(136, 72, 9, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      botFaceTex.needsUpdate = true;
+
+      // Also mirror onto the top-left 2D HUD Canvas
+      const hudCanvas = document.getElementById('bot-hud-canvas');
+      if (hudCanvas) {
+        const hctx = hudCanvas.getContext('2d');
+        hctx.drawImage(botFaceCanvas, 0, 0, 76, 64);
+      }
+    }
+
+    function build3DCockpitInterior() {
+      // Positioned relative to aircraftGroup so looking forward (-Z) shows runway through windshield
+      const dash = createOutlinedMesh(
+        new THREE.BoxGeometry(6.2, 1.4, 2.2),
+        makeToonMat(COLORS.navy),
+        1.04
+      );
+      dash.position.set(0, -1.05, -2.5);
+      cockpitInteriorGroup.add(dash);
+
+      const glare = createOutlinedMesh(
+        new THREE.BoxGeometry(6.4, 0.22, 1.5),
+        makeToonMat(COLORS.coral),
+        1.04
+      );
+      glare.position.set(0, -0.32, -2.3);
+      cockpitInteriorGroup.add(glare);
+
+      // Windshield Pillars
+      [-2.8, 2.8].forEach((px) => {
+        const pillar = createOutlinedMesh(
+          new THREE.BoxGeometry(0.28, 3.8, 0.28),
+          makeToonMat(COLORS.charcoal),
+          1.06
+        );
+        pillar.position.set(px, 1.1, -2.8);
+        pillar.rotation.z = px < 0 ? -0.2 : 0.2;
+        cockpitInteriorGroup.add(pillar);
+      });
+
+      // 3D Control Yoke on Right (Captain's side)
+      yoke3DMesh = new THREE.Group();
+      yoke3DMesh.position.set(0.85, -0.65, -1.45);
+      const yokeBar = createOutlinedMesh(new THREE.BoxGeometry(0.95, 0.14, 0.14), makeToonMat(COLORS.yellow), 1.1);
+      const gripL = createOutlinedMesh(new THREE.BoxGeometry(0.14, 0.48, 0.16), makeToonMat(COLORS.coral), 1.1);
+      gripL.position.set(-0.42, 0.18, 0);
+      const gripR = gripL.clone();
+      gripR.position.x = 0.42;
+      yoke3DMesh.add(yokeBar, gripL, gripR);
+      cockpitInteriorGroup.add(yoke3DMesh);
+
+      // Center Throttle Lever
+      throttle3DMesh = createOutlinedMesh(new THREE.BoxGeometry(0.32, 0.45, 0.22), makeToonMat(COLORS.coral), 1.1);
+      throttle3DMesh.position.set(0, -0.25, -1.65);
+      cockpitInteriorGroup.add(throttle3DMesh);
+
+      // Gear Handle
+      gear3DHandle = createOutlinedMesh(new THREE.CylinderGeometry(0.14, 0.14, 0.35, 12), makeToonMat(COLORS.yellow), 1.1);
+      gear3DHandle.rotation.z = Math.PI / 2;
+      gear3DHandle.position.set(0.38, -0.45, -1.75);
+      cockpitInteriorGroup.add(gear3DHandle);
+
+      // 3D Co-Pilot Bot seated on the Left (-X)
+      const bot = new THREE.Group();
+      bot.position.set(-1.15, -0.25, -1.95);
+      bot.rotation.y = 0.32;
+
+      const bTorso = createOutlinedMesh(new THREE.BoxGeometry(0.85, 0.75, 0.55), makeToonMat(COLORS.navy), 1.07);
+      const bHead = createOutlinedMesh(new THREE.BoxGeometry(1.05, 0.78, 0.68), makeToonMat(COLORS.offwhite), 1.07);
+      bHead.position.y = 0.78;
+
+      const bScreen = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.86, 0.58),
+        new THREE.MeshBasicMaterial({ map: botFaceTex })
+      );
+      bScreen.position.set(0, 0.78, 0.35);
+
+      const bCap = createOutlinedMesh(new THREE.CylinderGeometry(0.58, 0.52, 0.25, 16), makeToonMat(COLORS.navy), 1.07);
+      bCap.position.set(0, 1.24, 0);
+
+      const bTip = createOutlinedMesh(new THREE.SphereGeometry(0.09, 10, 10), makeToonMat(COLORS.coral), 1.15);
+      bTip.position.set(0, 1.5, 0);
+
+      [-0.58, 0.58].forEach((hx) => {
+        const phone = createOutlinedMesh(new THREE.BoxGeometry(0.16, 0.42, 0.32), makeToonMat(COLORS.yellow), 1.1);
+        phone.position.set(hx, 0.78, 0);
+        bot.add(phone);
+      });
+
+      bot.add(bTorso, bHead, bScreen, bCap, bTip);
+      cockpitInteriorGroup.add(bot);
+    }
+    build3DCockpitInterior();
+
+    /********************************************************************
+     * 5. FLIGHT DYNAMICS, SCENARIOS & TOUCHDOWN SCORING CONTROLLER
+     ********************************************************************/
+    const SCENARIOS = {
+      1: {
+        id: 1,
+        name: 'SUNNY CLEAR APPROACH',
+        skyColor: 0x6AC1FF,
+        fogDensity: 0.00038,
+        ambient: 0.88,
+        crosswind: 0,
+        turbulence: 0,
+        startZ: 1120,
+        startY: 118,
+        startX: 0
+      },
+      2: {
+        id: 2,
+        name: 'SUNSET CROSSWIND',
+        skyColor: 0xFF7E5F,
+        fogDensity: 0.00055,
+        ambient: 0.75,
+        crosswind: 14, // pushes plane laterally; player banks/crabs to align
+        turbulence: 0.15,
+        startZ: 1150,
+        startY: 122,
+        startX: -24
+      },
+      3: {
+        id: 3,
+        name: 'STORMY NIGHT ILS',
+        skyColor: 0x0E162B,
+        fogDensity: 0.00095,
+        ambient: 0.42,
+        crosswind: -10,
+        turbulence: 0.45,
+        startZ: 1150,
+        startY: 124,
+        startX: 16
+      }
+    };
+
+    class FlightSimulator {
+      constructor() {
+        this.scenarioId = 1;
+        this.cameraMode = 'chase'; // 'chase' or 'cockpit'
+        this.inStartMenu = true;   // Pause flight physics while on the Start Screen
+
+        // Aircraft Kinematics
+        this.pos = new THREE.Vector3(0, 118, 1120);
+        this.pitch = -0.04; // radians
+        this.roll = 0;      // radians
+        this.yaw = 0;       // radians
+        this.airspeed = 142; // knots
+        this.throttle = 55;  // 0 - 100%
+        this.verticalSpeedFPM = -450;
+
+        // Checklist Systems
+        this.gearDown = false;
+        this.flapsAngle = 0;     // 0, 15, 30
+        this.spoilersArmed = false;
+        this.radioFreq = 118.1;  // Target: 118.7
+
+        // Touchdown & Ground Roll State
+        this.onGround = false;
+        this.finished = false;
+        this.braking = false;
+        this.touchdownStats = null;
+        this.ringsCollected = 0;
+
+        // Active Input Flags
+        this.keys = {
+          pitchUp: false,
+          pitchDown: false,
+          rollLeft: false,
+          rollRight: false,
+          throttleUp: false,
+          throttleDown: false
+        };
+
+        this.lastCalloutTime = 0;
+        this.spokenAltitudes = new Set();
+      }
+
+      loadScenario(id) {
+        this.scenarioId = id;
+        const sc = SCENARIOS[id];
+
+        // Update Top Scenario Buttons
+        [1, 2, 3].forEach((n) => {
+          const b = document.getElementById(`scen-btn-${n}`);
+          if (b) b.style.backgroundColor = n === id ? '#FFD13B' : '#FFFFFF';
+          const sb = document.getElementById(`start-scen-1`.replace('1', n));
+          if (sb) sb.style.backgroundColor = n === id ? '#FFD13B' : '#FFFFFF';
+        });
+
+        scene.background = new THREE.Color(sc.skyColor);
+        scene.fog = new THREE.FogExp2(sc.skyColor, sc.fogDensity);
+        ambientLight.intensity = sc.ambient;
+
+        document.getElementById('scenario-tag').textContent = sc.name;
+        const windText = sc.crosswind === 0
+          ? '🌬️ WIND: CALM (0 KT)'
+          : `🌬️ X-WIND: ${Math.abs(sc.crosswind)} KT ${sc.crosswind > 0 ? '→' : '←'}`;
+        document.getElementById('wind-label').textContent = windText;
+
+        this.resetApproach();
+      }
+
+      resetApproach() {
+        const sc = SCENARIOS[this.scenarioId];
+        this.pos.set(sc.startX, sc.startY, sc.startZ);
+        this.pitch = -0.045;
+        this.roll = 0;
+        this.yaw = 0;
+        this.airspeed = 142;
+        this.throttle = 55;
+        this.verticalSpeedFPM = -480;
+
+        this.gearDown = false;
+        this.flapsAngle = 0;
+        this.spoilersArmed = false;
+        this.radioFreq = 118.1;
+
+        this.onGround = false;
+        this.finished = false;
+        this.braking = false;
+        this.touchdownStats = null;
+        this.ringsCollected = 0;
+        this.spokenAltitudes.clear();
+
+        document.getElementById('throttle-slider').value = 55;
+        document.getElementById('throttle-pct').textContent = '55%';
+        document.getElementById('debrief-modal').classList.add('hidden');
+        document.getElementById('debrief-modal').classList.remove('flex');
+
+        // Reset Rings
+        approachRings.forEach((r) => {
+          r.userData.passed = false;
+          r.visible = true;
+          r.material.color.setHex(COLORS.mint);
+        });
+        document.getElementById('rings-label').textContent = 'RINGS: 0/4';
+
+        this.updateChecklistUI();
+        this.updateCameraVisibility();
+        drawBotFaceExpression('normal');
+        this.botSay('"Final approach! Configure [G] Gear, [F] Flaps 30°, [B] Brakes & [R] 118.7!"');
+      }
+
+      selectStartScenario(id) {
+        audio.playMechanicalClunk(true);
+        this.loadScenario(id);
+      }
+
+      startGame() {
+        audio.init();
+        audio.playFanfare(true);
+        this.inStartMenu = false;
+        const startEl = document.getElementById('start-screen');
+        startEl.classList.add('hidden');
+        startEl.classList.remove('flex');
+        this.resetApproach();
+      }
+
+      openStartScreen() {
+        this.inStartMenu = true;
+        const startEl = document.getElementById('start-screen');
+        startEl.classList.remove('hidden');
+        startEl.classList.add('flex');
+      }
+
+      nextScenario() {
+        const next = this.scenarioId < 3 ? this.scenarioId + 1 : 1;
+        this.loadScenario(next);
+      }
+
+      toggleCameraView() {
+        this.cameraMode = this.cameraMode === 'chase' ? 'cockpit' : 'chase';
+        const label = document.getElementById('cam-label');
+        label.textContent = this.cameraMode === 'chase' ? 'VIEW: CHASE 3D' : 'VIEW: COCKPIT 3D';
+        audio.playMechanicalClunk(true);
+        this.updateCameraVisibility();
+      }
+
+      updateCameraVisibility() {
+        if (this.cameraMode === 'cockpit') {
+          chasePlaneModel.visible = false;
+          cockpitInteriorGroup.visible = true;
+        } else {
+          chasePlaneModel.visible = true;
+          cockpitInteriorGroup.visible = false;
+        }
+      }
+
+      levelWings() {
+        this.roll = 0;
+        this.pitch = -0.03;
+      }
+
+      // Checklist Actions
+      toggleGear() {
+        if (this.onGround || this.finished) return;
+        this.gearDown = !this.gearDown;
+        audio.playMechanicalClunk(this.gearDown);
+        this.botSay(this.gearDown ? '"Landing gear DOWN and three green!"' : '"Landing gear retracted!"');
+        this.updateChecklistUI();
+      }
+
+      cycleFlaps() {
+        if (this.onGround || this.finished) return;
+        const steps = [0, 15, 30];
+        this.flapsAngle = steps[(steps.indexOf(this.flapsAngle) + 1) % steps.length];
+        audio.playMechanicalClunk(true);
+        this.botSay(`"Flaps set to ${this.flapsAngle}°!"`);
+        this.updateChecklistUI();
+      }
+
+      toggleSpoilers() {
+        if (this.onGround || this.finished) return;
+        this.spoilersArmed = !this.spoilersArmed;
+        audio.playMechanicalClunk(true);
+        this.botSay(this.spoilersArmed ? '"Auto-brakes & ground spoilers ARMED!"' : '"Spoilers disarmed."');
+        this.updateChecklistUI();
+      }
+
+      stepRadio() {
+        if (this.onGround || this.finished) return;
+        const freqs = [118.1, 118.3, 118.5, 118.7, 118.9];
+        const idx = freqs.findIndex((f) => Math.abs(f - this.radioFreq) < 0.05);
+        this.radioFreq = freqs[(idx + 1) % freqs.length];
+        audio.playMechanicalClunk(true);
+        if (Math.abs(this.radioFreq - 118.7) < 0.05) {
+          this.botSay('"Tower 118.7 tuned: Cleared to land Runway 36!"');
+        }
+        this.updateChecklistUI();
+      }
+
+      isChecklistComplete() {
+        return (
+          this.gearDown &&
+          this.flapsAngle === 30 &&
+          this.spoilersArmed &&
+          Math.abs(this.radioFreq - 118.7) < 0.05
+        );
+      }
+
+      getChecklistCount() {
+        let c = 0;
+        if (this.gearDown) c++;
+        if (this.flapsAngle === 30) c++;
+        if (this.spoilersArmed) c++;
+        if (Math.abs(this.radioFreq - 118.7) < 0.05) c++;
+        return c;
+      }
+
+      updateChecklistUI() {
+        const setItem = (key, ok, subText) => {
+          const btn = document.getElementById(`chk-btn-${key}`);
+          const box = document.getElementById(`chk-box-${key}`);
+          const sub = document.getElementById(`chk-sub-${key}`);
+          sub.textContent = subText;
+          if (ok) {
+            btn.style.backgroundColor = '#E3FCEF';
+            box.style.backgroundColor = '#4DFFB5';
+            box.textContent = '✓';
+          } else {
+            btn.style.backgroundColor = '#FFFFFF';
+            box.style.backgroundColor = '#FFFFFF';
+            box.textContent = '';
+          }
+        };
+
+        setItem('gear', this.gearDown, this.gearDown ? 'DOWN & LOCKED ✓' : 'UP (Press [G])');
+        setItem('flaps', this.flapsAngle === 30, `Set to ${this.flapsAngle}° (Target 30°)`);
+        setItem('spoilers', this.spoilersArmed, this.spoilersArmed ? 'ARMED ✓' : 'DISARMED ([B])');
+        const radioOk = Math.abs(this.radioFreq - 118.7) < 0.05;
+        setItem('radio', radioOk, radioOk ? '118.7 CLEARED ✓' : `${this.radioFreq.toFixed(1)} MHz ([R])`);
+
+        const count = this.getChecklistCount();
+        document.getElementById('chk-progress').textContent = `${count} / 4 CONFIGURED`;
+        const badge = document.getElementById('chk-badge');
+        const footer = document.getElementById('chk-footer');
+        if (count === 4) {
+          badge.textContent = 'CLEARED TO LAND';
+          badge.style.color = '#4DFFB5';
+          footer.style.backgroundColor = '#4DFFB5';
+        } else {
+          badge.textContent = 'CONFIG REQUIRED';
+          badge.style.color = '#FF5A5F';
+          footer.style.backgroundColor = '#FFD13B';
+        }
+      }
+
+      botSay(text, mood = 'normal') {
+        document.getElementById('bot-callout-text').textContent = text;
+        drawBotFaceExpression(mood);
+      }
+
+      // Main Physics Step per Frame
+      update(dt, elapsed) {
+        if (this.inStartMenu) {
+          // Gentle showcase hover animation while on Start Screen
+          propBlades.rotation.z += 0.38;
+          aircraftGroup.position.set(
+            Math.sin(elapsed * 0.8) * 2.5,
+            118 + Math.sin(elapsed * 1.6) * 1.2,
+            1120
+          );
+          aircraftGroup.rotation.set(-0.03, Math.sin(elapsed * 0.4) * 0.08, Math.sin(elapsed * 1.1) * 0.08);
+          audio.updateEnginePitch(0, 0, false);
+          return;
+        }
+        if (this.finished) return;
+        const sc = SCENARIOS[this.scenarioId];
+
+        // 1. Handle Keyboard Throttle Adjustments
+        if (this.keys.throttleUp) {
+          this.throttle = Math.min(100, this.throttle + 38 * dt);
+          document.getElementById('throttle-slider').value = Math.round(this.throttle);
+          document.getElementById('throttle-pct').textContent = `${Math.round(this.throttle)}%`;
+        }
+        if (this.keys.throttleDown) {
+          this.throttle = Math.max(0, this.throttle - 38 * dt);
+          document.getElementById('throttle-slider').value = Math.round(this.throttle);
+          document.getElementById('throttle-pct').textContent = `${Math.round(this.throttle)}%`;
+        }
+
+        // 2. Airspeed Dynamics (affected by throttle, flaps drag, gear drag, pitch, and ground braking)
+        const dragPenalty = (this.gearDown ? 10 : 0) + (this.flapsAngle * 0.45);
+        const targetSpeed = this.onGround
+          ? (this.braking || this.spoilersArmed ? 0 : 45)
+          : (105 + this.throttle * 0.92 - dragPenalty - this.pitch * 95);
+
+        const decelRate = this.onGround
+          ? ((this.braking ? 36 : 8) + (this.spoilersArmed ? 16 : 0))
+          : 12;
+
+        if (this.onGround) {
+          this.airspeed = Math.max(0, this.airspeed - decelRate * dt);
+        } else {
+          this.airspeed += (targetSpeed - this.airspeed) * dt * 1.4;
+          this.airspeed = Math.max(88, Math.min(210, this.airspeed));
+        }
+
+        audio.updateEnginePitch(this.throttle, this.airspeed, !this.finished);
+
+        // 3. Pitch & Roll Controls
+        if (!this.onGround) {
+          const pitchRate = 0.72;
+          const rollRate = 1.35;
+
+          if (this.keys.pitchUp) this.pitch += pitchRate * dt;
+          if (this.keys.pitchDown) this.pitch -= pitchRate * dt;
+          if (this.keys.rollLeft) this.roll += rollRate * dt;
+          if (this.keys.rollRight) this.roll -= rollRate * dt;
+
+          // Gentle auto-stabilization when no roll input
+          if (!this.keys.rollLeft && !this.keys.rollRight) {
+            this.roll *= (1 - 1.5 * dt);
+          }
+
+          // Turbulence gusts in Level 2 & 3
+          if (sc.turbulence > 0) {
+            this.roll += Math.sin(elapsed * 4.3) * sc.turbulence * 0.18 * dt;
+            this.pitch += Math.cos(elapsed * 3.7) * sc.turbulence * 0.08 * dt;
+          }
+
+          this.pitch = Math.max(-0.28, Math.min(0.24, this.pitch));
+          this.roll = Math.max(-0.65, Math.min(0.65, this.roll));
+        } else {
+          // On Ground: flatten pitch & roll, allow nosewheel steering with A/D
+          this.pitch *= 0.85;
+          this.roll *= 0.85;
+          if (this.keys.rollLeft) this.pos.x -= 14 * dt;
+          if (this.keys.rollRight) this.pos.x += 14 * dt;
+        }
+
+        // 4. Compute Velocity & Position Update
+        const forwardSpeedUnits = this.airspeed * 0.56; // World units per second along -Z
+        this.pos.z -= forwardSpeedUnits * dt;
+
+        if (!this.onGround) {
+          // Lateral motion from roll bank + crosswind
+          const bankLateral = -Math.sin(this.roll) * forwardSpeedUnits * 0.48;
+          const windLateral = sc.crosswind * 0.35;
+          this.pos.x += (bankLateral + windLateral) * dt;
+
+          // Vertical velocity from pitch + lift from flaps + airspeed
+          const flapLift = this.flapsAngle * 0.065;
+          const speedLift = (this.airspeed - 135) * 0.05;
+          const climbRateUnits = (this.pitch * 88) + flapLift + speedLift - 2.2;
+          this.pos.y += climbRateUnits * dt;
+          this.verticalSpeedFPM = Math.round(climbRateUnits * 115);
+        } else {
+          this.pos.y = 3.2;
+          this.verticalSpeedFPM = 0;
+        }
+
+        // 5. Sync 3D Aircraft Transform & Animated Surfaces
+        aircraftGroup.position.copy(this.pos);
+        aircraftGroup.rotation.order = 'YXZ';
+        aircraftGroup.rotation.x = this.pitch;
+        aircraftGroup.rotation.z = this.roll;
+        aircraftGroup.rotation.y = -this.roll * 0.25;
+
+        // Spin Propeller
+        propBlades.rotation.z += (0.25 + this.throttle * 0.008);
+
+        // Animate Gear Extension
+        const targetGearScale = this.gearDown ? 1.0 : 0.01;
+        gearStrutsGroup.scale.y += (targetGearScale - gearStrutsGroup.scale.y) * 0.15;
+
+        // Animate Flaps
+        const targetFlapRot = (this.flapsAngle / 30) * 0.55;
+        flapSurfacesLeft.rotation.x = targetFlapRot;
+        flapSurfacesRight.rotation.x = targetFlapRot;
+
+        // Animate Spoilers (pop up when armed and on ground)
+        const targetSpoilerRot = (this.onGround && (this.spoilersArmed || this.braking)) ? -0.65 : 0;
+        spoilerSurfacesGroup.children.forEach((sp) => {
+          sp.rotation.x += (targetSpoilerRot - sp.rotation.x) * 0.2;
+        });
+
+        // Animate 3D Cockpit Yoke & Throttle
+        if (yoke3DMesh) {
+          yoke3DMesh.rotation.z = this.roll;
+          yoke3DMesh.position.z = -1.45 + this.pitch * 0.6;
+          throttle3DMesh.position.z = -1.5 - (this.throttle / 100) * 0.35;
+          gear3DHandle.position.y = this.gearDown ? -0.58 : -0.35;
+        }
+
+        // 6. Check Glide-Slope Ring Collection
+        approachRings.forEach((ring) => {
+          if (!ring.userData.passed && Math.abs(this.pos.z - ring.position.z) < 16) {
+            const dist2D = Math.hypot(this.pos.x - ring.position.x, this.pos.y - ring.position.y);
+            if (dist2D < 24) {
+              ring.userData.passed = true;
+              ring.visible = false;
+              this.ringsCollected++;
+              document.getElementById('rings-label').textContent = `RINGS: ${this.ringsCollected}/4`;
+              audio.playRingPass();
+              this.botSay(`"Nice! Glide-slope ring ${this.ringsCollected}/4 captured!"`, 'butter');
+            }
+          }
+        });
+
+        // 7. Update PAPI Lights based on Glide-Slope Angle to Touchdown Point (Z = -120)
+        const distToTD = Math.max(10, this.pos.z - (-120));
+        const slopeDeg = THREE.MathUtils.radToDeg(Math.atan2(this.pos.y, distToTD));
+        // Ideal slope ~ 3.0° to 3.8° (2 white, 2 red)
+        let whiteCount = 2;
+        if (slopeDeg > 4.6) whiteCount = 4;      // Too high
+        else if (slopeDeg > 3.8) whiteCount = 3; // Slightly high
+        else if (slopeDeg < 2.1) whiteCount = 0; // Too low
+        else if (slopeDeg < 2.8) whiteCount = 1; // Slightly low
+
+        papiLights.forEach((p, idx) => {
+          p.material.color.setHex(idx < whiteCount ? COLORS.offwhite : COLORS.coral);
+        });
+
+        // 8. GPWS Callouts & Banner Updates
+        this.updateHUDAndGPWS(slopeDeg);
+
+        // 9. Check Touchdown or Missed Approach
+        if (!this.onGround && this.pos.y <= 3.3) {
+          this.handleTouchdown();
+        }
+
+        // Check Full Stop on Runway
+        if (this.onGround && this.airspeed <= 2) {
+          this.completeLandingRoll(true);
+        }
+
+        // Check Runway Overrun (past Z = -1020)
+        if (this.pos.z < -1020) {
+          this.completeLandingRoll(false);
+        }
+      }
+
+      updateHUDAndGPWS(slopeDeg) {
+        const altFt = Math.max(0, Math.round((this.pos.y - 3.2) * 8.5));
+        const spdKt = Math.round(this.airspeed);
+        const vsFpm = this.verticalSpeedFPM;
+        const distNm = Math.max(0, (this.pos.z / 450)).toFixed(1);
+
+        const spdEl = document.getElementById('hud-spd');
+        spdEl.textContent = `${spdKt} KT`;
+        spdEl.style.color = (spdKt >= 125 && spdKt <= 155) ? '#4DFFB5' : '#FFD13B';
+
+        document.getElementById('hud-alt').textContent = `${altFt} FT`;
+
+        const vsEl = document.getElementById('hud-vs');
+        vsEl.textContent = `${vsFpm} FPM`;
+        vsEl.style.color = vsFpm < -750 ? '#FF5A5F' : '#4DFFB5';
+
+        document.getElementById('hud-dist').textContent = `${distNm} NM`;
+
+        // Altitude voice callouts
+        [500, 200, 100, 50].forEach((milestone) => {
+          if (altFt <= milestone && altFt > milestone - 25 && !this.spokenAltitudes.has(milestone) && !this.onGround) {
+            this.spokenAltitudes.add(milestone);
+            audio.playGPWSBeep();
+            if (milestone === 100) {
+              this.botSay('"100 FEET! Flare gently (pull nose up slightly) for a butter touchdown!"');
+            } else if (milestone === 200 && !this.isChecklistComplete()) {
+              this.botSay('"WARNING! 200 FEET—Complete the Landing Checklist now!"', 'panic');
+            }
+          }
+        });
+
+        // GPWS Status Banner
+        const banner = document.getElementById('gpws-banner');
+        if (this.onGround) {
+          banner.textContent = 'ON RUNWAY • HOLD [SPACE] BRAKES!';
+          banner.className = 'mt-2 px-2.5 py-1 rounded-lg border-2 border-[#111520] text-center font-extrabold text-xs tracking-wider mono-readout gpws-alert';
+        } else if (!this.gearDown && altFt < 300) {
+          banner.textContent = '⚠️ TOO LOW - GEAR UP! [G]';
+          banner.className = 'mt-2 px-2.5 py-1 rounded-lg border-2 border-[#111520] text-center font-extrabold text-xs tracking-wider mono-readout gpws-alert';
+        } else if (vsFpm < -820) {
+          banner.textContent = '⚠️ SINK RATE! PULL UP! [S/▼]';
+          banner.className = 'mt-2 px-2.5 py-1 rounded-lg border-2 border-[#111520] text-center font-extrabold text-xs tracking-wider mono-readout gpws-alert';
+        } else {
+          banner.className = 'mt-2 px-2.5 py-1 rounded-lg border-2 border-[#111520] bg-[#1E2D5E] text-[#4DFFB5] text-center font-extrabold text-xs tracking-wider mono-readout';
+          if (slopeDeg > 4.2) banner.textContent = 'PAPI: SLIGHTLY HIGH (NOSE DN)';
+          else if (slopeDeg < 2.4) banner.textContent = 'PAPI: SLIGHTLY LOW (PULL UP)';
+          else banner.textContent = 'GLIDE SLOPE: ON TARGET ✓';
+        }
+      }
+
+      handleTouchdown() {
+        const onRunwayZ = this.pos.z <= 45 && this.pos.z >= -950;
+        const onRunwayX = Math.abs(this.pos.x) <= 23;
+
+        // Did player miss the runway completely or land in water/grass?
+        if (!onRunwayZ || !onRunwayX) {
+          this.finished = true;
+          audio.playFanfare(false);
+          this.showDebriefModal({
+            outcome: 'OFF-RUNWAY LANDING!',
+            emoji: '🌊',
+            headerColor: '#FF5A5F',
+            sinkRate: this.verticalSpeedFPM,
+            speed: Math.round(this.airspeed),
+            centerOffset: Math.abs(this.pos.x).toFixed(1),
+            checklistCount: this.getChecklistCount(),
+            score: 0,
+            quote: '"Splash! We missed the runway asphalt! Keep aligned with the centerline!"'
+          });
+          return;
+        }
+
+        // Did player forget Landing Gear?
+        if (!this.gearDown) {
+          this.finished = true;
+          audio.playTireScreech();
+          audio.playFanfare(false);
+          this.showDebriefModal({
+            outcome: 'BELLY LANDING! (GEAR UP)',
+            emoji: '💥',
+            headerColor: '#FF5A5F',
+            sinkRate: this.verticalSpeedFPM,
+            speed: Math.round(this.airspeed),
+            centerOffset: Math.abs(this.pos.x).toFixed(1),
+            checklistCount: this.getChecklistCount(),
+            score: 15,
+            quote: '"Ouch! We forgot to lower the [G] LANDING GEAR before touchdown!"'
+          });
+          return;
+        }
+
+        // Did player slam down way too hard (> 1100 FPM)?
+        if (this.verticalSpeedFPM < -1100) {
+          this.finished = true;
+          audio.playTireScreech();
+          audio.playFanfare(false);
+          this.showDebriefModal({
+            outcome: 'HARD LANDING!',
+            emoji: '🛠️',
+            headerColor: '#FF5A5F',
+            sinkRate: this.verticalSpeedFPM,
+            speed: Math.round(this.airspeed),
+            centerOffset: Math.abs(this.pos.x).toFixed(1),
+            checklistCount: this.getChecklistCount(),
+            score: 25,
+            quote: '"Whoa! Sink rate was way too fast! Flare gently just before touchdown!"'
+          });
+          return;
+        }
+
+        // Successful Touchdown! Transition to Ground Roll & Braking
+        this.onGround = true;
+        this.pos.y = 3.2;
+        this.throttle = 0;
+        document.getElementById('throttle-slider').value = 0;
+        document.getElementById('throttle-pct').textContent = '0%';
+        audio.playTireScreech();
+
+        this.touchdownStats = {
+          sinkRate: this.verticalSpeedFPM,
+          speed: Math.round(this.airspeed),
+          centerOffset: Math.abs(this.pos.x),
+          checklistCount: this.getChecklistCount()
+        };
+
+        this.botSay('"TOUCHDOWN! Hold [SPACEBAR] or click WHEEL BRAKES to come to a full stop!"', 'butter');
+      }
+
+      completeLandingRoll(stoppedInTime) {
+        this.finished = true;
+        const st = this.touchdownStats || {
+          sinkRate: this.verticalSpeedFPM,
+          speed: Math.round(this.airspeed),
+          centerOffset: Math.abs(this.pos.x),
+          checklistCount: this.getChecklistCount()
+        };
+
+        if (!stoppedInTime) {
+          audio.playFanfare(false);
+          this.showDebriefModal({
+            outcome: 'RUNWAY OVERRUN!',
+            emoji: '🚧',
+            headerColor: '#FF5A5F',
+            sinkRate: st.sinkRate,
+            speed: st.speed,
+            centerOffset: st.centerOffset.toFixed(1),
+            checklistCount: st.checklistCount,
+            score: 35,
+            quote: '"We rolled off the end of the runway! Arm Auto-Brakes [B] and hold [SPACE]!"'
+          });
+          return;
+        }
+
+        // Calculate Final Score (0 - 100)
+        let score = 100;
+        // Sink rate deduction (ideal > -300 FPM)
+        const absSink = Math.abs(st.sinkRate);
+        if (absSink > 250) score -= Math.min(30, Math.round((absSink - 250) * 0.05));
+        // Centerline offset deduction
+        if (st.centerOffset > 2.5) score -= Math.min(20, Math.round((st.centerOffset - 2.5) * 1.2));
+        // Checklist deduction (15 pts per missed item)
+        score -= (4 - st.checklistCount) * 15;
+        // Bonus for rings
+        score = Math.min(100, Math.max(10, score + this.ringsCollected * 2));
+
+        const isButter = absSink <= 320 && st.checklistCount === 4;
+        audio.playFanfare(true);
+
+        this.showDebriefModal({
+          outcome: isButter ? 'BUTTER TOUCHDOWN!' : 'SAFE LANDING!',
+          emoji: isButter ? '🧈' : '✈️',
+          headerColor: '#4DFFB5',
+          sinkRate: st.sinkRate,
+          speed: st.speed,
+          centerOffset: st.centerOffset.toFixed(1),
+          checklistCount: st.checklistCount,
+          score: score,
+          quote: isButter
+            ? '"Pure butter! Checklist 100% verified and a silky-smooth touchdown!"'
+            : '"Welcome to Checkbot International! Solid landing and safe stop!"'
+        });
+      }
+
+      showDebriefModal(data) {
+        const modal = document.getElementById('debrief-modal');
+        document.getElementById('debrief-header').style.backgroundColor = data.headerColor;
+        document.getElementById('debrief-emoji').textContent = data.emoji;
+        document.getElementById('debrief-title').textContent = data.outcome;
+        document.getElementById('stat-sink').textContent = `${data.sinkRate} FPM`;
+        document.getElementById('stat-speed').textContent = `${data.speed} KTS`;
+        document.getElementById('stat-center').textContent = `${data.centerOffset} M`;
+        document.getElementById('stat-checklist').textContent = `${data.checklistCount} / 4 COMPLETE`;
+
+        const stars = data.score >= 85 ? '★★★' : data.score >= 60 ? '★★☆' : data.score >= 40 ? '★☆☆' : '☆☆☆';
+        document.getElementById('stat-score').textContent = `${data.score} / 100 (${stars})`;
+        document.getElementById('debrief-bot-quote').textContent = data.quote;
+
+        drawBotFaceExpression(data.score >= 60 ? 'butter' : 'panic');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    const sim = new FlightSimulator();
+
+    /********************************************************************
+     * 6. KEYBOARD & TOUCH / UI CONTROLS WIRING
+     ********************************************************************/
+    window.addEventListener('keydown', (e) => {
+      const code = e.code;
+      if (sim.inStartMenu) {
+        if (code === 'Enter' || code === 'Space') {
+          e.preventDefault();
+          sim.startGame();
+        }
+        return;
+      }
+      if (code === 'KeyW' || code === 'ArrowUp') sim.keys.pitchDown = true;
+      if (code === 'KeyS' || code === 'ArrowDown') sim.keys.pitchUp = true;
+      if (code === 'KeyA' || code === 'ArrowLeft') sim.keys.rollLeft = true;
+      if (code === 'KeyD' || code === 'ArrowRight') sim.keys.rollRight = true;
+      if (code === 'ShiftLeft' || code === 'ShiftRight' || code === 'KeyE') sim.keys.throttleUp = true;
+      if (code === 'ControlLeft' || code === 'ControlRight' || code === 'KeyQ') sim.keys.throttleDown = true;
+
+      if (code === 'Space') {
+        e.preventDefault();
+        sim.braking = true;
+        document.getElementById('brake-btn').classList.add('active-press');
+      }
+      if (code === 'KeyG' && !e.repeat) sim.toggleGear();
+      if (code === 'KeyF' && !e.repeat) sim.cycleFlaps();
+      if (code === 'KeyB' && !e.repeat) sim.toggleSpoilers();
+      if (code === 'KeyR' && !e.repeat) sim.stepRadio();
+      if (code === 'KeyC' && !e.repeat) sim.toggleCameraView();
+    });
+
+    window.addEventListener('keyup', (e) => {
+      const code = e.code;
+      if (code === 'KeyW' || code === 'ArrowUp') sim.keys.pitchDown = false;
+      if (code === 'KeyS' || code === 'ArrowDown') sim.keys.pitchUp = false;
+      if (code === 'KeyA' || code === 'ArrowLeft') sim.keys.rollLeft = false;
+      if (code === 'KeyD' || code === 'ArrowRight') sim.keys.rollRight = false;
+      if (code === 'ShiftLeft' || code === 'ShiftRight' || code === 'KeyE') sim.keys.throttleUp = false;
+      if (code === 'ControlLeft' || code === 'ControlRight' || code === 'KeyQ') sim.keys.throttleDown = false;
+      if (code === 'Space') {
+        sim.braking = false;
+        document.getElementById('brake-btn').classList.remove('active-press');
+      }
+    });
+
+    // On-screen hold buttons for Yoke & Wheel Brakes
+    function bindHoldButton(btnId, onDown, onUp) {
+      const el = document.getElementById(btnId);
+      const start = (e) => { e.preventDefault(); onDown(); };
+      const end = (e) => { e.preventDefault(); onUp(); };
+      el.addEventListener('pointerdown', start);
+      el.addEventListener('pointerup', end);
+      el.addEventListener('pointerleave', end);
+    }
+
+    bindHoldButton('btn-pitch-down', () => sim.keys.pitchDown = true, () => sim.keys.pitchDown = false);
+    bindHoldButton('btn-pitch-up', () => sim.keys.pitchUp = true, () => sim.keys.pitchUp = false);
+    bindHoldButton('btn-roll-left', () => sim.keys.rollLeft = true, () => sim.keys.rollLeft = false);
+    bindHoldButton('btn-roll-right', () => sim.keys.rollRight = true, () => sim.keys.rollRight = false);
+    bindHoldButton('brake-btn', () => sim.braking = true, () => sim.braking = false);
+
+    // Throttle Slider
+    const tSlider = document.getElementById('throttle-slider');
+    tSlider.addEventListener('input', (e) => {
+      sim.throttle = Number(e.target.value);
+      document.getElementById('throttle-pct').textContent = `${sim.throttle}%`;
+    });
+
+    /********************************************************************
+     * 7. MAIN RENDER & CAMERA TRACKING LOOP
+     ********************************************************************/
+    const clock = new THREE.Clock();
+    let nextLightningTime = 4;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(0.05, clock.getDelta());
+      const elapsed = clock.getElapsedTime();
+
+      sim.update(dt, elapsed);
+
+      // Update Camera Position (Start Screen Showcase vs Chase View vs 3D Cockpit View)
+      if (sim.inStartMenu) {
+        const orbitAngle = elapsed * 0.35;
+        const camOffset = new THREE.Vector3(
+          Math.sin(orbitAngle) * 22,
+          5.5 + Math.sin(elapsed * 0.7) * 1.5,
+          Math.cos(orbitAngle) * 22
+        );
+        camera.position.lerp(aircraftGroup.position.clone().add(camOffset), 0.1);
+        camera.lookAt(aircraftGroup.position.clone().add(new THREE.Vector3(0, 0.5, 0)));
+      } else if (sim.cameraMode === 'chase') {
+        const chaseOffset = new THREE.Vector3(0, 6.2, 24);
+        chaseOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), aircraftGroup.rotation.y);
+        camera.position.lerp(aircraftGroup.position.clone().add(chaseOffset), 0.18);
+        const lookTarget = aircraftGroup.position.clone().add(new THREE.Vector3(0, 1.0, -35));
+        camera.lookAt(lookTarget);
+      } else {
+        // Inside 3D Cockpit looking out over glare shield & Pilot Bot
+        const camWorldPos = new THREE.Vector3(0.45, 0.55, -0.35);
+        aircraftGroup.localToWorld(camWorldPos);
+        camera.position.copy(camWorldPos);
+
+        const forwardLook = new THREE.Vector3(0.2, 0.25, -60);
+        aircraftGroup.localToWorld(forwardLook);
+        camera.lookAt(forwardLook);
+        camera.rotation.z = sim.roll * 0.65;
+      }
+
+      // Level 3 Storm Lightning Flash
+      if (sim.scenarioId === 3 && elapsed > nextLightningTime) {
+        nextLightningTime = elapsed + 5 + Math.random() * 6;
+        const flashEl = document.getElementById('lightning-flash');
+        flashEl.style.opacity = '0.45';
+        setTimeout(() => { flashEl.style.opacity = '0'; }, 120);
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    window.onload = () => {
+      sim.loadScenario(1);
+      animate();
+    };
+  </script>
+</body>
+</html>

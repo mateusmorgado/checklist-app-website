@@ -276,6 +276,15 @@
     const card = os && $('.inst[data-os="' + os + '"]'); if (card) { card.classList.add('mine'); card.insertAdjacentHTML('afterbegin', '<span class="inst-you">Your device</span>'); }
   })();
 
+  // ---------- the game: loaded into its window only when someone presses Play ----------
+  (function () {
+    const m = $('#game-modal'), f = $('#game-frame'); let last = null;
+    const open = () => { last = document.activeElement; if (!f.src) f.src = 'game/index.html'; m.hidden = false; document.body.classList.add('lock'); setTimeout(() => f.focus(), 300); };
+    const close = () => { m.hidden = true; document.body.classList.remove('lock'); f.src = ''; f.removeAttribute('src'); if (last) last.focus(); };
+    $('#open-game').addEventListener('click', open); $('#close-game').addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !m.hidden) close(); });
+  })();
+
   // ---------- Impressum ----------
   (function () {
     const m = $('#imprint'); let last = null;

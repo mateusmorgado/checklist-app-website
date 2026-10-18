@@ -411,6 +411,21 @@
   </div>
 </section>
 
+<!-- GAME -->
+<section class="section game-sec" id="game" aria-labelledby="game-title">
+  <div class="wrap">
+    <div class="game-card reveal">
+      <svg class="game-bot" viewBox="0 0 100 100" aria-hidden="true"><line x1="50" y1="6" x2="50" y2="18" stroke="#111" stroke-width="4"/><circle cx="50" cy="6" r="5" fill="#ff5a5f" stroke="#111" stroke-width="3"/><path d="M22 28C25 14 75 14 78 28Z" fill="#27357a" stroke="#111" stroke-width="3.5"/><rect x="20" y="25" width="60" height="6" rx="3" fill="#ffd13b" stroke="#111" stroke-width="3"/><rect x="11" y="40" width="9" height="24" rx="4" fill="#ffd13b" stroke="#111" stroke-width="3"/><rect x="80" y="40" width="9" height="24" rx="4" fill="#ffd13b" stroke="#111" stroke-width="3"/><rect x="20" y="31" width="60" height="44" rx="12" fill="#fff" stroke="#111" stroke-width="3.5"/><rect x="26" y="37" width="48" height="32" rx="8" fill="#111"/><circle cx="39" cy="50" r="5.5" fill="#4dffb5"/><circle cx="61" cy="50" r="5.5" fill="#4dffb5"/><path d="M44 57Q50 64 56 57" fill="none" stroke="#4dffb5" stroke-width="3.5" stroke-linecap="round"/><path d="M30 75H70L76 96H24Z" fill="#27357a" stroke="#111" stroke-width="3.5"/></svg>
+      <div class="game-txt">
+        <p class="game-k">Got a minute?</p>
+        <h2 id="game-title">Land the plane.</h2>
+        <p>Fly the final approach with Captain Checkbot. Gear, flaps, brakes and radio: finish the landing checklist before the wheels touch down.</p>
+      </div>
+      <button class="btn big yellow game-play" id="open-game" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Play the game</button>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer class="foot">
@@ -424,6 +439,12 @@
     </div>
   </div>
 </footer>
+
+<!-- GAME WINDOW: the game only loads when someone presses Play -->
+<div class="game-modal" id="game-modal" role="dialog" aria-modal="true" aria-labelledby="game-modal-title" hidden>
+  <div class="game-bar"><b id="game-modal-title">Touchdown Checkbot</b><span class="game-hint">Keyboard or the on-screen controls</span><button class="btn white" id="close-game" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Close</span></button></div>
+  <iframe id="game-frame" title="Touchdown Checkbot game" allow="autoplay; fullscreen"></iframe>
+</div>
 
 <!-- IMPRESSUM -->
 <div class="modal" id="imprint" role="dialog" aria-modal="true" aria-labelledby="imprint-title" hidden>

@@ -718,3 +718,22 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .imprint .fill { background: var(--yellow); border-radius: 4px; padding: 0 4px; }
 .muted-line.mid { text-align: center; }
 .foot-top .foot-big { flex: 0 1 auto; width: max-content; max-width: 100%; }
+
+/* ---------- game ---------- */
+.game-sec { padding: clamp(48px, 7vw, 90px) 0; }
+.game-card { display: flex; align-items: center; gap: clamp(18px, 3vw, 36px); flex-wrap: wrap; background: var(--white); color: var(--ink); border: var(--b) solid var(--ink); border-radius: 22px; box-shadow: -10px -10px 0 var(--ink); padding: clamp(18px, 3vw, 30px); max-width: 980px; margin: 0 auto; }
+.game-bot { flex: none; width: 110px; height: 110px; background: #1e2d5e; border: var(--b) solid var(--ink); border-radius: 24px; padding: 8px; animation: game-bob 2.4s ease-in-out infinite; }
+@keyframes game-bob { 50% { transform: translateY(-6px) rotate(-4deg); } }
+.game-txt { flex: 1 1 280px; }
+.game-k { margin: 0; font: 800 14px var(--display); text-transform: uppercase; letter-spacing: .08em; color: var(--red-d); }
+.game-txt h2 { margin: 2px 0 6px; font: 800 clamp(30px, 4vw, 48px)/1 var(--display); text-transform: uppercase; }
+.game-txt p:last-child { margin: 0; font-size: 17px; line-height: 1.4; }
+.game-play svg { width: 22px; height: 22px; fill: currentColor; }
+.game-modal { position: fixed; inset: 0; z-index: 97; display: flex; flex-direction: column; background: var(--ink); }
+.game-modal[hidden] { display: none; }
+.game-bar { display: flex; align-items: center; gap: 14px; padding: 8px 12px; background: var(--yellow); border-bottom: var(--b) solid var(--ink); font: 800 18px var(--display); color: var(--ink); }
+.game-hint { flex: 1; font: 600 14px var(--body); opacity: .75; }
+.game-bar .btn { min-height: 40px; }
+#game-frame { flex: 1; width: 100%; border: 0; background: #1e2d5e; }
+@media (max-width: 520px) { .game-hint { display: none; } .game-bar b { flex: 1; } }
+@media (prefers-reduced-motion: reduce) { .game-bot { animation: none; } }

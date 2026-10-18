@@ -1,6 +1,11 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Got a minute?": "Kurz Zeit?",
+"Land the plane.": "Lande das Flugzeug.",
+"Fly the final approach with Captain Checkbot. Gear, flaps, brakes and radio: finish the landing checklist before the wheels touch down.": "Flieg den Endanflug mit Captain Checkbot. Fahrwerk, Klappen, Bremsen und Funk: Arbeite die Landecheckliste ab, bevor die Räder aufsetzen.",
+"Play the game": "Spiel starten",
+"Keyboard or the on-screen controls": "Tastatur oder die Bildschirm-Steuerung",
 "Press to try the real thing": "Drück hier für das Original",
 "This is the real app. It opens in a new tab, and your lists stay on your own device.": "Das ist die echte App. Sie öffnet sich in einem neuen Tab, und deine Listen bleiben auf deinem Gerät.",
 "Try the real thing": "Original ausprobieren",
