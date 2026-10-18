@@ -1,6 +1,13 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Cream & mint": "Creme & Mint",
+"Mint & coral": "Mint & Koralle",
+"Cockpit": "Cockpit",
+"Modern": "Modern",
+"Pick a look": "Wähle einen Look",
+"Spin the wheel": "Dreh das Rad",
+"Filter": "Filter",
 "Why you need it": "Warum du sie brauchst",
 "Your phone pulls you in ten directions.": "Dein Handy zieht dich in zehn Richtungen.",
 "A checklist brings you back to one.": "Eine Checkliste bringt dich zurück zu einer.",

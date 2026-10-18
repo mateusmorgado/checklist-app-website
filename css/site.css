@@ -997,7 +997,6 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .pw-tab { flex: none; }
 .pw-tab:not([aria-pressed="true"]) > span:not(.pw-ic) { display: none; }
 .pw-tab:not([aria-pressed="true"]) { padding: 4px; }
-.pw-arrow:last-child { margin-left: auto; }
 .pw-tab .pw-ic { flex: none; width: 36px; height: 36px; }
 
 /* while the hero headline animates, everything else in view waits */
@@ -1062,3 +1061,67 @@ body.compact .nav-panel { pointer-events: auto; }
 .fb-big { margin: 0; font: 800 clamp(28px, 4.2vw, 56px)/1.05 var(--display); letter-spacing: -.02em; }
 .fb-big .hl { display: inline-block; margin-top: .22em; box-shadow: -4px -4px 0 var(--ink); padding: 0 .12em; }
 .fb-small { margin: 18px 0 0; max-width: 40em; font: 600 clamp(16px, 1.6vw, 20px)/1.45 var(--body); }
+
+@media (prefers-reduced-motion: reduce) { .focus-band .focus-in.fb-wait { opacity: 1; transform: none; } }
+/* grey band: in from the left, typed out, cursor blinking at the end */
+.focus-band { position: relative; overflow: hidden; }
+.focus-band .focus-in { transition: opacity .5s, transform .7s cubic-bezier(.2, .9, .3, 1); }
+.focus-band .focus-in.fb-wait { opacity: 0; transform: translateX(-120px); }
+.fb-type { position: absolute; left: 0; right: 0; top: clamp(36px, 6vw, 72px); margin: 0 auto; }
+.fb-caret { display: inline-block; width: .09em; height: 1em; margin-left: 2px; vertical-align: -.12em; background: currentColor; animation: blink .7s steps(2) infinite; }
+.fb-small .fb-caret { width: 2px; }
+/* more room before the yellow WHY? band, so it starts only after the grey one has been read */
+.wq:not(.final) { padding-top: clamp(140px, 32vh, 340px); }
+body.caret-hold .hero .sub-src { display: none; }
+body.caret-hold .hero .sub-type { display: inline; }
+body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; width: .08em; height: 1em; margin-left: 2px; vertical-align: -.12em; background: currentColor; animation: blink .6s steps(2) infinite; }
+
+/* power arrows flank the phone */
+.pw-phonewrap > .pw-arrow { position: absolute; z-index: 6; top: 50%; margin-top: -24px; }
+#pw-prev { left: -14px; }
+#pw-next { right: -14px; }
+.pw-tabs { justify-content: center; }
+@media (max-width: 640px) { .pw-phonewrap > .pw-arrow { margin-top: -22px; } #pw-prev { left: -8px; } #pw-next { right: -8px; } }
+/* work tree on phones: a slim bar, filters behind a button */
+.jb-filter { display: none; }
+@media (max-width: 760px) {
+  .journey-bar { flex-wrap: nowrap; padding: 8px 12px; gap: 8px; }
+  .journey-bar h2 { font-size: 22px; flex: 1; white-space: nowrap; }
+  .jb-filter { display: inline-flex; }
+  .journey-bar .filters { display: none; position: absolute; left: 12px; right: 12px; top: calc(100% + 8px); flex-wrap: wrap; gap: 8px; padding: 12px; background: var(--white); border: var(--b) solid var(--ink); border-radius: 14px; box-shadow: -5px -5px 0 var(--ink); }
+  .journey.filters-open .journey-bar .filters { display: flex; }
+  .journey-bar .btn { min-height: 42px; padding: 0 12px; }
+  #close-journey span { display: none; }
+  .jt-row .jt-opt { padding: 0 14px; font-size: 15px; }
+}
+
+/* install: pile, shuffle, bam */
+.inst-grid .inst { transition: transform .55s cubic-bezier(.3, 1.2, .5, 1), box-shadow .3s, background .3s; position: relative; }
+.inst-grid.piling .inst { transition: transform .45s cubic-bezier(.3, 1.2, .5, 1); }
+.inst-grid.piling .inst.flip { animation: card-flip .32s ease-out; }
+@keyframes card-flip { 0% { translate: 0 0; } 40% { translate: 0 -46px; } 100% { translate: 0 0; } }
+.inst-grid.piling .inst:not(.mine) .inst-you, .inst-grid.piling .inst .inst-you { opacity: 0; }
+.inst.bam { z-index: 60 !important; box-shadow: -12px -12px 0 var(--ink); }
+.inst.bam::after { content: 'Your device!'; position: absolute; left: 50%; top: -30px; transform: translateX(-50%) rotate(-6deg); white-space: nowrap; font: 800 22px var(--display); text-transform: uppercase; background: var(--ink); color: var(--yellow); border-radius: 10px; padding: 4px 14px; animation: bam .5s cubic-bezier(.3, 1.8, .5, 1); }
+@keyframes bam { from { transform: translateX(-50%) rotate(-6deg) scale(2.4); opacity: 0; } }
+:root[data-lang="de"] .inst.bam::after { content: 'Dein Gerät!'; }
+.inst-grid.fanning .inst { transition: transform .8s cubic-bezier(.3, 1.3, .5, 1); }
+
+/* the looks wheel */
+.look-side { display: flex; flex-direction: column; align-items: center; }
+.wheel-wrap { position: relative; width: min(440px, 86vw); aspect-ratio: 1; }
+.wheel { position: absolute; inset: 0; border-radius: 50%; border: var(--b) solid var(--ink); box-shadow: -8px -8px 0 var(--ink); transition: transform 1s cubic-bezier(.2, .9, .25, 1.12); touch-action: none; cursor: grab; outline-offset: 8px; }
+.wheel:active { cursor: grabbing; }
+.wheel-lab { position: absolute; left: 50%; top: 50%; width: 46%; margin: 0; padding: 0 6px 0 0; text-align: right; transform-origin: 0 50%; transform: rotate(calc(var(--a) - 90deg)) translateY(-50%); background: none; border: 0; font: 800 clamp(13px, 1.5vw, 17px) var(--display); text-transform: uppercase; letter-spacing: .02em; cursor: pointer; }
+.wheel::after { content: ''; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: repeating-conic-gradient(from -22.5deg, transparent 0 44.4deg, var(--ink) 44.4deg 45deg); }
+.wheel-hub { position: absolute; left: 50%; top: 50%; width: 40%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: var(--yellow); border: var(--b) solid var(--ink); box-shadow: -5px -5px 0 var(--ink); display: grid; place-content: center; text-align: center; pointer-events: none; padding: 8px; }
+.wheel-hub small { font: 800 12px var(--display); text-transform: uppercase; letter-spacing: .12em; opacity: .7; }
+.wheel-hub b { font: 800 clamp(18px, 2.2vw, 26px)/1.05 var(--display); text-transform: uppercase; }
+.wheel-pin { position: absolute; z-index: 3; left: 50%; top: -18px; width: 0; height: 0; transform: translateX(-50%); border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 30px solid var(--ink); filter: drop-shadow(0 -3px 0 var(--white)); }
+.wheel-wrap.land .wheel-hub { animation: hub-pop .45s cubic-bezier(.3, 1.8, .5, 1); }
+.wheel-wrap.land .wheel-pin { animation: pin-tick .4s ease-out; }
+@keyframes hub-pop { 40% { transform: translate(-50%, -50%) scale(1.12); } }
+@keyframes pin-tick { 30% { transform: translateX(-50%) rotate(-14deg); } }
+.wheel-hint { margin: 20px 0 0; font: 800 14px var(--display); text-transform: uppercase; letter-spacing: .1em; opacity: .7; }
+@media (prefers-reduced-motion: reduce) { .wheel { transition: none; } }
+#looks { overflow-x: clip; } /* the spinning wheel’s rotated box must not widen the page */

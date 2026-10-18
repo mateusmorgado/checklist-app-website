@@ -98,7 +98,8 @@
     const txt = src.textContent; out.textContent = '';
     await wait(450);
     for (let k = 1; k <= txt.length; k++) { if (!ok()) { b.classList.remove('typing'); return; } out.textContent = txt.slice(0, k); await wait(txt[k - 1] === ' ' ? 8 : 16); }
-    await wait(150); if (!ok()) return; out.textContent = ''; b.classList.remove('typing');
+    await wait(150); if (!ok()) return; b.classList.add('caret-hold'); b.classList.remove('typing');
+    setTimeout(() => { b.classList.remove('caret-hold'); out.textContent = ''; }, 2000); // the cursor keeps blinking for two seconds
     // the header comes last, dropping in from the top once the rest is in place
     await wait(900); b.classList.remove('intro-first');
   }
@@ -115,7 +116,7 @@
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;
     // the text, buttons, arrow and colour chips wait until the headline has landed
-    document.body.classList.remove('typing'); document.body.classList.add('intro'); document.documentElement.classList.remove('booting'); if (run === 1) document.body.classList.add('intro-first');
+    document.body.classList.remove('typing', 'caret-hold'); document.body.classList.add('intro'); document.documentElement.classList.remove('booting'); if (run === 1) document.body.classList.add('intro-first');
     unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone', 'hit', 'broke'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
     if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); if (canPark()) park(); else lines.slice(0, 2).forEach(l => l.classList.add('gone')); ($$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')), document.body.classList.remove('intro', 'intro-first')); return; }
     centerLines(true);
@@ -300,48 +301,37 @@
     addEventListener('scroll', () => { if (w.matches(':hover, :focus-within, .open')) place(); }, { passive: true });
   });
 
-  // ---------- once the hero's Open the app button scrolls away, it flies into an app icon in the corner;
-  // at the bottom of the page the icon flies on into the big button next to "Check it. Run it. Done." ----------
-  (function () {
-    const cta = $('.hero .cta-row .btn.yellow'), fab = $('#fab-app'), foot = $('#foot-cta'); if (!cta || !fab) return;
-    let heroGone = false, footIn = false, shown = false, ghost = null;
-    const fabRect = () => { fab.style.transition = 'none'; fab.style.transform = 'none'; const b = fab.getBoundingClientRect(); fab.style.transform = ''; void fab.offsetWidth; fab.style.transition = ''; return b; };
-    function fly(a, b, text, fromRad, toRad, done) {
-      if (ghost) ghost.remove(); const g = ghost = document.createElement('div'); g.className = 'fab-ghost'; g.textContent = text; g.setAttribute('aria-hidden', 'true'); document.body.appendChild(g);
-      const box = (r, rad, extra) => Object.assign({ left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: rad }, extra);
-      const mid = { left: (a.left + b.left) / 2, top: Math.min(a.top, b.top) + Math.abs(b.top - a.top) * .45, width: (a.width + b.width) / 2, height: (a.height + b.height) / 2 };
-      g.animate([box(a, fromRad, { color: text ? 'var(--ink)' : 'transparent', transform: 'rotate(0deg)' }), box(mid, '18px', { color: 'transparent', transform: 'rotate(-12deg)', offset: .5 }), box(b, toRad, { color: 'transparent', transform: 'rotate(0deg)' })],
-        { duration: 650, easing: 'cubic-bezier(.6, 0, .3, 1)', fill: 'forwards' }).onfinish = () => { g.remove(); if (ghost === g) ghost = null; done(); };
-    }
-    // the footer button only ever appears by the corner icon flying into it, and turns back into the icon when you scroll up
-    let landed = false;
-    const land = () => { landed = true; foot.classList.remove('wait', 'bump'); void foot.offsetWidth; foot.classList.add('bump'); };
-    function update() {
-      heroGone = cta.getBoundingClientRect().bottom < 80;
-      if (foot && footIn && !landed) {
-        shown = false; const a = fabRect(); fab.classList.remove('show', 'hint');
-        if (reduce) land(); else fly(a, foot.getBoundingClientRect(), '', '18px', '18px', () => { if (footIn) land(); else update(); });
-        return;
-      }
-      if (foot && !footIn && landed) {
-        landed = false; foot.classList.add('wait');
-        if (heroGone) { shown = true; if (!reduce) fly(foot.getBoundingClientRect(), fabRect(), '', '18px', '18px', () => {}); setTimeout(() => { if (shown && !footIn) fab.classList.add('show'); }, reduce ? 0 : 660); return; }
-      }
-      const want = heroGone && !footIn;
-      if (want && !shown) {
-        shown = true;
-        const hint = () => { if (shown) { fab.classList.add('show', 'hint'); setTimeout(() => fab.classList.remove('hint'), 2200); } };
-        if (reduce) fab.classList.add('show'); else if (cta.getBoundingClientRect().bottom < 120) fly(cta.getBoundingClientRect(), fabRect(), cta.textContent, '14px', '18px', hint); else hint();
-      } else if (!want && shown) { shown = false; fab.classList.remove('show', 'hint'); }
-    }
-    new IntersectionObserver(es => es.forEach(e => { heroGone = !e.isIntersecting && e.boundingClientRect.top < 0; update(); }), { threshold: 0, rootMargin: '-80px 0px 0px 0px' }).observe(cta);
-    if (foot) new IntersectionObserver(es => es.forEach(e => { footIn = e.isIntersecting; update(); }), { threshold: .6 }).observe(foot);
-  })();
-
-  // ---------- install: the card for this device stands out ----------
+  // ---------- install: the cards collapse into a pile, get shuffled as if searching, and land on this device's card ----------
   (function () {
     const ua = navigator.userAgent, os = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(ua) ? 'android' : /Windows/.test(ua) ? 'windows' : /Macintosh/.test(ua) ? 'mac' : '';
-    const card = os && $('.inst[data-os="' + os + '"]'); if (card) { card.classList.add('mine'); card.insertAdjacentHTML('afterbegin', '<span class="inst-you">Your device</span>'); }
+    const grid = $('.inst-grid'), cards = $$('.inst', grid), mine = os && $('.inst[data-os="' + os + '"]');
+    if (mine) mine.insertAdjacentHTML('afterbegin', '<span class="inst-you">Your device</span>');
+    if (!grid || reduce || !mine) { if (mine) mine.classList.add('mine'); return; }
+    let done = false;
+    async function search() {
+      if (done) return; done = true;
+      const g = grid.getBoundingClientRect(), cx = g.left + g.width / 2, cy = g.top + Math.min(g.height, 260) / 2;
+      const off = cards.map(c => { const r = c.getBoundingClientRect(); return [cx - (r.left + r.width / 2), cy - (r.top + r.height / 2)]; });
+      grid.classList.add('piling');
+      cards.forEach((c, i) => { c.style.transform = 'translate(' + off[i][0] + 'px,' + off[i][1] + 'px) rotate(' + ((i % 2 ? 1 : -1) * (3 + i * 2)) + 'deg)'; c.style.zIndex = i + 1; });
+      await wait(700);
+      // flip through the pile, fast then slower
+      const order = []; for (let k = 0; k < 9; k++) order.push(cards[k % cards.length]); order.push(mine);
+      let z = 20;
+      for (let k = 0; k < order.length; k++) {
+        const c = order[k], i = cards.indexOf(c);
+        c.style.zIndex = ++z; c.classList.remove('flip'); void c.offsetWidth; c.classList.add('flip');
+        c.style.transform = 'translate(' + off[i][0] + 'px,' + off[i][1] + 'px) rotate(' + ((k % 2 ? 1 : -1) * 4) + 'deg)';
+        await wait(110 + k * k * 9);
+      }
+      // bam
+      mine.classList.add('mine', 'bam'); mine.style.transform = 'translate(' + off[cards.indexOf(mine)][0] + 'px,' + off[cards.indexOf(mine)][1] + 'px) scale(1.12) rotate(-2deg)';
+      await wait(1300);
+      grid.classList.remove('piling'); grid.classList.add('fanning');
+      cards.forEach(c => { c.style.transform = ''; c.classList.remove('flip'); });
+      setTimeout(() => { grid.classList.remove('fanning'); mine.classList.remove('bam'); cards.forEach(c => { c.style.zIndex = ''; }); }, 900);
+    }
+    new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); search(); } }), { rootMargin: '-25% 0px -25% 0px' }).observe(grid);
   })();
 
   // ---------- the game: loaded into its window only when someone presses Play ----------
@@ -391,6 +381,30 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !m.hidden) close(); });
   })();
 
+  // ---------- grey band: slides in from the left, then the words are typed; the cursor keeps blinking until WHY? starts ----------
+  (function () {
+    const band = $('.focus-band'), inner = band && $('.focus-in', band); if (!inner) return;
+    let clone = null, caret = null, started = false;
+    function finish() { if (clone) { clone.remove(); clone = null; } inner.style.visibility = ''; }
+    async function type() {
+      if (started) return; started = true;
+      if (reduce) { inner.classList.remove('fb-wait'); return; }
+      clone = inner.cloneNode(true); clone.classList.add('fb-type'); clone.setAttribute('aria-hidden', 'true'); clone.setAttribute('data-no-i18n', '');
+      const tw = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT), nodes = []; let n;
+      while ((n = tw.nextNode())) if (n.nodeValue.trim()) nodes.push([n, n.nodeValue]);
+      nodes.forEach(([node]) => { node.nodeValue = ''; });
+      caret = document.createElement('i'); caret.className = 'fb-caret'; nodes[0][0].parentNode.insertBefore(caret, nodes[0][0].nextSibling);
+      inner.style.visibility = 'hidden'; inner.classList.remove('fb-wait'); inner.parentNode.appendChild(clone);
+      void clone.offsetWidth; clone.classList.remove('fb-wait'); await wait(600);
+      for (const [node, full] of nodes) {
+        node.parentNode.insertBefore(caret, node.nextSibling);
+        for (let k = 1; k <= full.length; k++) { if (!clone) return; node.nodeValue = full.slice(0, k); await wait(full[k - 1] === ' ' ? 6 : 13); }
+      }
+    }
+    document.addEventListener('wq-start', finish);
+    if ('IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); type(); } }), { rootMargin: '-30% 0px -30% 0px' }).observe(band);
+  })();
+
   // ---------- why a checklist: a big WHY? turns into the answer, line by line ----------
   (function () {
     const st = $('#wq-stage'), ls = $$('.wq-l', st), cw = $('.cite-wrap', st), cite = $('#wq-cite'); let wr = 0;
@@ -403,7 +417,7 @@
       if (now) sec.classList.add('instant');
     }
     async function play() {
-      const r = ++wr, ok = () => r === wr;
+      const r = ++wr, ok = () => r === wr; document.dispatchEvent(new Event('wq-start'));
       sec.classList.remove('final', 'instant'); st.className = 'wq-stage'; ls.forEach(l => { l.classList.remove('in', 'fin'); l.style.height = ''; });
       if (reduce) { st.classList.add('s-lines', 'done'); ls.forEach(l => l.classList.add('in', 'fin')); focus(true); return; }
       await wait(200); if (!ok()) return; st.classList.add('s-why');
@@ -620,13 +634,41 @@
     Cream: ['Modern: Cream & mint', 'Peach cream, dark ink, mint buttons.'],
     Red: ['Modern: Bold red', 'This site. Loud, big and happy.'],
   };
-  const lScreen = $('#looks-screen'), chipsEl = $('#look-chips'), note = $('#look-note'); let look = 7, lHold = 0;
-  F.looks.forEach((l, i) => { const im = new Image(); im.src = 'img/frames/' + l.img + '.webp'; im.alt = l.name + ' look of the ChecklistPro home screen'; im.width = 780; im.height = 1688; lScreen.appendChild(im);
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip-b'; b.role = 'tab'; b.textContent = l.name; b.addEventListener('click', () => { pickLook(i); lHold = Date.now() + 9000; }); chipsEl.appendChild(b); });
-  function pickLook(i) { look = i; $$('img', lScreen).forEach((im, k) => im.classList.toggle('on', k === i)); $$('.chip-b', chipsEl).forEach((b, k) => b.setAttribute('aria-selected', k === i ? 'true' : 'false')); const n = NOTES[F.looks[i].name]; note.innerHTML = '<dt>' + n[0] + '</dt><dd>' + n[1] + '</dd>'; }
-  pickLook(7);
+  // a wheel of looks: spin it (drag, swipe, arrow keys or tap a slice) and the look under the pin lands on the phone
+  const lScreen = $('#looks-screen'), wheel = $('#wheel'), wName = $('#wheel-name'), wKind = $('#wheel-kind'); let look = 7, lHold = 0, angle = 0;
+  const SW = { Minimalist: '#ffffff', Airbus: '#0b1e2d', Boeing: '#151515', Embraer: '#2b3138', Mint: '#7be8a4', Blue: '#2f8bff', Cream: '#fdf0e9', Red: '#ff4a4a' };
+  const N = F.looks.length, step = 360 / N;
+  wheel.style.background = 'conic-gradient(from ' + (-step / 2) + 'deg, ' + F.looks.map((l, i) => SW[l.name] + ' ' + (i * step) + 'deg ' + ((i + 1) * step) + 'deg').join(', ') + ')';
+  F.looks.forEach((l, i) => {
+    const im = new Image(); im.src = 'img/frames/' + l.img + '.webp'; im.alt = l.name + ' look of the ChecklistPro home screen'; im.width = 780; im.height = 1688; lScreen.appendChild(im);
+    const lab = document.createElement('button'); lab.type = 'button'; lab.className = 'wheel-lab'; lab.textContent = l.name; lab.style.setProperty('--a', (i * step) + 'deg');
+    lab.style.color = ['Airbus', 'Boeing', 'Embraer'].includes(l.name) ? '#fff' : '#111';
+    lab.addEventListener('click', e => { if (moved) return; spinTo(i); lHold = Date.now() + 9000; }); wheel.appendChild(lab);
+  });
+  function pickLook(i) {
+    look = i; $$('img', lScreen).forEach((im, k) => im.classList.toggle('on', k === i));
+    const n = NOTES[F.looks[i].name][0].split(': '); wKind.textContent = n.length > 1 ? n[0] : ''; wName.textContent = n[n.length - 1];
+    wheel.setAttribute('aria-valuenow', i + 1); wheel.setAttribute('aria-valuetext', NOTES[F.looks[i].name][0]);
+  }
+  // the slice under the pin (at the top) is the chosen one
+  const idxAt = a => ((Math.round(-a / step) % N) + N) % N;
+  function spinTo(i, turns) {
+    let target = -i * step; const cur = angle;
+    while (target > cur + 1) target -= 360; while (target < cur - 359) target += 360;   // always spin forward, the short way round
+    if (turns) target -= 360 * turns;
+    angle = target; wheel.style.transition = ''; wheel.style.transform = 'rotate(' + angle + 'deg)'; pickLook(i);
+    wheel.parentNode.classList.remove('land'); void wheel.offsetWidth; wheel.parentNode.classList.add('land');
+  }
+  let drag = null, moved = false;
+  const ang = e => { const r = wheel.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI; };
+  wheel.addEventListener('pointerdown', e => { drag = { a0: ang(e), start: angle, t: performance.now(), last: angle }; moved = false; wheel.style.transition = 'none'; wheel.setPointerCapture(e.pointerId); lHold = Date.now() + 9000; });
+  wheel.addEventListener('pointermove', e => { if (!drag) return; let d = ang(e) - drag.a0; if (d > 180) d -= 360; if (d < -180) d += 360; if (Math.abs(d) > 3) moved = true; drag.last = angle; angle = drag.start + d; drag.v = (angle - drag.last); wheel.style.transform = 'rotate(' + angle + 'deg)'; const i = idxAt(angle); if (i !== look) pickLook(i); });
+  const release = () => { if (!drag) return; const fling = (drag.v || 0) * 6; drag = null; wheel.style.transition = ''; angle += fling; const i = idxAt(angle); angle = -i * step + Math.round((angle + i * step) / 360) * 360; wheel.style.transform = 'rotate(' + angle + 'deg)'; pickLook(i); wheel.parentNode.classList.remove('land'); void wheel.offsetWidth; wheel.parentNode.classList.add('land'); setTimeout(() => { moved = false; }, 50); };
+  wheel.addEventListener('pointerup', release); wheel.addEventListener('pointercancel', release);
+  wheel.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { spinTo((look + 1) % N); lHold = Date.now() + 9000; e.preventDefault(); } if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { spinTo((look + N - 1) % N); lHold = Date.now() + 9000; e.preventDefault(); } });
+  angle = -7 * step; wheel.style.transform = 'rotate(' + angle + 'deg)'; pickLook(7);
   let lVis = false; if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { lVis = e.isIntersecting; }), { threshold: .3 }).observe($('#looks-phone'));
-  setInterval(() => { if (lVis && !reduce && Date.now() > lHold) pickLook((look + 1) % F.looks.length); }, 2400);
+  setInterval(() => { if (lVis && !reduce && Date.now() > lHold && !drag) spinTo((look + 1) % N); }, 2600);
 
 
   // ---------- button click sound: the same quiet, physical click as the app's Modern design ----------
@@ -756,6 +798,9 @@
     ov.classList.toggle('web', set === 'web'); if (set === 'web') { film.stop(); flip.start(); } else { flip.stop(); film.start(); }
     window.Journey.fill(set); $('#journey-scroll').scrollTop = 0; setTimeout(() => window.Journey.draw(true), 60);
   }));
+  // phones: the filter chips fold behind a Filter button
+  $('#jb-filter').addEventListener('click', () => { const o = ov.classList.toggle('filters-open'); $('#jb-filter').setAttribute('aria-expanded', o ? 'true' : 'false'); });
+  $('#journey-filters').addEventListener('click', e => { if (e.target.closest('.fchip')) { ov.classList.remove('filters-open'); $('#jb-filter').setAttribute('aria-expanded', 'false'); } });
   $('#open-journey').addEventListener('click', () => openJourney()); $('#open-journey-2').addEventListener('click', () => openJourney()); $('#close-journey').addEventListener('click', () => closeJourney());
   addEventListener('keydown', e => {
     if (!ov.classList.contains('open')) return;

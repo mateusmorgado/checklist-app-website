@@ -45,7 +45,6 @@
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
-<a class="fab-app" id="fab-app" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener" aria-label="Open the app"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="9" width="40" height="40" rx="10" fill="#111"/><rect x="14" y="14" width="40" height="40" rx="10" class="fab-box"/><path d="M23 34.5l7 7 14.5-16" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="fab-tip">Open the app</span></a>
 <div class="swatches" id="swatches">
   <div class="sw-set" id="sw-set" role="group" aria-label="Colours">
     <button type="button" data-p="red" style="--sw:#ff4a4a" aria-label="Bold red" title="Bold red" aria-pressed="true"></button>
@@ -157,7 +156,7 @@
 
 <!-- WHY YOU NEED IT -->
 <aside class="focus-band" aria-label="Why you need it">
-  <div class="wrap focus-in reveal">
+  <div class="wrap focus-in fb-wait">
     <p class="fb-big">Your phone pulls you in ten directions. <span class="hl">A checklist brings you back to one.</span></p>
     <p class="fb-small">Make a list once for the things you do again and again. Nothing slips while notifications fight for your attention: less remembering, fewer distractions, more done.</p>
   </div>
@@ -240,14 +239,16 @@
     <h2 id="pro-title" class="mega reveal"><span>Not just</span> <span class="hl">a list.</span></h2>
     <p class="lead reveal">Three things a to-do app won’t do for you.</p>
     <div class="pw-grid">
-      <div class="pw-stage" id="pw-stage" aria-hidden="true">
+      <div class="pw-stage" id="pw-stage">
         <div class="pw-phonewrap">
-          <svg class="pw-waves" viewBox="0 0 60 120"><path d="M10 40q14 20 0 40"/><path d="M24 26q26 34 0 68"/><path d="M38 12q38 48 0 96"/></svg>
-          <svg class="pw-waves l" viewBox="0 0 60 120"><path d="M10 40q14 20 0 40"/><path d="M24 26q26 34 0 68"/><path d="M38 12q38 48 0 96"/></svg>
-          <div class="pw-notes" id="pw-notes"></div>
-          <svg class="pw-buzz" viewBox="0 0 12 48"><path d="M6 2l5 6-10 8 10 8-10 8 10 8-5 6"/></svg>
-          <svg class="pw-buzz r" viewBox="0 0 12 48"><path d="M6 2l5 6-10 8 10 8-10 8 10 8-5 6"/></svg>
-          <div class="phone" id="pw-phone" style="--pw:min(300px, 66vw)">
+          <button class="pw-arrow" id="pw-prev" type="button" aria-label="Previous power"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <button class="pw-arrow" id="pw-next" type="button" aria-label="Next power"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+          <svg aria-hidden="true" class="pw-waves" viewBox="0 0 60 120"><path d="M10 40q14 20 0 40"/><path d="M24 26q26 34 0 68"/><path d="M38 12q38 48 0 96"/></svg>
+          <svg aria-hidden="true" class="pw-waves l" viewBox="0 0 60 120"><path d="M10 40q14 20 0 40"/><path d="M24 26q26 34 0 68"/><path d="M38 12q38 48 0 96"/></svg>
+          <div aria-hidden="true" class="pw-notes" id="pw-notes"></div>
+          <svg aria-hidden="true" class="pw-buzz" viewBox="0 0 12 48"><path d="M6 2l5 6-10 8 10 8-10 8 10 8-5 6"/></svg>
+          <svg aria-hidden="true" class="pw-buzz r" viewBox="0 0 12 48"><path d="M6 2l5 6-10 8 10 8-10 8 10 8-5 6"/></svg>
+          <div aria-hidden="true" class="phone" id="pw-phone" style="--pw:min(300px, 66vw)">
             <div class="screen pw-screen" id="pw-screen">
 
               <div class="scn s-tone" data-scene="tone">
@@ -320,7 +321,7 @@
           </div>
         </div>
 
-        <div class="pilot" id="pilot">
+        <div class="pilot" id="pilot" aria-hidden="true">
           <div class="balloon" id="balloon"><small>Co-pilot</small><span class="say" id="pilot-say" data-no-i18n></span><i class="caret"></i></div>
           <svg class="bot" viewBox="0 0 200 250">
             <ellipse class="b-shadow" cx="100" cy="242" rx="54" ry="7"/>
@@ -357,12 +358,10 @@
 
       <div class="pw-side">
         <div class="pw-tabs" id="pw-tabs" role="group" aria-label="Pro powers">
-          <button class="pw-arrow" id="pw-prev" type="button" aria-label="Previous power"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
           <button class="pw-tab" type="button" data-scene="tone" aria-pressed="true"><span class="pw-ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10zM16 9a4 4 0 0 1 0 6M18.6 6.5a7.6 7.6 0 0 1 0 11"/></svg></span><span>Tone</span></button>
           <button class="pw-tab" type="button" data-scene="res" aria-pressed="false"><span class="pw-ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M9 8h7M9 12h5"/></svg></span><span>Research</span></button>
           <button class="pw-tab" type="button" data-scene="ai" aria-pressed="false"><span class="pw-ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4M19.5 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span><span>AI list</span></button>
           <button class="pw-tab" type="button" data-scene="safe" aria-pressed="false"><span class="pw-ic" style="--c:var(--blue)"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3M12 14.5v3"/></svg></span><span>Safe</span></button>
-          <button class="pw-arrow" id="pw-next" type="button" aria-label="Next power"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
         </div>
         <div class="pw-deck" id="pw-deck">
           <article class="pw-card" data-scene="tone">
@@ -412,10 +411,12 @@
         </a>
       </div>
       <div class="look-side">
-        <div class="chips" id="look-chips" role="tablist" aria-label="Looks"></div>
-        <dl class="look-notes" id="look-note"></dl>
-        <p class="muted-line">This is the real app. It opens in a new tab, and your lists stay on your own device.</p>
-        <a class="btn big yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Try the real thing</a>
+        <div class="wheel-wrap" id="wheel-wrap">
+          <i class="wheel-pin" aria-hidden="true"></i>
+          <div class="wheel" id="wheel" role="slider" tabindex="0" aria-label="Pick a look" aria-valuemin="1" aria-valuemax="8" aria-valuenow="8"></div>
+          <div class="wheel-hub" aria-hidden="true"><small id="wheel-kind">Modern</small><b id="wheel-name">Bold red</b></div>
+        </div>
+        <p class="wheel-hint">Spin the wheel</p>
       </div>
     </div>
   </div>
@@ -469,7 +470,7 @@
   <div class="wrap">
     <div class="foot-top"><p class="foot-big">Check it.<br>Run it.<br><span class="hl">Done.</span></p>
       <div class="foot-acts"><button class="btn big white" id="open-journey-2" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v8m0 0a3 3 0 1 0 0 6a3 3 0 0 0 0-6Zm0-8a2 2 0 1 0 0 .01M18 4v4a4 4 0 0 1-4 4h-2"/></svg>See how this was made</button>
-      <a class="foot-cta wait" id="foot-cta" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="9" width="40" height="40" rx="10" fill="#111"/><rect x="14" y="14" width="40" height="40" rx="10" class="fab-box"/><path d="M23 34.5l7 7 14.5-16" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Open the app</span></a></div></div>
+      <a class="foot-cta" id="foot-cta" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="9" width="40" height="40" rx="10" fill="#111"/><rect x="14" y="14" width="40" height="40" rx="10" class="fab-box"/><path d="M23 34.5l7 7 14.5-16" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Open the app</span></a></div></div>
     <div class="foot-row">
       <p>Designed and coded by <b>Mateus Morgado</b> with Claude Code.<br>Plain React in a single file. No build step.<br><a class="foot-link" href="https://morgado.tech" target="_blank" rel="noopener">Portfolio: morgado.tech ↗</a> · <button class="foot-link as-link" id="open-imprint" type="button">Impressum</button></p>
       <p><button class="btn white" id="open-report" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 0h11l-2 4 2 4H5"/></svg>Report a bug</button></p>
@@ -532,6 +533,7 @@
   <div class="journey-bar">
     <h2 id="journey-title">The work tree</h2>
     <div class="filters" id="journey-filters" role="group" aria-label="Filter the tree"></div>
+    <button class="btn white jb-filter" id="jb-filter" type="button" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span>Filter</span></button>
     <button class="btn white" id="close-journey" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Close</span></button>
   </div>
   <div class="journey-scroll" id="journey-scroll" tabindex="-1">
