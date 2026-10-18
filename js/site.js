@@ -20,7 +20,7 @@
   }
   let introRun = 0;
   // The two struck lines are shoved to the left edge by the big line and wait there. They fall like gravity when the page is scrolled.
-  const hero = $('.hero'), canPark = () => innerWidth >= 900;
+  const hero = $('.hero'), canPark = () => innerWidth >= 900 && innerWidth > innerHeight;
   const lot = document.createElement('div'); lot.className = 'lines parking'; lot.setAttribute('aria-hidden', 'true'); hero.appendChild(lot);
   let parked = [], dropArm = null;
   function unpark() {
@@ -141,7 +141,13 @@
     const paint = p => { root.setAttribute('data-palette', p); setIcon(); btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false')); if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--red').trim()); };
     paint(root.getAttribute('data-palette') || 'red');
     $('#to-top').addEventListener('click', () => { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
-    btns.forEach(b => b.addEventListener('click', () => { paint(b.dataset.p); try { localStorage.setItem('cp-palette', b.dataset.p); } catch (e) {} }));
+    // on phones the dots sit in a little pile; the first tap fans them out, the next one picks a colour
+    const sw = $('#swatches'), small = matchMedia('(max-width: 640px)'); let fold = 0;
+    btns.forEach(b => b.addEventListener('click', () => {
+      if (small.matches && !sw.classList.contains('open')) { sw.classList.add('open'); clearTimeout(fold); fold = setTimeout(() => sw.classList.remove('open'), 5000); return; }
+      paint(b.dataset.p); try { localStorage.setItem('cp-palette', b.dataset.p); } catch (e) {}
+      if (small.matches) { clearTimeout(fold); fold = setTimeout(() => sw.classList.remove('open'), 900); }
+    }));
   })();
 
   // ---------- video: a silent teaser loops until someone presses play, then the full ad starts from the beginning ----------
@@ -283,6 +289,17 @@
     const close = () => { m.hidden = true; document.body.classList.remove('lock'); f.src = ''; f.removeAttribute('src'); if (last) last.focus(); };
     $('#open-game').addEventListener('click', open); $('#close-game').addEventListener('click', close);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !m.hidden) close(); });
+  })();
+
+  // ---------- small screens: the header folds into a menu ----------
+  (function () {
+    const nav = $('.nav'), btn = $('#menu-btn'), panel = $('#nav-panel');
+    const set = o => { nav.classList.toggle('open', o); panel.hidden = !o; btn.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+    btn.addEventListener('click', e => { e.stopPropagation(); set(panel.hidden); });
+    panel.addEventListener('click', e => { if (e.target.closest('a, button')) set(false); });
+    $('#np-journey').addEventListener('click', () => $('#open-journey').click());
+    document.addEventListener('click', e => { if (!panel.hidden && !panel.contains(e.target)) set(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) { set(false); btn.focus(); } });
   })();
 
   // ---------- Impressum ----------

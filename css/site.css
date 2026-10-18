@@ -803,3 +803,55 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .pw-next { position: absolute; right: 14px; bottom: 14px; background: none; border: 0; padding: 4px 6px; font: 800 14px var(--display); color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .pw-next:hover { color: var(--red-d); }
 @media (max-width: 640px) { #pw-phone { --pw: min(300px, 58vw) !important; } }
+
+/* ---------- the header folds into a menu when it no longer fits ---------- */
+.menu-btn { display: none; }
+.menu-btn svg { width: 24px; height: 24px; fill: none; stroke: var(--ink); stroke-width: 2.6; stroke-linecap: round; }
+.menu-btn path { transition: transform .25s, opacity .2s; transform-origin: 12px 12px; }
+.nav.open .menu-btn .m1 { transform: translateY(5px) rotate(45deg); } .nav.open .menu-btn .m2 { opacity: 0; } .nav.open .menu-btn .m3 { transform: translateY(-5px) rotate(-45deg); }
+.nav-panel { position: absolute; top: calc(100% + 10px); right: var(--pad); width: min(320px, calc(100vw - 32px)); display: grid; gap: 4px; padding: 14px; background: var(--white); color: var(--ink); border: var(--b) solid var(--ink); border-radius: 16px; box-shadow: -6px -6px 0 var(--ink); animation: panel-in .25s cubic-bezier(.3, 1.4, .5, 1); transform-origin: top right; }
+.nav-panel[hidden] { display: none; }
+@keyframes panel-in { from { opacity: 0; transform: scale(.92) translateY(-8px); } }
+.np-link { font: 800 22px var(--display); text-transform: uppercase; color: var(--ink); text-decoration: none; padding: 6px 10px; border-radius: 10px; }
+.np-link:hover, .np-link:focus-visible { background: var(--yellow); }
+.nav-panel .btn { justify-content: center; margin-top: 8px; }
+@media (max-width: 1100px) {
+  .nav-links, .nav-cta #open-journey, .nav-cta > .yellow { display: none !important; }
+  .menu-btn { display: inline-flex; }
+}
+@media (min-width: 1101px) { .nav-panel { display: none !important; } }
+
+/* ---------- hero on tablets and small laptops ---------- */
+.hero-phone .phone { --pw: var(--hpw, 270px) !important; }
+@media (min-width: 1001px) and (max-width: 1400px) { .hero { --hpw: clamp(200px, 19vw, 270px); } .hero-phone { right: max(4vw, 40px); } .hero-in { padding-right: calc(var(--hpw) + max(4vw, 40px) + 70px) !important; } }
+@media (min-width: 700px) and (max-width: 1100px) and (orientation: portrait) {
+  .hero { flex-direction: column; justify-content: center; padding-top: 110px; --hpw: 210px; }
+  .hero-in { padding-right: var(--pad) !important; }
+  .lines { font-size: clamp(40px, 8vw, 96px); }
+  .sub { font-size: clamp(22px, 3.1vw, 32px); }
+  .hero-phone { display: flex !important; position: relative; right: auto; top: auto; transform: rotate(4deg); margin: 34px auto 70px; }
+}
+@media (max-width: 1100px) { .k4, .k5, .k6 { display: none; } }
+@media (max-width: 700px) { .k2 { display: none; } }
+/* ---------- colour pile on phones ---------- */
+@media (max-width: 640px) {
+  .swatches { left: max(12px, env(safe-area-inset-left)); transform: none; bottom: max(12px, env(safe-area-inset-bottom)); gap: 6px; padding: 6px; }
+  .at-top .swatches { transform: translateY(40px); }
+  .swatches button { width: 30px; height: 30px; }
+  .swatches:not(.open) button[data-p] { margin-left: -24px; transform: rotate(var(--r, 0deg)); }
+  .swatches:not(.open) button[data-p]:first-child { margin-left: 0; }
+  .swatches:not(.open) button[data-p]:nth-child(2) { --r: 8deg; } .swatches:not(.open) button[data-p]:nth-child(3) { --r: -6deg; } .swatches:not(.open) button[data-p]:nth-child(4) { --r: 12deg; }
+  .swatches:not(.open) button[aria-pressed="true"] { z-index: 2; box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--ink); }
+  .swatches:not(.open)::after { content: '›'; align-self: center; font: 800 20px/1 var(--display); color: var(--ink); margin: 0 2px 0 4px; }
+  .swatches:not(.open) .sw-sep { order: 5; }
+  .swatches:not(.open) .to-top { order: 6; }
+  .swatches button[data-p] { transition: margin .3s cubic-bezier(.3, 1.4, .5, 1), transform .3s; }
+}
+@media (max-width: 520px) { .nav { gap: 6px; } .nav-cta { gap: 6px; } .nav-cta .btn.icon { min-width: 42px; width: 42px; padding: 0; justify-content: center; } .brand { padding-right: 8px; } }
+@media (max-width: 360px) { .brand span { font-size: 16px; } }
+.powers { overflow-x: clip; }
+@media (max-width: 640px) {
+  .pw-deck { margin-right: 22px; }
+  .pw-card[data-k="1"] { transform: translate(8px, 10px) rotate(1.5deg); } .pw-card[data-k="2"] { transform: translate(15px, 19px) rotate(2.5deg); } .pw-card[data-k="3"] { transform: translate(20px, 26px) rotate(3deg); }
+}
+@media (max-width: 640px) { .fab-app.hint .fab-tip { opacity: 0; } }

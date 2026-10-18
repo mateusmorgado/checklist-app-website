@@ -1,6 +1,8 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Menu": "Menü",
+"Game": "Spiel",
 "Tone": "Ton",
 "Research": "Forschung",
 "AI list": "KI-Liste",
