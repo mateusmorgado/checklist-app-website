@@ -11,7 +11,7 @@ python3 -m http.server 8000   # then open http://localhost:8000
 ## What is on the page
 
 1. **Hero**: "This is not a To-Do app. This is not a habits app. This is a checklist prompt app." Each line slams in, the first two get struck through, the last one lands with confetti. (`Replay` runs it again.)
-2. **Video**: a 720p window for the ad. Drop the file at `video/ad-720p.mp4` (1280 x 720). Until it exists, a placeholder is shown.
+2. **Video**: a silent teaser (`video/teaser.mp4`, 6-10 s, no audio, about 1-2 MB) loops in the window until someone presses *Play with sound*, which starts the full ad from the beginning; when it ends the teaser loops again. The teaser is paused off screen and with reduced motion. Without a teaser file the poster is shown. Addresses can be changed in `js/config.js` (`TEASER_SRC`, `VIDEO_SRC`). Old text:  a 720p window for the ad. Drop the file at `video/ad-720p.mp4` (1280 x 720). Until it exists, a placeholder is shown.
 3. **Lists that ask first**: the Pro part. Two simple lists tick themselves, then a Gym bag shows conditionals: a cursor answers Yes to "Sauna?" and "Squat day?", and towel, flip-flops and squat shoes join the list. Afterwards you can flip each answer yourself.
 4. **See how it flows**: an iPhone mockup that plays four real flows (run, ask, say it, build it) from screenshots of the real app, with a tap indicator.
 5. **Make it yours**: the eight looks of the app (Minimalist, three cockpit styles, four Modern colours).

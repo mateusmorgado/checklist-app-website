@@ -46,13 +46,27 @@
     host.addEventListener('pointerleave', () => { p.style.transform = ''; });
   });
 
-  // ---------- video ----------
-  const box = $('#video-box'), vid = $('#ad');
+  // ---------- video: a silent teaser loops until someone presses play, then the full ad starts from the beginning ----------
+  const box = $('#video-box'), vid = $('#ad'), teaser = $('#teaser'), playBtn = $('#play-main');
   if (window.VIDEO_SRC && window.VIDEO_SRC !== 'video/ad-720p.mp4') { $('#ad source').src = window.VIDEO_SRC; vid.load(); }
-  const missing = () => box.classList.add('missing');
-  $('#ad source').addEventListener('error', missing);
-  vid.addEventListener('error', missing);
-  setTimeout(() => { if (vid.networkState === 3 || vid.error) missing(); }, 2500);
+  if (window.TEASER_SRC && window.TEASER_SRC !== 'video/teaser.mp4') { $('#teaser source').src = window.TEASER_SRC; teaser.load(); }
+  let teaserOk = true, mainOk = true;
+  const checkMissing = () => { if (!teaserOk && !mainOk) box.classList.add('missing'); };
+  $('#teaser source').addEventListener('error', () => { teaserOk = false; teaser.hidden = true; box.classList.add('no-teaser'); checkMissing(); });
+  $('#ad source').addEventListener('error', () => { mainOk = false; if (vid.hidden === false) { vid.hidden = true; box.classList.remove('playing'); } box.classList.add('main-missing'); checkMissing(); });
+  const wantsMotion = !reduce && !(navigator.connection && navigator.connection.saveData);
+  const playTeaser = () => { if (!teaserOk || box.classList.contains('playing') || !wantsMotion) return; const p = teaser.play(); if (p && p.catch) p.catch(() => {}); };
+  if (wantsMotion) { teaser.autoplay = true; playTeaser(); }
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playTeaser(); else teaser.pause(); }), { threshold: .25 }).observe(box);
+  function startMain() {
+    if (!mainOk) { box.classList.add('missing', 'main-missing'); return; }
+    teaser.pause(); teaser.hidden = true; vid.hidden = false; box.classList.add('playing');
+    vid.preload = 'auto'; vid.currentTime = 0; const p = vid.play(); if (p && p.catch) p.catch(() => {});
+  }
+  function backToTeaser() { vid.pause(); vid.hidden = true; box.classList.remove('playing'); if (teaserOk) { teaser.hidden = false; playTeaser(); } }
+  playBtn.addEventListener('click', startMain); teaser.addEventListener('click', startMain);
+  vid.addEventListener('ended', backToTeaser);
+  setTimeout(() => { if (teaser.networkState === 3) { teaserOk = false; teaser.hidden = true; box.classList.add('no-teaser'); checkMissing(); } }, 2500);
 
   // ---------- idea cards: small ones tick themselves ----------
   async function tickCard(li) {

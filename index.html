@@ -76,9 +76,15 @@
     <div class="win reveal">
       <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">checklistpro-ad.mp4</span><span class="win-btns" aria-hidden="true">_ ▢ ✕</span></div>
       <div class="video-box" id="video-box">
-        <video id="ad" controls playsinline preload="metadata" poster="img/poster.webp" width="1280" height="720">
+        <video id="teaser" class="teaser" muted loop playsinline preload="auto" poster="img/poster.webp" aria-hidden="true" tabindex="-1">
+          <source src="video/teaser.mp4" type="video/mp4">
+        </video>
+        <video id="ad" class="main" controls playsinline preload="none" poster="img/poster.webp" width="1280" height="720" hidden>
           <source src="video/ad-720p.mp4" type="video/mp4">
         </video>
+        <button class="play-btn" id="play-main" type="button" aria-label="Play the full video from the beginning, with sound">
+          <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><b>Play with sound</b>
+        </button>
         <div class="video-missing" id="video-missing">
           <div class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></div>
           <p><b>The ad lands here.</b><br>Drop a 720p file at <code>video/ad-720p.mp4</code>.</p>
