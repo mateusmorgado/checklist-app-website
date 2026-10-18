@@ -507,12 +507,25 @@
 <div class="journey" id="journey" role="dialog" aria-modal="true" aria-labelledby="journey-title" hidden>
   <div class="journey-bar">
     <h2 id="journey-title">The work tree</h2>
-    <div class="jt-switch" id="jt-switch" role="group" aria-label="Which story"><button type="button" class="jt-opt" data-set="app" aria-pressed="true">The app</button><button type="button" class="jt-opt" data-set="web" aria-pressed="false">This website</button></div>
     <div class="filters" id="journey-filters" role="group" aria-label="Filter the tree"></div>
     <button class="btn white" id="close-journey" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Close</span></button>
   </div>
   <div class="journey-scroll" id="journey-scroll" tabindex="-1">
     <p class="journey-note de-only" lang="de">Die Zitate in diesem Baum sind im englischen Original geblieben.</p>
+    <div class="jt-row"><div class="jt-switch" id="jt-switch" role="group" aria-label="Which story"><button type="button" class="jt-opt" data-set="app" aria-pressed="true">The app</button><button type="button" class="jt-opt" data-set="web" aria-pressed="false">This website</button></div></div>
+    <div class="jw" id="jw">
+      <div class="jw-main">
+        <div class="jw-tabs" role="group" aria-label="Part of the website"><button type="button" class="jw-tab" data-c="hero" aria-pressed="true">Hero</button><button type="button" class="jw-tab" data-c="pro" aria-pressed="false">Middle section</button><button type="button" class="jw-tab" data-c="page" aria-pressed="false">Whole page</button></div>
+        <div class="jw-screen"><img id="jw-img" alt="The website at one commit" src="img/evo/hero-00.webp"><span class="jw-time" id="jw-time" data-no-i18n>11:12</span><span class="jw-rec" aria-hidden="true">● REC</span></div>
+        <div class="jf-bar" aria-hidden="true"><i id="jw-fill"></i></div>
+      </div>
+      <dl class="jf-stats jw-stats">
+        <div><dt>Prompts from Mateus</dt><dd data-to="69">69</dd></div>
+        <div><dt>Steps by Claude Code</dt><dd data-to="497">497</dd></div>
+        <div><dt>Commits</dt><dd data-to="35">35</dd></div>
+        <div><dt>Hours of work</dt><dd data-to="5" data-pre="≈ ">≈ 5</dd></div>
+      </dl>
+    </div>
     <div class="jf" id="jf">
       <div class="jf-chat" id="jf-chat" aria-hidden="true"></div>
       <div class="jf-right">
@@ -523,9 +536,9 @@
         </div>
         <div class="jf-bar" aria-hidden="true"><i id="jf-fill"></i></div>
         <dl class="jf-stats">
-          <div><dt>Prompts from Mateus</dt><dd data-to="76">76</dd></div>
-          <div><dt>Steps by Claude Code</dt><dd data-to="656">656</dd></div>
-          <div><dt>Commits</dt><dd data-to="82">82</dd></div>
+          <div><dt>Commits</dt><dd data-to="54">54</dd></div>
+          <div><dt>Days</dt><dd data-to="5">5</dd></div>
+          <div><dt>Hours of work</dt><dd data-to="11" data-pre="≈ ">≈ 11</dd></div>
         </dl>
       </div>
     </div>
@@ -538,6 +551,7 @@
 <script src="js/config.js"></script>
 <script src="js/frames.js"></script>
 <script src="js/journey.js"></script>
+<script src="js/evo.js"></script>
 <script src="js/i18n-data.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/site.js"></script>

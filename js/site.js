@@ -652,17 +652,17 @@
     }
     function finish() {
       alive = false; cancelAnimationFrame(raf); clearTimeout(timer); box.classList.add('done'); fill.style.width = '100%';
-      sts.forEach((s, k) => { s.classList.add('on'); s.classList.toggle('now', k === 2); }); dds.forEach(d => { d.textContent = d.dataset.to; });
+      sts.forEach((s, k) => { s.classList.add('on'); s.classList.toggle('now', k === 2); }); dds.forEach(d => { d.textContent = (d.dataset.pre || '') + d.dataset.to; });
     }
     function run() {
-      const t0 = performance.now(); chat.innerHTML = ''; n = 0; box.classList.remove('done'); dds.forEach(d => { d.textContent = '0'; });
+      const t0 = performance.now(); chat.innerHTML = ''; n = 0; box.classList.remove('done'); dds.forEach(d => { d.textContent = (d.dataset.pre || '') + '0'; });
       const tick = () => { if (!alive) return; const t = performance.now() - t0; if (t >= T) return; msg(t); timer = setTimeout(tick, gap(t)); };
       tick();
       const frame = () => {
         if (!alive) return; const t = performance.now() - t0, p = Math.min(1, t / T);
         fill.style.width = (p * 100) + '%';
         const st = t >= STAGE_AT[2] ? 2 : t >= STAGE_AT[1] ? 1 : 0; sts.forEach((s, k) => { s.classList.toggle('on', k <= st); s.classList.toggle('now', k === st); });
-        dds.forEach(d => { d.textContent = Math.round(+d.dataset.to * ease(p)); });
+        dds.forEach(d => { d.textContent = (d.dataset.pre || '') + Math.round(+d.dataset.to * ease(p)); });
         if (t >= T) { add('c', mark + '<b>Shipped.</b> ChecklistPro, today.'); finish(); return; }
         raf = requestAnimationFrame(frame);
       };
@@ -673,18 +673,34 @@
       stop() { alive = false; cancelAnimationFrame(raf); clearTimeout(timer); },
     };
   })();
+  // ---------- the website's stop-motion: one screenshot per commit, played like a flip book ----------
+  const flip = (function () {
+    const img = $('#jw-img'), time = $('#jw-time'), fill = $('#jw-fill'), tabs = $$('.jw-tab'), dds = $$('.jw-stats dd'), E = window.EVO || {};
+    const order = ['hero', 'pro', 'page']; let c = 'hero', i = 0, t = 0, alive = false, counted = false;
+    Object.values(E).forEach(list => list.forEach(([f]) => { const im = new Image(); im.src = 'img/evo/' + f; }));
+    const show = () => { const list = E[c], [f, tm] = list[i]; img.src = 'img/evo/' + f; time.textContent = tm; fill.style.width = ((i + 1) / list.length * 100) + '%'; };
+    function step() {
+      if (!alive) return; show(); const list = E[c];
+      if (!counted) { const p = (order.indexOf(c) * list.length + i + 1) / (order.length * list.length); dds.forEach(d => { d.textContent = (d.dataset.pre || '') + Math.round(+d.dataset.to * Math.min(1, p * 3)); }); if (p >= 1 / 3) counted = true; }
+      // about 8 seconds per part, a short hold on the latest frame, then the next part
+      if (i < list.length - 1) { i++; t = setTimeout(step, 8000 / list.length); } else t = setTimeout(() => { pick(order[(order.indexOf(c) + 1) % order.length]); }, 1800);
+    }
+    function pick(k) { c = k; i = 0; tabs.forEach(b => b.setAttribute('aria-pressed', b.dataset.c === k ? 'true' : 'false')); clearTimeout(t); if (reduce) { i = E[c].length - 1; show(); return; } step(); }
+    tabs.forEach(b => b.addEventListener('click', () => { alive = true; pick(b.dataset.c); }));
+    return { start() { if (alive) return; alive = true; counted = false; pick('hero'); }, stop() { alive = false; clearTimeout(t); } };
+  })();
   function openJourney(push) {
-    film.start();
+    if (window.Journey.set === 'web') flip.start(); else film.start();
     lastFocus = document.activeElement; window.Journey.build(); ov.hidden = false; document.body.classList.add('lock');
     requestAnimationFrame(() => { ov.classList.add('open'); setTimeout(() => { window.Journey.draw(true); }, 120); $('#close-journey').focus(); });
     if (push !== false && location.hash !== '#journey') history.pushState(null, '', '#journey');
   }
-  function closeJourney(push) { film.stop(); ov.classList.remove('open'); document.body.classList.remove('lock'); setTimeout(() => { ov.hidden = true; }, 450); if (lastFocus) lastFocus.focus(); if (push !== false && location.hash === '#journey') history.pushState(null, '', location.pathname + location.search); }
+  function closeJourney(push) { film.stop(); flip.stop(); ov.classList.remove('open'); document.body.classList.remove('lock'); setTimeout(() => { ov.hidden = true; }, 450); if (lastFocus) lastFocus.focus(); if (push !== false && location.hash === '#journey') history.pushState(null, '', location.pathname + location.search); }
   // switch the tree between the app's story and this website's story
   $$('.jt-opt').forEach(b => b.addEventListener('click', () => {
     const set = b.dataset.set; if (window.Journey.set === set) return;
     $$('.jt-opt').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
-    ov.classList.toggle('web', set === 'web'); if (set === 'web') film.stop(); else film.start();
+    ov.classList.toggle('web', set === 'web'); if (set === 'web') { film.stop(); flip.start(); } else { flip.stop(); film.start(); }
     window.Journey.fill(set); $('#journey-scroll').scrollTop = 0; setTimeout(() => window.Journey.draw(true), 60);
   }));
   $('#open-journey').addEventListener('click', () => openJourney()); $('#open-journey-2').addEventListener('click', () => openJourney()); $('#close-journey').addEventListener('click', () => closeJourney());

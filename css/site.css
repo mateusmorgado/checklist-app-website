@@ -951,3 +951,23 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 @media (max-width: 760px) { .jt-opt { padding: 0 10px; font-size: 14px; } }
 .row.idea { background: none; border: 0; border-radius: 0; box-shadow: none; padding: 14px 0; rotate: 0deg; } /* not the .idea cards from the Ideas section */
 .row.idea .card2 h3 { display: block; margin: 0 0 4px; font: 800 clamp(19px, 2.4vw, 26px)/1.1 var(--display); text-transform: none; letter-spacing: normal; }
+
+/* switch above the work tree, and the website's stop-motion */
+.jt-row { display: flex; justify-content: center; margin: 0 0 20px; }
+.jt-row .jt-switch { padding: 6px; border-radius: 16px; box-shadow: -5px -5px 0 var(--yellow); }
+.jt-row .jt-opt { min-height: 48px; padding: 0 22px; font-size: 18px; }
+.jw { display: none; grid-template-columns: minmax(0, 1fr) 220px; gap: clamp(16px, 2.5vw, 30px); max-width: 1100px; margin: 0 auto 34px; padding: clamp(14px, 2vw, 24px); background: var(--ink); color: var(--white); border: var(--b) solid var(--ink); border-radius: 22px; box-shadow: -10px -10px 0 var(--yellow); }
+.journey.web .jw { display: grid; }
+.jw-main { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.jw-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.jw-tab { min-height: 40px; padding: 0 14px; border: 2.5px solid var(--white); border-radius: 10px; background: transparent; color: var(--white); font: 800 15px var(--display); cursor: pointer; }
+.jw-tab[aria-pressed="true"] { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.jw-screen { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; border: 3px solid #2a2e38; }
+.jw-screen img { width: 100%; height: 100%; object-fit: contain; display: block; image-rendering: auto; }
+.jw-time { position: absolute; left: 10px; bottom: 10px; font: 800 22px ui-monospace, Menlo, monospace; color: var(--yellow); background: rgba(0, 0, 0, .75); padding: 2px 10px; border-radius: 8px; }
+.jw-rec { position: absolute; right: 10px; top: 10px; font: 800 13px var(--display); color: #ff5a5f; background: rgba(0, 0, 0, .7); padding: 3px 8px; border-radius: 6px; animation: rec 1s steps(2) infinite; }
+@keyframes rec { 50% { opacity: .3; } }
+.jw-stats { grid-template-columns: 1fr; align-content: center; }
+.jf-stats { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+@media (max-width: 760px) { .jw { grid-template-columns: 1fr; } .jw-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .jw-rec { animation: none; } }
