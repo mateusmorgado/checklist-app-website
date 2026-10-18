@@ -626,28 +626,43 @@
   const ov = $('#journey'); let lastFocus = null;
   // ---------- the film at the top of the work tree: prompts and plans fly back and forth while the app takes shape ----------
   const film = (function () {
-    const chat = $('#jf-chat'), fill = $('#jf-fill'), sts = $$('.jf-st'), rows = (window.JOURNEY_ROWS || []).filter(r => r.says || r.title);
+    const box = $('#jf'), chat = $('#jf-chat'), fill = $('#jf-fill'), sts = $$('.jf-st'), dds = $$('.jf-stats dd'), rows = (window.JOURNEY_ROWS || []).filter(r => r.says || r.title);
     const mark = $('.journey-intro .claude-mark') ? $('.journey-intro .claude-mark').outerHTML : '';
     const CODE = ['+ <div className="stack">', '+ const items = list.filter(i => i.on)', '- items.sort(byDone)', '+ .item { min-height: 56px }', '+ onPointerDown={startDrag}', '+ <Question if="sauna" add={towel} />', '+ playTone("heart", 0.6)', '- position: absolute', '+ :root[data-design="modern"] {', '+ localStorage.setItem(KEY, json)', '+ fetch("/api/quick", { audio })', '+ confetti({ from: "bottom" })', '+ <Progress value={done / all} />', '+ @media (max-width: 380px)', '- setTimeout(moveToTop, 1000)', '+ aria-pressed={on}'];
-    let t = 0, i = 0, alive = false;
-    const add = (cls, html) => { const b = document.createElement('div'); b.className = 'jf-b ' + cls; b.innerHTML = html; chat.appendChild(b); while (chat.children.length > 14) chat.firstChild.remove(); return b; };
     const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-    function step() {
-      if (!alive) return; const r = rows[i % rows.length], p = (i % rows.length) / (rows.length - 1);
-      if (r.says) add('u', '“' + esc(r.says) + '”');
-      const dots = document.createElement('div'); dots.className = 'jf-dots'; dots.innerHTML = '<i></i><i></i><i></i>'; chat.appendChild(dots);
-      t = setTimeout(() => {
-        dots.remove(); if (!alive) return;
-        add('c', mark + '<b>Plan:</b> ' + esc(r.title));
-        let k = 0; const burst = () => { if (!alive || k++ > 2) { i++; t = setTimeout(step, 500); return; } const c = CODE[(i * 3 + k) % CODE.length]; add('code' + (c[0] === '-' ? ' del' : ''), esc(c)); t = setTimeout(burst, 140); };
-        t = setTimeout(burst, 260);
-      }, 650);
-      fill.style.width = (p * 100) + '%';
-      const stage = p < .34 ? 0 : p < .67 ? 1 : 2; sts.forEach((s, k) => { s.classList.toggle('on', k <= stage); s.classList.toggle('now', k === stage); });
+    // 8 seconds: calm, rush to the paper design, calm for 3 s, rush to today, calm again
+    const T = 8000, STAGE_AT = [0, 2500, 6500];
+    const gap = t => (t > 1500 && t < 2500) || (t > 5500 && t < 6500) ? 70 : 520;
+    const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+    let raf = 0, timer = 0, alive = false, n = 0;
+    const add = (cls, html) => { const b = document.createElement('div'); b.className = 'jf-b ' + cls; b.innerHTML = html; chat.appendChild(b); while (chat.children.length > 14) chat.firstChild.remove(); };
+    function msg(t) {
+      const r = rows[Math.min(rows.length - 1, Math.floor(t / T * rows.length))], kind = n % 4; n++;
+      if (kind === 0 && r.says) add('u', '“' + esc(r.says) + '”');
+      else if (kind <= 1) add('c', mark + '<b>Plan:</b> ' + esc(r.title));
+      else { const c = CODE[n % CODE.length]; add('code' + (c[0] === '-' ? ' del' : ''), esc(c)); }
+    }
+    function finish() {
+      alive = false; cancelAnimationFrame(raf); clearTimeout(timer); box.classList.add('done'); fill.style.width = '100%';
+      sts.forEach((s, k) => { s.classList.add('on'); s.classList.toggle('now', k === 2); }); dds.forEach(d => { d.textContent = d.dataset.to; });
+    }
+    function run() {
+      const t0 = performance.now(); chat.innerHTML = ''; n = 0; box.classList.remove('done'); dds.forEach(d => { d.textContent = '0'; });
+      const tick = () => { if (!alive) return; const t = performance.now() - t0; if (t >= T) return; msg(t); timer = setTimeout(tick, gap(t)); };
+      tick();
+      const frame = () => {
+        if (!alive) return; const t = performance.now() - t0, p = Math.min(1, t / T);
+        fill.style.width = (p * 100) + '%';
+        const st = t >= STAGE_AT[2] ? 2 : t >= STAGE_AT[1] ? 1 : 0; sts.forEach((s, k) => { s.classList.toggle('on', k <= st); s.classList.toggle('now', k === st); });
+        dds.forEach(d => { d.textContent = Math.round(+d.dataset.to * ease(p)); });
+        if (t >= T) { add('c', mark + '<b>Shipped.</b> ChecklistPro, today.'); finish(); return; }
+        raf = requestAnimationFrame(frame);
+      };
+      raf = requestAnimationFrame(frame);
     }
     return {
-      start() { if (reduce) { sts.forEach(s => s.classList.add('on')); fill.style.width = '100%'; rows.slice(-4).forEach(r => { if (r.says) add('u', '“' + esc(r.says) + '”'); add('c', mark + '<b>Plan:</b> ' + esc(r.title)); }); return; } if (alive) return; alive = true; chat.innerHTML = ''; i = 0; step(); },
-      stop() { alive = false; clearTimeout(t); },
+      start() { if (reduce) { finish(); return; } if (alive) return; alive = true; run(); },
+      stop() { alive = false; cancelAnimationFrame(raf); clearTimeout(timer); },
     };
   })();
   function openJourney(push) {
