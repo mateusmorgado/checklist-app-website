@@ -681,12 +681,12 @@
     const img = $('#jw-img'), time = $('#jw-time'), fill = $('#jw-fill'), tabs = $$('.jw-tab'), dds = $$('.jw-stats dd'), E = window.EVO || {};
     const order = ['hero', 'page']; let c = 'hero', i = 0, t = 0, alive = false, counted = false;
     Object.values(E).forEach(list => list.forEach(([f]) => { const im = new Image(); im.src = 'img/evo/' + f; }));
-    const show = () => { const list = E[c], [f, tm] = list[i]; img.src = 'img/evo/' + f; time.textContent = tm; fill.style.width = ((i + 1) / list.length * 100) + '%'; };
+    const show = () => { const list = E[c], [f, tm] = list[i]; img.src = 'img/evo/' + f; const isColour = !/\d:\d/.test(tm); time.textContent = isColour ? tm : ''; time.hidden = !isColour; fill.style.width = ((i + 1) / list.length * 100) + '%'; };
     function step() {
       if (!alive) return; show(); const list = E[c];
       if (!counted) { const p = (order.indexOf(c) * list.length + i + 1) / (order.length * list.length); dds.forEach(d => { d.textContent = (d.dataset.pre || '') + Math.round(+d.dataset.to * Math.min(1, p * 3)); }); if (p >= 1 / 3) counted = true; }
       // about 8 seconds per part, a short hold on the latest frame, then the next part
-      if (i < list.length - 1) { i++; t = setTimeout(step, 8000 / list.length); } else t = setTimeout(() => { pick(order[(order.indexOf(c) + 1) % order.length]); }, 1800);
+      if (i < list.length - 1) { const colour = !/\d:\d/.test(list[i][1]); i++; t = setTimeout(step, colour ? 750 : 6000 / list.length); } else t = setTimeout(() => { pick(order[(order.indexOf(c) + 1) % order.length]); }, 1800);
     }
     function pick(k) { c = k; i = 0; tabs.forEach(b => b.setAttribute('aria-pressed', b.dataset.c === k ? 'true' : 'false')); clearTimeout(t); if (reduce) { i = E[c].length - 1; show(); return; } step(); }
     tabs.forEach(b => b.addEventListener('click', () => { alive = true; pick(b.dataset.c); }));
