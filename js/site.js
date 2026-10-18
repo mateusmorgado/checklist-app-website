@@ -19,17 +19,50 @@
     setTimeout(() => { confetti.innerHTML = ''; }, 4200);
   }
   let introRun = 0;
+  // The two struck lines are shoved to the left edge by the big line and wait there. They fall like gravity when the page is scrolled.
+  const hero = $('.hero'), heroIn = $('.hero-in'), canPark = () => innerWidth >= 900;
+  let parked = [], dropArm = null;
+  function unpark() {
+    if (dropArm) { removeEventListener('scroll', dropArm); dropArm = null; }
+    parked.forEach(p => { p.ph.parentNode.insertBefore(p.l, p.ph); p.ph.remove(); }); parked = [];
+    lines.slice(0, 2).forEach(l => { l.classList.remove('parked', 'dropping', 'dropped'); l.removeAttribute('style'); });
+  }
+  function park() {
+    const hr = hero.getBoundingClientRect(), f = lines.slice(0, 2).map(l => ({ l, r: l.getBoundingClientRect() }));
+    f.forEach(({ l, r }, i) => {
+      const ph = document.createElement('div'); ph.className = 'line-ph'; ph.style.height = r.height + 'px'; ph.style.marginBottom = getComputedStyle(l).marginBottom; l.parentNode.insertBefore(ph, l);
+      l.style.cssText = 'position:absolute;z-index:4;margin:0;left:' + (r.left - hr.left) + 'px;top:' + (r.top - hr.top) + 'px;white-space:nowrap;transform-origin:0 0;transition:none';
+      hero.appendChild(l); parked.push({ l, ph });
+    });
+    void hero.offsetHeight;
+    f.forEach(({ l }, i) => {
+      const right = i === 1, cw = document.documentElement.clientWidth;
+      l.classList.add('parked'); l.style.transition = ''; l.style.fontSize = '24px';
+      l.style.setProperty('--rot', right ? '90deg' : '-90deg'); l.style.setProperty('--end', right ? '150deg' : '-150deg'); l.style.setProperty('--dx', right ? '.12' : '-.12');
+      if (right) { l.style.left = (cw - 16) + 'px'; l.style.top = '130px'; l.style.transform = 'rotate(90deg)'; }
+      else { l.style.left = '12px'; l.style.top = (Math.min(hero.offsetHeight, innerHeight) - 80) + 'px'; l.style.transform = 'rotate(-90deg)'; }
+      l.style.transitionDelay = (i * 160) + 'ms';
+    });
+    parked.forEach(({ ph }) => { ph.style.height = '0px'; ph.style.marginBottom = '0px'; });
+    if (reduce) return;
+    dropArm = () => { if (scrollY < 40) return; removeEventListener('scroll', dropArm); dropArm = null; drop(); };
+    setTimeout(() => { if (dropArm) { addEventListener('scroll', dropArm, { passive: true }); dropArm(); } }, 1100);
+  }
+  function drop() {
+    const away = hero.offsetHeight + 400;
+    parked.forEach(({ l }, i) => { l.style.transitionDelay = ''; l.classList.add('dropping'); l.style.setProperty('--away', away + 'px'); l.style.animationDelay = (i * 160) + 'ms'; l.addEventListener('animationend', () => l.classList.add('dropped'), { once: true }); });
+  }
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;
-    lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
-    if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines.slice(0, 2).forEach(l => l.classList.add('gone')); lines[2].classList.remove('struck'); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')); return; }
+    unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
+    if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); if (canPark()) park(); else lines.slice(0, 2).forEach(l => l.classList.add('gone')); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')); return; }
     await wait(300); if (!ok()) return; lines[0].classList.add('show');
     await wait(900); if (!ok()) return; lines[0].classList.add('struck');
     await wait(650); if (!ok()) return; lines[1].classList.add('show');
     await wait(900); if (!ok()) return; lines[1].classList.add('struck');
     await wait(750); if (!ok()) return; lines[2].classList.add('show'); burst();
-    await wait(500); if (!ok()) return; lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); });
-    await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone'));
+    await wait(500); if (!ok()) return;
+    if (canPark()) park(); else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
     await wait(500); if (!ok()) return; $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in'));
   }
   $('#replay').addEventListener('click', intro);

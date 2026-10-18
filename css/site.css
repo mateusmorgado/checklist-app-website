@@ -79,7 +79,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
 .replay { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; font: 700 16px var(--display); text-decoration: underline; text-underline-offset: 4px; min-height: 48px; padding: 0 8px; }
 .replay svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
-.hero-phone { position: absolute; right: max(2.5vw, 24px); top: 50%; z-index: 2; transform: translateY(-46%) rotate(6deg); display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.hero-phone { position: absolute; right: max(7vw, 100px); top: 50%; z-index: 2; transform: translateY(-46%) rotate(6deg); display: flex; flex-direction: column; align-items: center; gap: 22px; }
 .hero-phone .screen { background: #111; touch-action: pan-y; cursor: grab; } .hero-phone .screen.drag { cursor: grabbing; }
 .swipe { display: flex; width: 100%; height: 100%; transition: transform .7s cubic-bezier(.6, 0, .15, 1); will-change: transform; }
 .swipe.drag { transition: none; }
@@ -87,6 +87,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .swipe-meta { display: flex; align-items: center; gap: 12px; transform: rotate(-6deg); }
 .swipe-name { font: 800 16px var(--display); background: var(--yellow); color: var(--ink); border: 3px solid var(--ink); border-radius: 10px; padding: 3px 12px; box-shadow: -3px -3px 0 var(--ink); }
 .swipe-dots { display: inline-flex; gap: 6px; } .swipe-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--ink); opacity: .3; transition: opacity .3s, transform .3s; } .swipe-dots i.on { opacity: 1; transform: scale(1.35); }
+/* parked on the left edge, then gravity */
+.line-ph { transition: height .7s cubic-bezier(.6, 0, .2, 1), margin .7s; }
+.line.parked { z-index: 4; transition: left .8s cubic-bezier(.3, 1.5, .5, 1), top .8s cubic-bezier(.3, 1.5, .5, 1), font-size .8s, transform .8s cubic-bezier(.3, 1.5, .5, 1); }
+.line.parked .chip { box-shadow: -3px -3px 0 var(--ink); border-width: 3px; border-radius: 8px; }
+.line.dropping { animation: gravity 1.15s cubic-bezier(.5, 0, 1, .55) both; transition: none; }
+.line.dropped { visibility: hidden; }
+@keyframes gravity { 0% { transform: translate(0, 0) rotate(var(--rot)); } 10% { transform: translate(0, -8px) rotate(calc(var(--rot) * 1.02)); } 100% { transform: translate(calc(var(--away) * var(--dx)), var(--away)) rotate(var(--end)); } }
 /* the first two lines fall off to the left and the rest moves up */
 .line.fell { transform: translate(-70vw, 120px) rotate(-24deg); opacity: 0; transition: transform .9s cubic-bezier(.5, 0, 1, .6), opacity .5s .45s; }
 .line.gone { height: 0 !important; margin: 0 !important; overflow: hidden; visibility: hidden; transition: height .6s cubic-bezier(.6, 0, .2, 1), margin .6s; }
