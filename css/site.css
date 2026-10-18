@@ -1018,3 +1018,4 @@ body.typing .hero .sub-type::after { content: ''; display: inline-block; width: 
 body.typing .hero .sub .cite-wrap, body.typing .hero .cta-row, body.typing .hero-down, body.typing .swatches { opacity: 0 !important; transform: translateY(24px) !important; pointer-events: none; }
 .hero .sub .cite-wrap { transition: opacity .45s ease, transform .55s cubic-bezier(.3, 1.3, .5, 1); }
 .hero .cta-row { transition-delay: .18s; } .hero-down { transition-delay: .4s; } .swatches { transition-delay: .6s; }
+.lines { transition: transform .7s cubic-bezier(.5, 0, .2, 1); }

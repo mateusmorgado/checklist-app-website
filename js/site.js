@@ -15,7 +15,7 @@
   const cv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   function burst() {
     if (reduce) return; confetti.innerHTML = ''; const COLORS = [cv('--yellow'), cv('--mint'), '#ffffff', cv('--pink'), cv('--blue'), cv('--orange')];
-    for (let i = 0; i < 46; i++) { const p = document.createElement('i'); const w = 8 + Math.random() * 10; p.style.cssText = 'left:' + (Math.random() * 100) + '%;width:' + w + 'px;height:' + (w * 1.4) + 'px;background:' + COLORS[i % COLORS.length] + ';border-radius:' + (i % 3 === 0 ? '50%' : '3px') + ';animation-delay:' + (Math.random() * .7) + 's;animation-duration:' + (1.8 + Math.random() * 1.4) + 's'; confetti.appendChild(p); }
+    for (let i = 0; i < 30; i++) { const p = document.createElement('i'); const w = 8 + Math.random() * 10; p.style.cssText = 'left:' + (Math.random() * 100) + '%;width:' + w + 'px;height:' + (w * 1.4) + 'px;background:' + COLORS[i % COLORS.length] + ';border-radius:' + (i % 3 === 0 ? '50%' : '3px') + ';animation-delay:' + (Math.random() * .7) + 's;animation-duration:' + (1.8 + Math.random() * 1.4) + 's'; confetti.appendChild(p); }
     setTimeout(() => { confetti.innerHTML = ''; }, 4200);
   }
   let introRun = 0;
@@ -98,12 +98,23 @@
     for (let k = 1; k <= txt.length; k++) { if (!ok()) { b.classList.remove('typing'); return; } out.textContent = txt.slice(0, k); await wait(txt[k - 1] === ' ' ? 8 : 16); }
     await wait(150); if (!ok()) return; out.textContent = ''; b.classList.remove('typing');
   }
+  // on small screens the headline plays in the middle of the screen, then rises to its place
+  const lineBox = $('.lines'); let lift = 0;
+  function centerLines(instant) {
+    if (canPark() || reduce || scrollY > 40) { lift = 0; lineBox.style.transform = ''; return; }
+    if (instant) lineBox.style.transition = 'none';
+    const r = lineBox.getBoundingClientRect(), top = r.top - lift;
+    lift = Math.max(0, innerHeight / 2 - (top + r.height / 2)); lineBox.style.transform = 'translateY(' + lift + 'px)';
+    if (instant) { void lineBox.offsetWidth; lineBox.style.transition = ''; }
+  }
+  function liftLines() { lift = 0; lineBox.style.transform = ''; }
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;
     // the text, buttons, arrow and colour chips wait until the headline has landed
     document.body.classList.remove('typing'); document.body.classList.add('intro'); if (run === 1) document.body.classList.add('intro-first');
     unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone', 'hit', 'broke'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
     if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); if (canPark()) park(); else lines.slice(0, 2).forEach(l => l.classList.add('gone')); ($$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')), document.body.classList.remove('intro', 'intro-first')); return; }
+    centerLines(true);
     await wait(300); if (!ok()) return; lines[0].classList.add('show');
     await wait(900); if (!ok()) return; lines[0].classList.add('struck');
     await wait(650); if (!ok()) return; lines[1].classList.add('show');
@@ -117,7 +128,8 @@
     lines[2].classList.remove('broke'); void lines[2].offsetWidth; lines[2].classList.add('broke'); setTimeout(() => lines[2].classList.remove('broke'), 1300);
     if (!canPark()) lines.slice(0, 2).forEach(l => l.classList.remove('hit'));
     if (canPark()) { lines[2].classList.add('squash'); lines[2].addEventListener('animationend', () => lines[2].classList.remove('squash'), { once: true }); park(); } else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
-    await wait(500); if (!ok()) return; typeSub(ok);
+    await wait(500); if (!ok()) return; centerLines();
+    await wait(700); if (!ok()) return; if (lift) { liftLines(); await wait(750); if (!ok()) return; } typeSub(ok);
   }
   $('#replay').addEventListener('click', () => { nextFall(); intro(); });
   intro();
