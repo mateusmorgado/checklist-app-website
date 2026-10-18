@@ -26,43 +26,65 @@
   function unpark() {
     if (dropArm) { removeEventListener('scroll', dropArm); dropArm = null; }
     parked.forEach(p => { p.ph.parentNode.insertBefore(p.l, p.ph); p.ph.remove(); }); parked = []; $$('.falling').forEach(f => f.remove());
-    lines.slice(0, 2).forEach(l => { l.classList.remove('parked', 'dropping', 'dropped'); l.removeAttribute('style'); }); hero.classList.remove('parked'); lines[2].classList.remove('squash');
+    lines.slice(0, 2).forEach(l => { l.getAnimations().forEach(x => x.cancel()); l.classList.remove('parked', 'dropping', 'dropped'); l.removeAttribute('style'); }); hero.classList.remove('parked'); lines[2].classList.remove('squash');
   }
+  // Three ways for the struck lines to land, and to fall when the page is scrolled. Each page load (and each Replay) takes the next one.
+  // A line is placed by its centre (x, y) and angle r. Path points are offsets from the resting place, at a share o of the time.
+  const deg = Math.PI / 180;
+  const ext = (L, h, r) => ({ x: Math.abs(L / 2 * Math.cos(r * deg)) + Math.abs(h / 2 * Math.sin(r * deg)), y: Math.abs(L / 2 * Math.sin(r * deg)) + Math.abs(h / 2 * Math.cos(r * deg)) });
+  const FALLS = [
+    { name: 'props', shift: true, lines: [
+      { r: -76, at: (e, W, H) => [10 + e.x, H - 20 - e.y], ms: 900, delay: 0, path: [{ o: .55, x: 40, y: -70, r: -118 }, { o: .8, x: -6, y: 6, r: -70 }], drop: { x: -.18, r: -170, delay: 0 } },
+      { r: 98, at: (e, W, H) => [W - 10 - e.x, H * .4], ms: 1050, delay: 200, path: [{ o: .5, x: -90, y: -60, r: 190 }, { o: .8, x: 8, y: 0, r: 88 }], drop: { x: .3, r: 380, delay: 260 } } ] },
+    { name: 'floor', shift: false, lines: [
+      { r: -3, at: (e, W, H) => [24 + e.x, H - 10 - e.y], ms: 1300, delay: 0, path: [{ o: .35, x: 80, y: -260, r: -38, ease: 'ease-in' }, { o: .74, x: 0, y: 0, r: 5, ease: 'ease-out' }, { o: .86, x: 0, y: -18, r: -7, ease: 'ease-in' }], drop: { x: -.55, r: -55, delay: 120 } },
+      { r: 7, at: (e, W, H) => [W - 24 - e.x, H - 14 - e.y], ms: 1450, delay: 160, path: [{ o: .38, x: -120, y: -380, r: 62, ease: 'ease-in' }, { o: .76, x: 0, y: 0, r: -4, ease: 'ease-out' }, { o: .88, x: 0, y: -24, r: 12, ease: 'ease-in' }], drop: { x: .5, r: 80, delay: 0 } } ] },
+    { name: 'hang', shift: true, lines: [
+      { r: -102, at: (e, W, H) => [10 + e.x, 100 + e.y], ms: 1500, delay: 0, path: [{ o: .35, x: 120, y: -30, r: -230 }, { o: .62, x: 0, y: 0, r: -84 }, { o: .8, x: 0, y: 0, r: -112 }, { o: .92, x: 0, y: 0, r: -98 }], drop: { x: 0, r: -190, delay: 0 } },
+      { r: 4, at: (e, W, H) => [24 + e.x, H - 10 - e.y], ms: 1300, delay: 120, path: [{ o: .45, x: 420, y: -320, r: 170, ease: 'ease-in' }, { o: .8, x: 0, y: 0, r: -5, ease: 'ease-out' }, { o: .9, x: 0, y: -14, r: 7, ease: 'ease-in' }], drop: { x: -.6, r: -40, delay: 300 } } ] },
+  ];
+  let fallIdx = 0;
+  const nextFall = () => { try { fallIdx = (parseInt(localStorage.getItem('cp-fall') || '-1', 10) + 1) % FALLS.length; localStorage.setItem('cp-fall', fallIdx); } catch (e) { fallIdx = (fallIdx + 1 + Math.floor(Math.random() * 2)) % FALLS.length; } };
+  nextFall();
   function park() {
-    const hr = hero.getBoundingClientRect(), f = lines.slice(0, 2).map(l => ({ l, r: l.getBoundingClientRect() }));
-    f.forEach(({ l, r }, i) => {
+    const P = FALLS[fallIdx], PX = 28, hr = hero.getBoundingClientRect(), f = lines.slice(0, 2).map(l => ({ l, r: l.getBoundingClientRect() }));
+    f.forEach(({ l, r }) => {
       const ph = document.createElement('div'); ph.className = 'line-ph'; ph.style.height = r.height + 'px'; ph.style.marginBottom = getComputedStyle(l).marginBottom; l.parentNode.insertBefore(ph, l);
-      l.style.cssText = 'position:absolute;z-index:4;margin:0;left:' + (r.left - hr.left) + 'px;top:' + (r.top - hr.top) + 'px;white-space:nowrap;transform-origin:0 0;transition:none';
+      l.style.cssText = 'position:absolute;z-index:4;margin:0;left:' + (r.left - hr.left) + 'px;top:' + (r.top - hr.top) + 'px;white-space:nowrap;transform-origin:50% 50%;transition:none';
       lot.appendChild(l); parked.push({ l, ph });
     });
-    void hero.offsetHeight;
-    // they come to rest leaning in the two bottom corners, like props: / on the left, \ on the right
-    const PX = 28, A = 76 * Math.PI / 180, cw = document.documentElement.clientWidth, base = Math.min(hero.offsetHeight, innerHeight) - 36;
+    if (P.shift) hero.classList.add('parked');
+    const W = document.documentElement.clientWidth, H = Math.min(hero.offsetHeight, innerHeight);
     f.forEach(({ l }, i) => {
-      const right = i === 1, L = l.offsetWidth * PX / parseFloat(getComputedStyle(l).fontSize);
-      l.classList.add('parked'); l.style.transition = ''; l.style.fontSize = PX + 'px';
-      l.style.setProperty('--rot', right ? '76deg' : '-76deg'); l.style.setProperty('--end', right ? '150deg' : '-150deg'); l.style.setProperty('--dx', right ? '.12' : '-.12');
-      if (right) { l.style.left = (cw - 10 - L * Math.cos(A)) + 'px'; l.style.top = (base - L * Math.sin(A)) + 'px'; l.style.transform = 'rotate(76deg)'; }
-      else { l.style.left = '8px'; l.style.top = base + 'px'; l.style.transform = 'rotate(-76deg)'; }
-      l.style.transitionDelay = (i * 120) + 'ms';
+      const spec = P.lines[i], k = PX / parseFloat(getComputedStyle(l).fontSize), L = l.offsetWidth * k, h = l.offsetHeight * k;
+      const start = { left: l.style.left, top: l.style.top, fontSize: getComputedStyle(l).fontSize, transform: 'rotate(0deg)' };
+      const [cx, cy] = spec.at(ext(L, h, spec.r), W, H), place = (x, y, r) => ({ left: (cx + x - L / 2) + 'px', top: (cy + y - h / 2) + 'px', fontSize: PX + 'px', transform: 'rotate(' + r + 'deg)' });
+      const end = place(0, 0, spec.r);
+      l.classList.add('parked'); l.dataset.rot = spec.r; Object.assign(l.style, end);
+      if (reduce) return;
+      const frames = [Object.assign({ offset: 0, easing: 'ease-out' }, start)].concat(spec.path.map(p => Object.assign({ offset: p.o, easing: p.ease || 'ease-in-out' }, place(p.x, p.y, p.r))), [Object.assign({ offset: 1 }, end)]);
+      l.animate(frames, { duration: spec.ms, delay: spec.delay, fill: 'backwards' });
     });
-    hero.classList.add('parked');
     parked.forEach(({ ph }) => { ph.style.height = '0px'; ph.style.marginBottom = '0px'; });
     if (reduce) return;
     // only a scroll down after the lines have landed lets them go
     let y0 = null;
     dropArm = () => { if (y0 == null || scrollY - y0 < 40) return; removeEventListener('scroll', dropArm); dropArm = null; drop(); };
     addEventListener('scroll', dropArm, { passive: true });
-    setTimeout(() => { y0 = scrollY; }, 1000);
+    setTimeout(() => { y0 = scrollY; }, 1500);
   }
   function drop() {
     // the lines move to a fixed layer, so they fall through the screen while the page scrolls
-    const fall = document.createElement('div'); fall.className = 'lines falling'; fall.setAttribute('aria-hidden', 'true'); document.body.appendChild(fall);
+    const P = FALLS[fallIdx], fall = document.createElement('div'); fall.className = 'lines falling'; fall.setAttribute('aria-hidden', 'true'); document.body.appendChild(fall);
     const hr = hero.getBoundingClientRect(), away = innerHeight + 700;
+    let left = parked.length;
     parked.forEach(({ l }, i) => {
-      l.style.left = (parseFloat(l.style.left) + hr.left) + 'px'; l.style.top = (parseFloat(l.style.top) + hr.top) + 'px'; l.style.transitionDelay = '';
-      fall.appendChild(l); l.classList.add('dropping'); l.style.setProperty('--away', away + 'px'); l.style.animationDelay = (i * 160) + 'ms';
-      l.addEventListener('animationend', () => { l.classList.add('dropped'); if (parked.every(p => p.l.classList.contains('dropped'))) parked.forEach(p => lot.appendChild(p.l)), fall.remove(); }, { once: true });
+      const d = P.lines[i].drop, r = +l.dataset.rot;
+      l.style.left = (parseFloat(l.style.left) + hr.left) + 'px'; l.style.top = (parseFloat(l.style.top) + hr.top) + 'px';
+      fall.appendChild(l); l.classList.add('dropping');
+      const a = l.animate([{ transform: 'translate(0, 0) rotate(' + r + 'deg)' }, { offset: .1, transform: 'translate(0, -10px) rotate(' + (r + (d.r > r ? -3 : 3)) + 'deg)' }, { transform: 'translate(' + (d.x * away) + 'px, ' + away + 'px) rotate(' + d.r + 'deg)' }],
+        { duration: 1500, delay: d.delay, easing: 'cubic-bezier(.45, 0, .9, .5)', fill: 'forwards' });
+      a.onfinish = () => { l.classList.add('dropped'); if (--left === 0) { parked.forEach(p => { p.l.getAnimations().forEach(x => x.cancel()); lot.appendChild(p.l); }); fall.remove(); } };
     });
   }
   async function intro() {
@@ -79,7 +101,7 @@
     if (canPark()) { lines[2].classList.add('squash'); lines[2].addEventListener('animationend', () => lines[2].classList.remove('squash'), { once: true }); park(); } else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
     await wait(500); if (!ok()) return; $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in'));
   }
-  $('#replay').addEventListener('click', intro);
+  $('#replay').addEventListener('click', () => { nextFall(); intro(); });
   intro();
 
   // mouse parallax for the stickers and the hero phone

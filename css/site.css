@@ -96,11 +96,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .falling { position: fixed; inset: 0; z-index: 45; pointer-events: none; overflow: hidden; }
 .parking .line, .falling .line { letter-spacing: 0; }
 .line-ph { transition: height .7s cubic-bezier(.6, 0, .2, 1), margin .7s; }
-.line.parked { z-index: 4; transition: left .8s cubic-bezier(.3, 1.5, .5, 1), top .8s cubic-bezier(.3, 1.5, .5, 1), font-size .8s, transform .8s cubic-bezier(.3, 1.5, .5, 1); }
+.line.parked { z-index: 4; }
 .line.parked .chip { box-shadow: -3px -3px 0 var(--ink); border-width: 3px; border-radius: 8px; }
-.line.dropping { animation: gravity 1.5s cubic-bezier(.45, 0, .9, .5) both; transition: none; }
+.line.dropping { transition: none; }
 .line.dropped { visibility: hidden; }
-@keyframes gravity { 0% { transform: translate(0, 0) rotate(var(--rot)); } 10% { transform: translate(0, -8px) rotate(calc(var(--rot) * 1.02)); } 100% { transform: translate(calc(var(--away) * var(--dx)), var(--away)) rotate(var(--end)); } }
 /* the first two lines fall off to the left and the rest moves up */
 .line.fell { transform: translate(-70vw, 120px) rotate(-24deg); opacity: 0; transition: transform .9s cubic-bezier(.5, 0, 1, .6), opacity .5s .45s; }
 .line.gone { height: 0 !important; margin: 0 !important; overflow: hidden; visibility: hidden; transition: height .6s cubic-bezier(.6, 0, .2, 1), margin .6s; }
@@ -112,7 +111,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .stk { position: absolute; width: 70px; height: 70px; fill: var(--yellow); stroke: var(--ink); stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; animation: floaty 6s ease-in-out infinite alternate; will-change: transform; }
 .stk .line { fill: none; stroke-width: 4.5; } .stk .o { fill: none; stroke-width: 13; } .stk .i { fill: none; stroke: var(--mint); stroke-width: 6.5; }
 .k1 { top: 14%; left: 3%; width: 96px; height: 96px; } .k2 { top: 22%; right: 30%; width: 104px; height: 104px; animation-delay: -2s; }
-.k3 { bottom: 21%; left: 58%; width: 54px; height: 54px; fill: var(--white); animation-delay: -3s; } .k4 { top: 12%; right: 12%; fill: var(--white); animation-delay: -4s; }
+.k3 { top: 56%; right: 31%; width: 54px; height: 54px; fill: var(--white); animation-delay: -3s; } .k4 { top: 12%; right: 12%; fill: var(--white); animation-delay: -4s; }
 .k5 { bottom: 9%; left: 6%; width: 110px; height: 110px; animation-delay: -1s; } .k6 { bottom: 5%; right: 36%; fill: var(--pink); width: 90px; height: 90px; animation-delay: -5s; }
 @keyframes floaty { from { translate: 0 0; rotate: -4deg; } to { translate: 0 -16px; rotate: 8deg; } }
 .confetti { position: absolute; inset: 0; pointer-events: none; z-index: 4; overflow: hidden; }
