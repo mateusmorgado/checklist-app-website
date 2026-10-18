@@ -327,7 +327,7 @@
   // ---------- pro powers: animated scenes in the phone, a pilot robot reads the chosen power back ----------
   const F = window.FRAMES;
   (function () {
-    const stage = $('#pw-stage'), scr = $('#pw-screen'), tapEl = $('#pw-tap'), conf = $('#pw-conf'), pts = $$('.pw-pt'), scenes = {};
+    const stage = $('#pw-stage'), scr = $('#pw-screen'), tapEl = $('#pw-tap'), conf = $('#pw-conf'), tabs = $$('.pw-tab'), cards = $$('.pw-card'), deck = $('#pw-deck'), scenes = {};
     $$('.scn', scr).forEach(s => { scenes[s.dataset.scene] = s; });
     const pilot = $('#pilot'), say = $('#pilot-say'), balloon = $('#balloon');
     const de = () => document.documentElement.lang === 'de';
@@ -429,22 +429,86 @@
         await nap(800, r); tapOn($('.ai-save', s)); await nap(300, r); confetti();
         await nap(2200, r);
       },
+      async safe(r, s) {
+        const arena = $('#safe-arena', s); arena.innerHTML = ''; s.classList.remove('locked', 'stamped');
+        if (reduce) { s.classList.add('locked', 'stamped'); return; }
+        await nap(1300, r);
+        // the co-pilot jumps into the phone
+        const bot = $('.bot', pilot), pr = bot.getBoundingClientRect(), sr = scr.getBoundingClientRect();
+        pilot.style.setProperty('--dx', (sr.left + sr.width / 2 - (pr.left + pr.width / 2)) + 'px'); pilot.style.setProperty('--dy', (sr.top + sr.height * .35 - (pr.top + pr.height / 2)) + 'px');
+        pilot.classList.remove('home'); pilot.classList.add('dive');
+        await nap(1500, r);
+        const mini = document.createElement('div'); mini.className = 'mini-bot'; mini.appendChild(bot.cloneNode(true)); arena.appendChild(mini);
+        const W = sr.width, H = sr.height, bw = W * .34, bh = bw * 1.25, at = (x, y, rot) => ({ transform: 'translate(' + x + 'px,' + y + 'px) rotate(' + (rot || 0) + 'deg)' });
+        const bonk = (x, y, txt) => { const b = document.createElement('span'); b.className = 'bonk'; b.textContent = txt; b.style.left = x + 'px'; b.style.top = y + 'px'; arena.appendChild(b); scr.classList.remove('glass-hit'); void scr.offsetWidth; scr.classList.add('glass-hit'); setTimeout(() => b.remove(), 800); };
+        const hop = (frames, ms) => mini.animate(frames, { duration: ms * SP, easing: 'cubic-bezier(.35, 0, .4, 1)', fill: 'forwards' }).finished;
+        await hop([at(0, -bh), at(0, H * .42, 0), at(0, H * .36), at(0, H * .42)], 900); if (!live(r)) return;
+        speak(de() ? 'Hey! Wo bin ich?' : 'Hey! Where am I?');
+        await hop([at(0, H * .42), at(0, -6, -8)], 520); if (!live(r)) return; bonk(W * .32, 4, 'BONK!');
+        await hop([at(0, -6, -8), at(0, H * .42, 0)], 520); if (!live(r)) return;
+        await hop([at(0, H * .42), at(-W * .5 + bw * .5 - 4, H * .3, -20)], 480); if (!live(r)) return; bonk(4, H * .3, 'BONK!');
+        await hop([at(-W * .5 + bw * .5, H * .3, -20), at(W * .5 - bw * .5 + 4, H * .32, 20)], 640); if (!live(r)) return; bonk(W - W * .3, H * .32, 'BONK!');
+        speak(de() ? 'Ich komme nicht raus!' : 'I can’t get out!');
+        await hop([at(W * .5 - bw * .5, H * .32, 20), at(0, H * .42, 0)], 620); if (!live(r)) return;
+        s.classList.add('locked'); await nap(400, r); s.classList.add('stamped');
+        speak(de() ? 'Deine Listen auch nicht. Sicher!' : 'Neither can your lists. Safe!');
+        await nap(3200, r);
+      },
     };
-
-    // the bar under the chosen power runs for about as long as its scene
-    const DUR = { tone: 8600, res: 6000, ai: 8200 };
-    async function select(i) {
-      cur = i; const r = ++run, b = pts[i], key = b.dataset.scene, s = scenes[key];
-      pts.forEach((p, k) => { p.setAttribute('aria-pressed', k === i ? 'true' : 'false'); p.classList.remove('run'); });
-      b.style.setProperty('--dur', DUR[key] + 'ms'); void b.offsetWidth; if (!reduce) b.classList.add('run');
-      Object.values(scenes).forEach(x => x.classList.toggle('on', x === s)); stage.classList.remove('tone-on'); notes(false); tapEl.classList.remove('go');
-      gesture('salute'); speak($('.pw-name', b).textContent.trim() + '. Check!');
-      try { await SCENES[key](r, s); } catch (e) { return; }
-      if (live(r) && visible && !reduce) select((cur + 1) % pts.length);
+    // a tone button plays a short sample of that attention tone
+    let actx = null, stopTone = null;
+    function playTone(kind, btn) {
+      if (stopTone) { const same = btn.classList.contains('playing'); stopTone(); if (same) return; }
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume();
+      const t0 = actx.currentTime + .02, out = actx.createGain(); out.gain.value = .09; out.connect(actx.destination);
+      const tone = (f, at, len, type, vol) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, at); g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(vol || 1, at + .008); g.gain.exponentialRampToValueAtTime(.001, at + len); o.connect(g); g.connect(out); o.start(at); o.stop(at + len + .05); return o; };
+      let len = 2.6;
+      if (kind === 'heart') for (let i = 0; i < 4; i++) tone(980, t0 + i * .82, .14, 'sine', .9);
+      if (kind === 'sonar') for (let i = 0; i < 2; i++) { const o = tone(1240, t0 + i * 1.3, 1.2, 'sine', .8); o.frequency.exponentialRampToValueAtTime(1150, t0 + i * 1.3 + 1.2); tone(1240, t0 + i * 1.3 + .38, .9, 'sine', .25); }
+      if (kind === 'metro') for (let i = 0; i < 6; i++) tone(i % 3 ? 1500 : 2100, t0 + i * .45, .05, 'square', .5);
+      if (kind === 'alarm') for (let i = 0; i < 6; i++) tone(i % 2 ? 660 : 880, t0 + i * .32, .28, 'square', .35);
+      if (kind === 'cabin') {
+        const n = actx.createBufferSource(), buf = actx.createBuffer(1, actx.sampleRate * 3, actx.sampleRate), d = buf.getChannelData(0); let last = 0;
+        for (let i = 0; i < d.length; i++) { last = (last + .02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+        const f = actx.createBiquadFilter(), g = actx.createGain(); f.type = 'lowpass'; f.frequency.value = 420; n.buffer = buf; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(1, t0 + .4); g.gain.setValueAtTime(1, t0 + 2.2); g.gain.linearRampToValueAtTime(0, t0 + 2.6);
+        n.connect(f); f.connect(g); g.connect(out); n.start(t0); n.stop(t0 + 2.7); tone(118, t0, 2.6, 'sine', .25);
+      }
+      btn.classList.add('playing');
+      const timer = setTimeout(() => stopTone && stopTone(), len * 1000);
+      stopTone = () => { clearTimeout(timer); out.gain.setTargetAtTime(0, actx.currentTime, .03); setTimeout(() => out.disconnect(), 200); btn.classList.remove('playing'); stopTone = null; };
     }
-    pts.forEach((b, i) => b.addEventListener('click', () => select(i)));
+    $$('.tone-btn').forEach(b => b.addEventListener('click', () => playTone(b.dataset.tone, b)));
+
+    // the cards sit in a deck: the chosen one on top, the next ones peeking out behind it
+    const DUR = { tone: 8600, res: 6000, ai: 8200, safe: 9800 };
+    const n = cards.length;
+    function layDeck(i, from) {
+      cards.forEach((c, k) => { const d = (k - i + n) % n; c.dataset.k = Math.min(d, 3); const on = d === 0; c.inert = !on; c.setAttribute('aria-hidden', on ? 'false' : 'true'); c.classList.remove('run'); });
+      if (from != null && from !== i && !reduce) { const old = cards[from]; old.classList.add('leaving'); setTimeout(() => { old.classList.add('back-in'); old.classList.remove('leaving'); void old.offsetWidth; old.classList.remove('back-in'); }, 520); }
+    }
+    // every card takes the height of the tallest, so the deck edges line up
+    function fitDeck() { cards.forEach(c => { c.style.bottom = 'auto'; }); const h = Math.max(...cards.map(c => c.offsetHeight)); cards.forEach(c => { c.style.bottom = ''; }); deck.style.height = h + 'px'; }
+    // each card says which one comes next
+    cards.forEach((c, k) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'pw-next'; b.addEventListener('click', () => select((k + 1) % cards.length)); c.appendChild(b); });
+    const nameNext = () => cards.forEach((c, k) => { $('.pw-next', c).textContent = (de() ? 'Weiter: ' : 'Next: ') + $('.pw-name', cards[(k + 1) % cards.length]).textContent.trim() + ' ›'; });
+    async function select(i) {
+      const from = cur; cur = i; const r = ++run, key = cards[i].dataset.scene, s = scenes[key];
+      tabs.forEach((t, k) => t.setAttribute('aria-pressed', k === i ? 'true' : 'false'));
+      layDeck(i, from); nameNext(); const c = cards[i]; c.style.setProperty('--dur', DUR[key] + 'ms'); void c.offsetWidth; if (!reduce) c.classList.add('run');
+      Object.values(scenes).forEach(x => x.classList.toggle('on', x === s)); stage.classList.remove('tone-on'); notes(false); tapEl.classList.remove('go');
+      if (pilot.classList.contains('dive')) { pilot.classList.remove('dive'); pilot.classList.add('home'); setTimeout(() => pilot.classList.remove('home'), 700); }
+      gesture('salute'); speak($('.pw-name', c).textContent.trim() + '. Check!');
+      try { await SCENES[key](r, s); } catch (e) { return; }
+      if (live(r) && visible && !reduce) select((cur + 1) % n);
+    }
+    tabs.forEach((b, i) => b.addEventListener('click', () => select(i)));
+    // swipe the deck left or right
+    let sx = null;
+    deck.addEventListener('pointerdown', e => { if (e.target.closest('button, a')) return; sx = e.clientX; });
+    deck.addEventListener('pointerup', e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 50) select((cur + (dx < 0 ? 1 : n - 1)) % n); });
+    layDeck(0); fitDeck(); addEventListener('resize', fitDeck); if ('ResizeObserver' in window) { const ro = new ResizeObserver(fitDeck); cards.forEach(c => ro.observe(c)); }
     // start when the stage comes into view, pause when it leaves
-    const onView = v => { visible = v; if (v) select(cur); else { run++; notes(false); pts.forEach(p => p.classList.remove('run')); stage.classList.remove('tone-on'); } };
+    const onView = v => { visible = v; if (v) select(cur); else { run++; notes(false); cards.forEach(p => p.classList.remove('run')); stage.classList.remove('tone-on'); } };
     if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting !== visible) onView(e.isIntersecting); }), { threshold: .35 }).observe(stage); else onView(true);
   })();
 

@@ -277,6 +277,14 @@
                 </div>
               </div>
 
+              <div class="scn s-safe" data-scene="safe">
+                <h4 class="a-title"><span>On this device</span></h4>
+                <div class="vault"><svg class="lock" viewBox="0 0 48 48"><path class="shackle" d="M14 22v-7a10 10 0 0 1 20 0v7"/><rect x="9" y="21" width="30" height="22" rx="5"/><circle cx="24" cy="31" r="3.4"/><path d="M24 34v4"/></svg><p class="vault-t">Stored locally</p></div>
+                <ul class="a-items safe-items"><li><span>Passport</span><i class="a-box"></i></li><li><span>Meds</span><i class="a-box"></i></li><li><span>Keys</span><i class="a-box"></i></li></ul>
+                <div class="safe-arena" id="safe-arena"></div>
+                <p class="safe-stamp">Stays on your device</p>
+              </div>
+
               <div class="scn-conf" id="pw-conf"></div>
               <i class="pw-tap" id="pw-tap"></i>
             </div>
@@ -319,43 +327,42 @@
       </div>
 
       <div class="pw-side">
-        <div class="pw-points" id="pw-points" role="group" aria-label="Pro powers">
-          <div class="pw-item">
-            <button class="pw-pt" type="button" data-scene="tone" aria-pressed="true">
-              <span class="pw-ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10zM16 9a4 4 0 0 1 0 6M18.6 6.5a7.6 7.6 0 0 1 0 11"/></svg></span>
-              <span class="pw-name">Attention tone</span>
-              <span class="pw-sub">A sound that keeps you on task.</span>
-              <span class="pw-more">Switch it on for a list and a soft tone plays while you run it. A little pressure, so you don’t drift off to another app. It stops the moment the last item is ticked.
-                <span class="pw-tags"><span>Heart monitor</span><span>Sonar</span><span>Cabin hum</span><span>Metronome</span><span>Alarm</span></span></span>
-              <i class="pw-time"></i>
-            </button>
-            <span class="cite-wrap pw-cite"><a class="cite" href="https://scholar.google.com/scholar?q=Manly+2004+%22An+electronic+knot+in+the+handkerchief%22" target="_blank" rel="noopener" aria-describedby="paper-manly">Manly et al., 2004</a><span class="book-pop" id="paper-manly" role="tooltip">
-              <span class="book3d" aria-hidden="true"><span class="b-cover paper"><small>Neuropsychological Rehabilitation</small><b>An electronic knot in the handkerchief</b><i></i></span></span>
-              <span class="book-txt"><small class="book-k">Study</small><span class="book-ref" data-no-i18n>Manly, T., Heutink, J., Davison, B., Gaynord, B., Greenfield, E., Parr, A., Ridgeway, V., &amp; Robertson, I. H. (2004). An electronic knot in the handkerchief: “Content free cueing” and the maintenance of attentive control. <i>Neuropsychological Rehabilitation, 14</i>(1–2), 89–116.</span><span class="book-note">Short tones at random moments helped people keep their goal in mind and get back to the task.</span><span class="book-go">Click to look it up</span></span>
-            </span></span>
-          </div>
-          <div class="pw-item">
-            <button class="pw-pt" type="button" data-scene="res" aria-pressed="false">
-              <span class="pw-ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M9 8h7M9 12h5"/></svg></span>
-              <span class="pw-name">Research based</span>
-              <span class="pw-sub">Built on studies, not hunches.</span>
-              <span class="pw-more">Checklists come from cockpits and operating rooms, where they are measured in lives. The app’s Manifesto tells that story, and its features name the research behind them, with the full sources inside.
-                <span class="pw-tags"><span>Gawande</span><span>Pronovost</span><span>Haynes</span><span>Posner</span><span>MacLeod</span></span></span>
-              <i class="pw-time"></i>
-            </button>
-          </div>
-          <div class="pw-item">
-            <button class="pw-pt" type="button" data-scene="ai" aria-pressed="false">
-              <span class="pw-ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4M19.5 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span>
-              <span class="pw-name">AI quick list</span>
-              <span class="pw-sub">Say it. Get a checklist.</span>
-              <span class="pw-more">Tap the bolt and say what’s on your mind, for up to 17 seconds. AI turns your words into a checklist you can edit before you save it. Good for groceries, packing, anything on the fly.
-                <span class="pw-tags"><span>17 seconds</span><span>Edit before saving</span><span>3 a day</span></span></span>
-              <i class="pw-time"></i>
-            </button>
-          </div>
+        <div class="pw-tabs" id="pw-tabs" role="group" aria-label="Pro powers">
+          <button class="pw-tab" type="button" data-scene="tone" aria-pressed="true"><span class="pw-ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10zM16 9a4 4 0 0 1 0 6M18.6 6.5a7.6 7.6 0 0 1 0 11"/></svg></span><span>Tone</span></button>
+          <button class="pw-tab" type="button" data-scene="res" aria-pressed="false"><span class="pw-ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M9 8h7M9 12h5"/></svg></span><span>Research</span></button>
+          <button class="pw-tab" type="button" data-scene="ai" aria-pressed="false"><span class="pw-ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4M19.5 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span><span>AI list</span></button>
+          <button class="pw-tab" type="button" data-scene="safe" aria-pressed="false"><span class="pw-ic" style="--c:var(--blue)"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3M12 14.5v3"/></svg></span><span>Safe</span></button>
         </div>
-        <p class="hint-line">Tap a power to see it. The co-pilot reads it back.</p>
+        <div class="pw-deck" id="pw-deck">
+          <article class="pw-card" data-scene="tone">
+            <header><span class="pw-ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10zM16 9a4 4 0 0 1 0 6M18.6 6.5a7.6 7.6 0 0 1 0 11"/></svg></span><div><h3 class="pw-name">Attention tone</h3><p class="pw-sub">A sound that keeps you on task.</p></div></header>
+            <p class="pw-more">Switch it on for a list and a soft tone plays while you run it. A little pressure, so you don’t drift off to another app. It stops the moment the last item is ticked.</p>
+            <p class="pw-label">Tap a tone to hear it</p>
+            <div class="pw-tags tones"><button class="tone-btn" type="button" data-tone="heart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Heart monitor</button><button class="tone-btn" type="button" data-tone="sonar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Sonar</button><button class="tone-btn" type="button" data-tone="cabin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Cabin hum</button><button class="tone-btn" type="button" data-tone="metro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Metronome</button><button class="tone-btn" type="button" data-tone="alarm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Alarm</button></div>
+            <div class="pw-refs"><span class="cite-wrap"><a class="cite" href="https://scholar.google.com/scholar?q=Manly+2004+%22An+electronic+knot+in+the+handkerchief%22" target="_blank" rel="noopener" aria-describedby="paper-manly">Manly et al., 2004</a><span class="book-pop" id="paper-manly" role="tooltip"><span class="book3d" aria-hidden="true"><span class="b-cover paper"><small>Neuropsychological Rehabilitation</small><b>An electronic knot in the handkerchief</b><i></i></span></span><span class="book-txt"><small class="book-k">Study</small><span class="book-ref" data-no-i18n>Manly, T., Heutink, J., Davison, B., Gaynord, B., Greenfield, E., Parr, A., Ridgeway, V., &amp; Robertson, I. H. (2004). An electronic knot in the handkerchief: “Content free cueing” and the maintenance of attentive control. <i>Neuropsychological Rehabilitation, 14</i>(1–2), 89–116.</span><span class="book-note">Short tones at random moments helped people keep their goal in mind and get back to the task.</span><span class="book-go">Click to look it up</span></span></span></span></div>
+            <i class="pw-time"></i>
+          </article>
+          <article class="pw-card" data-scene="res">
+            <header><span class="pw-ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M9 8h7M9 12h5"/></svg></span><div><h3 class="pw-name">Research based</h3><p class="pw-sub">Built on studies, not hunches.</p></div></header>
+            <p class="pw-more">Checklists come from cockpits and operating rooms, where they are measured in lives. The app’s Manifesto tells that story, and its features name the research behind them.</p>
+            <p class="pw-label">Open a study</p>
+            <div class="pw-refs studies"><span class="cite-wrap"><a class="cite" href="https://www.google.com/search?q=The+Checklist+Manifesto+Atul+Gawande" target="_blank" rel="noopener" aria-describedby="st-gawande">Gawande, 2009</a><span class="book-pop" id="st-gawande" role="tooltip"><span class="book3d" aria-hidden="true"><span class="b-cover"><small>Atul Gawande</small><b>The Checklist Manifesto</b><i></i></span></span><span class="book-txt"><small class="book-k">Book</small><span class="book-ref" data-no-i18n>Gawande, A. (2009). <i>The checklist manifesto: How to get things right</i>. Metropolitan Books.</span><span class="book-note">Why short checklists catch the steps that even experts skip, from cockpits to operating rooms.</span><span class="book-go">Click to look it up</span></span></span></span><span class="cite-wrap"><a class="cite" href="https://scholar.google.com/scholar?q=Pronovost+2006+intervention+to+decrease+catheter-related+bloodstream+infections+ICU" target="_blank" rel="noopener" aria-describedby="st-pronovost">Pronovost, 2006</a><span class="book-pop" id="st-pronovost" role="tooltip"><span class="book3d" aria-hidden="true"><span class="b-cover paper"><small>New England Journal of Medicine</small><b>Decreasing catheter-related bloodstream infections in the ICU</b><i></i></span></span><span class="book-txt"><small class="book-k">Study</small><span class="book-ref" data-no-i18n>Pronovost, P., Needham, D., Berenholtz, S., et al. (2006). An intervention to decrease catheter-related bloodstream infections in the ICU. <i>New England Journal of Medicine, 355</i>(26), 2725–2732.</span><span class="book-note">A five-step checklist in intensive care units cut these infections by up to 66%.</span><span class="book-go">Click to look it up</span></span></span></span><span class="cite-wrap"><a class="cite" href="https://scholar.google.com/scholar?q=Haynes+2009+surgical+safety+checklist+reduce+morbidity+mortality" target="_blank" rel="noopener" aria-describedby="st-haynes">Haynes, 2009</a><span class="book-pop" id="st-haynes" role="tooltip"><span class="book3d" aria-hidden="true"><span class="b-cover paper"><small>New England Journal of Medicine</small><b>A surgical safety checklist</b><i></i></span></span><span class="book-txt"><small class="book-k">Study</small><span class="book-ref" data-no-i18n>Haynes, A. B., Weiser, T. G., Berry, W. R., et al. (2009). A surgical safety checklist to reduce morbidity and mortality in a global population. <i>New England Journal of Medicine, 360</i>(5), 491–499.</span><span class="book-note">With a 19-item checklist, deaths after surgery fell from 1.5% to 0.8%.</span><span class="book-go">Click to look it up</span></span></span></span><span class="cite-wrap"><a class="cite" href="https://scholar.google.com/scholar?q=Posner+Petersen+1990+attention+system+of+the+human+brain" target="_blank" rel="noopener" aria-describedby="st-posner">Posner, 1990</a><span class="book-pop" id="st-posner" role="tooltip"><span class="book3d" aria-hidden="true"><span class="b-cover paper"><small>Annual Review of Neuroscience</small><b>The attention system of the human brain</b><i></i></span></span><span class="book-txt"><small class="book-k">Study</small><span class="book-ref" data-no-i18n>Posner, M. I., &amp; Petersen, S. E. (1990). The attention system of the human brain. <i>Annual Review of Neuroscience, 13</i>, 25–42.</span><span class="book-note">Alerting is its own network in the brain: a signal raises your readiness to act.</span><span class="book-go">Click to look it up</span></span></span></span><span class="cite-wrap"><a class="cite" href="https://scholar.google.com/scholar?q=MacLeod+2010+production+effect+delineation+of+a+phenomenon" target="_blank" rel="noopener" aria-describedby="st-macleod">MacLeod, 2010</a><span class="book-pop" id="st-macleod" role="tooltip"><span class="book3d" aria-hidden="true"><span class="b-cover paper"><small>J. Exp. Psychology: LMC</small><b>The production effect</b><i></i></span></span><span class="book-txt"><small class="book-k">Study</small><span class="book-ref" data-no-i18n>MacLeod, C. M., Gopie, N., Hourihan, K. L., Neary, K. R., &amp; Ozubko, J. D. (2010). The production effect: Delineation of a phenomenon. <i>Journal of Experimental Psychology: Learning, Memory, and Cognition, 36</i>(3), 671–685.</span><span class="book-note">Saying a word out loud makes it easier to remember than reading it silently.</span><span class="book-go">Click to look it up</span></span></span></span></div>
+            <i class="pw-time"></i>
+          </article>
+          <article class="pw-card" data-scene="ai">
+            <header><span class="pw-ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4M19.5 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span><div><h3 class="pw-name">AI quick list</h3><p class="pw-sub">Say it. Get a checklist.</p></div></header>
+            <p class="pw-more">Tap the bolt and say what’s on your mind, for up to 17 seconds. AI turns your words into a checklist you can edit before you save it. Good for groceries, packing, anything on the fly. Powered by the Gemini TTS 3.8 Flash model.</p>
+            <div class="pw-tags"><span>Gemini TTS 3.8 Flash</span><span>17 seconds</span><span>Edit before saving</span><span>3 a day</span></div>
+            <i class="pw-time"></i>
+          </article>
+          <article class="pw-card" data-scene="safe">
+            <header><span class="pw-ic" style="--c:var(--blue)"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3M12 14.5v3"/></svg></span><div><h3 class="pw-name">Safe</h3><p class="pw-sub">Your lists never leave your phone.</p></div></header>
+            <p class="pw-more">No account, no cloud, no tracking. Everything you write lives in your device’s own memory, and it works offline. Only the AI quick list sends your words out, and only when you use it.</p>
+            <div class="pw-tags"><span>No account</span><span>No cloud</span><span>Stored on your device</span><span>Works offline</span></div>
+            <i class="pw-time"></i>
+          </article>
+        </div>
+        <p class="hint-line">Swipe the cards or tap a power. The co-pilot reads it back.</p>
       </div>
     </div>
   </div>
