@@ -59,7 +59,7 @@
     <span>Checklist<b>Pro</b></span>
   </a>
   <nav class="nav-links" aria-label="Sections">
-    <a href="#video">Video</a><a href="#ideas">Ideas</a><a href="#flows">Flows</a><a href="#looks">Looks</a>
+    <a href="#video">Video</a><a href="#ideas">Ideas</a><a href="#pro">Pro</a><a href="#looks">Looks</a>
   </nav>
   <div class="nav-cta">
     <button class="btn white icon lang" id="lang-toggle" type="button" data-no-i18n aria-label="Auf Deutsch wechseln">DE</button>
@@ -185,17 +185,143 @@
 </section>
 
 <!-- FLOWS -->
-<section class="section" id="flows" aria-labelledby="flows-title">
+<section class="section powers" id="pro" aria-labelledby="pro-title">
   <div class="wrap">
-    <h2 id="flows-title" class="sr-only">How it flows</h2>
-    <div class="flow-grid">
-      <div class="flow-phone"><div class="phone tilt" id="flow-phone" style="--pw:min(300px, 72vw)">
-        <div class="screen" id="flow-screen"></div><i class="tap" id="flow-tap" aria-hidden="true"></i>
-      </div></div>
-      <div class="flow-side">
-        <div class="tabs" role="tablist" aria-label="Flows" id="flow-tabs"></div>
-        <ol class="steps" id="flow-steps" aria-live="polite"></ol>
-        <p class="hint-line">Tap a step to jump to it. The phone plays on its own.</p>
+    <h2 id="pro-title" class="mega reveal"><span>Not just</span> <span class="hl">a list.</span></h2>
+    <p class="lead reveal">Three things a to-do app won’t do for you.</p>
+    <div class="pw-grid">
+      <div class="pw-stage" id="pw-stage" aria-hidden="true">
+        <div class="pw-phonewrap">
+          <svg class="pw-waves" viewBox="0 0 60 120"><path d="M10 40q14 20 0 40"/><path d="M24 26q26 34 0 68"/><path d="M38 12q38 48 0 96"/></svg>
+          <svg class="pw-waves l" viewBox="0 0 60 120"><path d="M10 40q14 20 0 40"/><path d="M24 26q26 34 0 68"/><path d="M38 12q38 48 0 96"/></svg>
+          <div class="phone" id="pw-phone" style="--pw:min(300px, 66vw)">
+            <div class="screen pw-screen" id="pw-screen">
+
+              <div class="scn s-tone" data-scene="tone">
+                <h4 class="a-title"><span>Leaving home</span></h4>
+                <div class="a-prog-row"><span class="a-prog"><i class="a-bar"></i></span><b class="a-count">0 / 4</b></div>
+                <div class="monitor">
+                  <div class="mon-row"><svg class="mon-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.3-9C1 7.4 3.4 4 6.8 4 9 4 10.6 5.3 12 7c1.4-1.7 3-3 5.2-3C20.6 4 23 7.4 21.3 11 19 15.6 12 20 12 20z"/></svg><span class="mon-name">Heart monitor</span><span class="mon-bpm">72</span></div>
+                  <div class="mon-screen"><svg class="ecg" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0 24h28l4-4 4 4h8l3 5 4-25 4 28 3-8h10l5-6 6 6h19h28l4-4 4 4h8l3 5 4-25 4 28 3-8h10l5-6 6 6h19h28l4-4 4 4h8l3 5 4-25 4 28 3-8h10l5-6 6 6h19h28l4-4 4 4h8l3 5 4-25 4 28 3-8h10l5-6 6 6h19"/></svg><i class="ecg-flat"></i></div>
+                </div>
+                <div class="t-mid"><span class="t-spk"><svg viewBox="0 0 24 24"><path class="t-cone" d="M3 10v4h4l5 4V6L7 10z"/><path class="t-on" d="M16 9a4 4 0 0 1 0 6M18.6 6.5a7.6 7.6 0 0 1 0 11"/><path class="t-off" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></span><p class="t-lbl"><span class="t-play">Plays until you finish</span><span class="t-quiet">Done. Silence.</span></p></div>
+                <ul class="a-items">
+                  <li><span>Keys</span><i class="a-box"></i></li>
+                  <li><span>Wallet</span><i class="a-box"></i></li>
+                  <li><span>Phone</span><i class="a-box"></i></li>
+                  <li><span>Stove off</span><i class="a-box"></i></li>
+                </ul>
+                <div class="a-btns"><span class="a-btn">Close</span></div>
+              </div>
+
+              <div class="scn s-res" data-scene="res">
+                <h4 class="a-title"><span>Manifesto</span></h4>
+                <p class="r-intro">Why checklists work</p>
+                <div class="r-card r1"><b class="r-big">1935</b><p>A new bomber crashed on takeoff. Pilots answered with a checklist.</p><cite>Gawande, 2009</cite></div>
+                <div class="r-card r2"><b class="r-big"><small>up to</small> −<span class="r-num">0</span>%</b><p>bloodstream infections in intensive care</p><cite>Pronovost et al., 2006</cite></div>
+                <div class="r-card r3"><b class="r-big">1.5% → 0.8%</b><p>deaths after surgery, with a 19-item checklist</p><cite>Haynes et al., 2009</cite></div>
+                <div class="r-src"><span>Posner &amp; Petersen, 1990</span><span>MacLeod et al., 2010</span></div>
+              </div>
+
+              <div class="scn s-ai" data-scene="ai" data-step="home">
+                <div class="ai-p ai-home">
+                  <span class="ai-logo"><i></i>Checklist<b>Pro</b></span>
+                  <ul class="ai-lists"><li>Gym</li><li>Weekend trip</li><li>Preflight</li></ul>
+                  <div class="a-btns"><span class="a-btn ai-bolt"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><span class="a-btn">Settings</span><span class="a-btn y">+ New</span></div>
+                </div>
+                <div class="ai-p ai-rec">
+                  <h4 class="a-title"><span>New quick list</span></h4>
+                  <p class="ai-note">Good for groceries: just say what you need.</p>
+                  <div class="ai-mic"><svg class="ai-ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/></svg><span class="ai-btn"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></span></div>
+                  <div class="ai-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                  <p class="ai-status">Listening… tap Stop when you are done. <b class="ai-time">0:17</b></p>
+                  <div class="ai-text" data-no-i18n><span class="ai-typed"></span><i class="ai-caret"></i></div>
+                  <div class="a-btns"><span class="a-btn p">Cancel</span><span class="a-btn y ai-stop">Stop</span></div>
+                </div>
+                <div class="ai-p ai-think"><svg class="ai-spark" viewBox="0 0 48 48"><path d="M24 3C26 16 32 22 45 24C32 26 26 32 24 45C22 32 16 26 3 24C16 22 22 16 24 3Z"/><path class="s2" d="M38 4c.6 4 2.4 5.8 6.4 6.4-4 .6-5.8 2.4-6.4 6.4-.6-4-2.4-5.8-6.4-6.4 4-.6 5.8-2.4 6.4-6.4z"/></svg><p>Making your list…</p></div>
+                <div class="ai-p ai-list">
+                  <h4 class="a-title"><span>Groceries</span></h4>
+                  <div class="a-prog-row"><span class="ai-made"><svg viewBox="0 0 48 48"><path d="M24 3C26 16 32 22 45 24C32 26 26 32 24 45C22 32 16 26 3 24C16 22 22 16 24 3Z"/></svg>Made with AI</span><b class="a-count">5 items</b></div>
+                  <ul class="a-items">
+                    <li><span>Milk</span><i class="a-box"></i></li>
+                    <li><span>Eggs</span><i class="a-box"></i></li>
+                    <li><span>Bread</span><i class="a-box"></i></li>
+                    <li><span>Apples</span><i class="a-box"></i></li>
+                    <li><span>Coffee</span><i class="a-box"></i></li>
+                  </ul>
+                  <div class="a-btns"><span class="a-btn">Record more</span><span class="a-btn y ai-save">Save</span></div>
+                </div>
+              </div>
+
+              <div class="scn-conf" id="pw-conf"></div>
+              <i class="pw-tap" id="pw-tap"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="pilot" id="pilot">
+          <div class="balloon" id="balloon"><small>Co-pilot</small><span class="say" id="pilot-say" data-no-i18n></span><i class="caret"></i></div>
+          <svg class="bot" viewBox="0 0 200 250">
+            <ellipse class="b-shadow" cx="100" cy="242" rx="54" ry="7"/>
+            <g class="b-all">
+              <rect class="b-leg" x="76" y="190" width="18" height="36" rx="8"/><rect class="b-leg" x="106" y="190" width="18" height="36" rx="8"/>
+              <rect class="b-shoe" x="66" y="222" width="32" height="15" rx="7.5"/><rect class="b-shoe" x="102" y="222" width="32" height="15" rx="7.5"/>
+              <g class="b-arm-l"><rect class="b-sleeve" x="40" y="136" width="22" height="52" rx="11"/><path class="b-cuff" d="M41 176h20"/><circle class="b-hand" cx="51" cy="194" r="10"/></g>
+              <rect class="b-jacket" x="56" y="126" width="88" height="74" rx="22"/>
+              <path class="b-shirt" d="M84 128L100 158L116 128Z"/>
+              <path class="b-tie" d="M96 134h8l3 22-7 8-7-8z"/>
+              <circle class="b-btn" cx="100" cy="176" r="3.4"/><circle class="b-btn" cx="100" cy="189" r="3.4"/>
+              <path class="b-wing" d="M115 150q6-5 12-1q6-4 12 1"/>
+              <rect class="b-neck" x="88" y="116" width="24" height="14" rx="4"/>
+              <g class="b-head">
+                <rect class="b-cup" x="33" y="70" width="17" height="36" rx="8.5"/><rect class="b-cup" x="150" y="70" width="17" height="36" rx="8.5"/>
+                <rect class="b-skull" x="45" y="48" width="110" height="76" rx="26"/>
+                <rect class="b-face" x="57" y="62" width="86" height="52" rx="17"/>
+                <g class="b-eyes"><ellipse class="b-eye" cx="82" cy="85" rx="9" ry="11"/><ellipse class="b-eye" cx="118" cy="85" rx="9" ry="11"/>
+                  <g class="b-glints"><circle cx="85" cy="81" r="3.2"/><circle cx="121" cy="81" r="3.2"/></g></g>
+                <ellipse class="b-cheek" cx="67" cy="100" rx="6" ry="3.5"/><ellipse class="b-cheek" cx="133" cy="100" rx="6" ry="3.5"/>
+                <ellipse class="b-mouth" cx="100" cy="103" rx="7" ry="2.6"/>
+                <path class="b-boom" d="M41 104q3 14 30 9"/><circle class="b-mic" cx="73" cy="112" r="4"/>
+                <line class="b-ant" x1="100" y1="24" x2="100" y2="9"/><circle class="b-light" cx="100" cy="8" r="5.5"/>
+                <path class="b-crown" d="M38 40Q100 8 162 40L152 56H48Z"/>
+                <path class="b-band" d="M48 50H152"/>
+                <path class="b-visor" d="M50 57H150Q144 70 100 70Q56 70 50 57Z"/>
+                <path class="b-badge-w" d="M83 37q8-6 13-1M117 37q-8-6-13-1"/><circle class="b-badge" cx="100" cy="37" r="5.5"/>
+              </g>
+              <g class="b-arm-r"><rect class="b-sleeve" x="138" y="136" width="22" height="52" rx="11"/><path class="b-cuff" d="M139 176h20"/><circle class="b-hand" cx="149" cy="194" r="10"/></g>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="pw-side">
+        <div class="pw-points" id="pw-points" role="group" aria-label="Pro powers">
+          <button class="pw-pt" type="button" data-scene="tone" aria-pressed="true">
+            <span class="pw-ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10zM16 9a4 4 0 0 1 0 6M18.6 6.5a7.6 7.6 0 0 1 0 11"/></svg></span>
+            <span class="pw-name">Attention tone</span>
+            <span class="pw-sub">A sound that keeps you on task.</span>
+            <span class="pw-more">Switch it on for a list and a soft tone plays while you run it. A little pressure, so you don’t drift off to another app. It stops the moment the last item is ticked.
+              <span class="pw-tags"><span>Heart monitor</span><span>Sonar</span><span>Cabin hum</span><span>Metronome</span><span>Alarm</span></span></span>
+            <i class="pw-time"></i>
+          </button>
+          <button class="pw-pt" type="button" data-scene="res" aria-pressed="false">
+            <span class="pw-ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M9 8h7M9 12h5"/></svg></span>
+            <span class="pw-name">Research based</span>
+            <span class="pw-sub">Built on studies, not hunches.</span>
+            <span class="pw-more">Checklists come from cockpits and operating rooms, where they are measured in lives. The app’s Manifesto tells that story, and its features name the research behind them, with the full sources inside.
+              <span class="pw-tags"><span>Gawande</span><span>Pronovost</span><span>Haynes</span><span>Posner</span><span>MacLeod</span></span></span>
+            <i class="pw-time"></i>
+          </button>
+          <button class="pw-pt" type="button" data-scene="ai" aria-pressed="false">
+            <span class="pw-ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4M19.5 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span>
+            <span class="pw-name">AI quick list</span>
+            <span class="pw-sub">Say it. Get a checklist.</span>
+            <span class="pw-more">Tap the bolt and say what’s on your mind, for up to 17 seconds. AI turns your words into a checklist you can edit before you save it. Good for groceries, packing, anything on the fly.
+              <span class="pw-tags"><span>17 seconds</span><span>Edit before saving</span><span>3 a day</span></span></span>
+            <i class="pw-time"></i>
+          </button>
+        </div>
+        <p class="hint-line">Tap a power to see it. The co-pilot reads it back.</p>
       </div>
     </div>
   </div>
@@ -293,7 +419,7 @@
   </div>
   <div class="journey-scroll" id="journey-scroll" tabindex="-1">
     <p class="journey-note de-only" lang="de">Die Zitate in diesem Baum sind im englischen Original geblieben.</p>
-    <p class="journey-intro">How ChecklistPro was made, idea by idea. Built in one conversation, with <b>Mateus</b> steering and Claude Code building. The line in the middle is what shipped. Branches are ideas tried, parked or dropped.</p>
+    <p class="journey-intro">How ChecklistPro was made, idea by idea. Built in one conversation, with <b>Mateus</b> steering and Claude Code <svg class="claude-mark" viewBox="0 0 24 24" role="img" aria-label="Claude"><path fill="#d97757" stroke="#d97757" stroke-width=".9" stroke-linejoin="round" d="M10.84 11.68L12.00 1.60L13.16 11.68ZM11.14 11.16L16.46 3.95L13.17 12.28ZM11.74 10.83L21.01 7.21L12.83 12.87ZM12.32 10.84L21.40 12.00L12.32 13.16ZM12.83 11.13L21.36 16.98L11.74 13.17ZM13.17 11.72L16.36 19.87L11.14 12.84ZM13.16 12.32L12.00 22.20L10.84 12.32ZM12.81 12.88L6.91 20.14L10.85 11.66ZM12.28 13.17L2.82 17.09L11.16 11.14ZM11.68 13.16L2.90 12.00L11.68 10.84ZM11.14 12.84L3.08 6.85L12.30 10.84ZM10.83 12.28L7.39 3.69L12.86 11.16Z"/><circle cx="12" cy="12" r="2.2" fill="#d97757"/></svg> building. The line in the middle is what shipped. Branches are ideas tried, parked or dropped.</p>
     <div class="legend" id="legend"></div>
     <div class="tree" id="tree"><svg class="tree-svg" id="tree-svg" aria-hidden="true"></svg><ol class="rows" id="tree-rows"></ol></div>
   </div>

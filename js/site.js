@@ -184,30 +184,107 @@
   $('#demo-replay').addEventListener('click', demo);
   if ('IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); demo(); } }), { threshold: .45 }).observe($('#cond-demo')); else demo();
 
-  // ---------- flows ----------
-  const F = window.FRAMES, FLOWS = [['run', 'Run it'], ['ask', 'Ask once'], ['voice', 'Say it'], ['build', 'Build it']];
-  const screen = $('#flow-screen'), tap = $('#flow-tap'), phone = $('#flow-phone'), steps = $('#flow-steps'), tabs = $('#flow-tabs');
-  const imgs = {}; let flow = 'run', idx = 0, timer = 0, visible = false, holdUntil = 0;
-  const frameImg = f => { if (!imgs[f.img]) { const im = new Image(); im.src = 'img/frames/' + f.img + '.webp'; im.alt = ''; im.width = 780; im.height = 1688; im.decoding = 'async'; imgs[f.img] = im; } return imgs[f.img]; };
-  function renderTabs() { tabs.innerHTML = ''; FLOWS.forEach(([k, n]) => { const b = document.createElement('button'); b.className = 'tab'; b.type = 'button'; b.role = 'tab'; b.textContent = n; b.setAttribute('aria-selected', k === flow ? 'true' : 'false'); b.addEventListener('click', () => { setFlow(k); holdUntil = Date.now() + 6000; }); tabs.appendChild(b); }); }
-  function renderSteps() { steps.innerHTML = ''; F[flow].forEach((f, i) => { const li = document.createElement('li'); const b = document.createElement('button'); b.type = 'button'; b.textContent = f.note; b.addEventListener('click', () => { show(i); holdUntil = Date.now() + 7000; }); li.appendChild(b); steps.appendChild(li); }); }
-  function show(i) {
-    idx = i; const fr = F[flow];
-    screen.innerHTML = ''; fr.forEach((f, k) => { const im = frameImg(f).cloneNode(); im.className = k === i ? 'on' : ''; screen.appendChild(im); });
-    $$('button', steps).forEach((b, k) => { if (k === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
-  }
-  function setFlow(k) { flow = k; renderTabs(); renderSteps(); show(0); F[k].forEach(frameImg); }
-  async function tickFlow() {
-    if (!visible || reduce || Date.now() < holdUntil) return;
-    const fr = F[flow][idx];
-    if (fr.tap) { tap.style.left = (fr.tap[0] * 100) + '%'; tap.style.top = (fr.tap[1] * 100) + '%'; tap.classList.remove('go'); void tap.offsetWidth; tap.classList.add('go'); await wait(750); }
-    if (!visible) return;
-    const next = idx + 1;
-    if (next >= F[flow].length) { await wait(600); const keys = FLOWS.map(x => x[0]); setFlow(keys[(keys.indexOf(flow) + 1) % keys.length]); } else show(next);
-  }
-  setFlow('run');
-  (function loop() { tickFlow().finally(() => setTimeout(loop, 2300)); })();
-  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; }), { threshold: .3 }).observe(phone); else visible = true;
+  // ---------- pro powers: animated scenes in the phone, a pilot robot reads the chosen power back ----------
+  const F = window.FRAMES;
+  (function () {
+    const stage = $('#pw-stage'), scr = $('#pw-screen'), tapEl = $('#pw-tap'), conf = $('#pw-conf'), pts = $$('.pw-pt'), scenes = {};
+    $$('.scn', scr).forEach(s => { scenes[s.dataset.scene] = s; });
+    const pilot = $('#pilot'), say = $('#pilot-say'), balloon = $('#balloon');
+    const de = () => document.documentElement.lang === 'de';
+    let cur = 0, run = 0, visible = false, sayRun = 0;
+    const live = r => r === run;
+    const nap = (ms, r) => new Promise((res, rej) => setTimeout(() => (live(r) ? res() : rej(0)), reduce ? 0 : ms));
+
+    function tapOn(el, fx = .5, fy = .5) {
+      const s = scr.getBoundingClientRect(), b = el.getBoundingClientRect();
+      tapEl.style.left = ((b.left + b.width * fx - s.left) / s.width * 100) + '%'; tapEl.style.top = ((b.top + b.height * fy - s.top) / s.height * 100) + '%';
+      tapEl.classList.remove('go'); void tapEl.offsetWidth; tapEl.classList.add('go');
+    }
+    function confetti() {
+      if (reduce) return; conf.innerHTML = ''; const C = [cv('--yellow'), cv('--mint'), '#fff', cv('--pink'), cv('--blue')];
+      for (let i = 0; i < 22; i++) { const p = document.createElement('i'); p.style.cssText = 'left:' + (Math.random() * 96) + '%;background:' + C[i % C.length] + ';animation-delay:' + (Math.random() * .35) + 's;border-radius:' + (i % 3 ? '1px' : '50%'); conf.appendChild(p); }
+      setTimeout(() => { conf.innerHTML = ''; }, 2400);
+    }
+
+    // the robot
+    async function speak(text) {
+      const me = ++sayRun; balloon.classList.remove('pop'); void balloon.offsetWidth; balloon.classList.add('pop');
+      if (reduce) { say.textContent = text; return; }
+      pilot.classList.add('talk'); say.textContent = '';
+      for (let i = 1; i <= text.length; i++) { if (me !== sayRun) return; say.textContent = text.slice(0, i); await wait(text[i - 1] === ' ' ? 30 : 46); }
+      if (me === sayRun) pilot.classList.remove('talk');
+    }
+    function gesture(c) { if (reduce) return; pilot.classList.remove(c); void pilot.offsetWidth; pilot.classList.add(c); setTimeout(() => pilot.classList.remove(c), 1600); }
+    (function blink() { setTimeout(() => { if (!reduce) { pilot.classList.add('blink'); setTimeout(() => pilot.classList.remove('blink'), 140); } blink(); }, 2200 + Math.random() * 2800); })();
+    if (!reduce && matchMedia('(pointer: fine)').matches) {
+      const glints = $$('.b-glints circle', pilot);
+      addEventListener('pointermove', e => { if (!visible) return; const r = pilot.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height * .34), d = Math.hypot(dx, dy) || 1; glints.forEach(g => { g.style.transform = 'translate(' + (dx / d * 3.5) + 'px,' + (dy / d * 3.5) + 'px)'; }); });
+    }
+    const QUIPS = { en: ['Roger that!', 'Cleared for takeoff!', 'All checks complete!', 'Seatbelts on!'], de: ['Roger!', 'Startfreigabe erteilt!', 'Alle Checks erledigt!', 'Anschnallen, bitte!'] };
+    let quip = 0;
+    pilot.addEventListener('click', () => { gesture('wave'); const q = QUIPS[de() ? 'de' : 'en']; speak(q[quip++ % q.length]); });
+
+    // scenes
+    const SCENES = {
+      async tone(r, s) {
+        const items = $$('.a-items li', s), bar = $('.a-bar', s), count = $('.a-count', s);
+        items.forEach(li => li.classList.remove('on')); bar.style.width = '0'; count.textContent = '0 / 4'; s.classList.remove('done');
+        if (reduce) { items.forEach(li => li.classList.add('on')); bar.style.width = '100%'; count.textContent = '4 / 4'; s.classList.add('done'); return; }
+        stage.classList.add('tone-on');
+        await nap(1500, r);
+        for (let k = 0; k < items.length; k++) {
+          tapOn($('.a-box', items[k])); await nap(320, r);
+          items[k].classList.add('on'); bar.style.width = ((k + 1) / items.length * 100) + '%'; count.textContent = (k + 1) + ' / ' + items.length;
+          await nap(1250, r);
+        }
+        s.classList.add('done'); stage.classList.remove('tone-on'); confetti();
+        await nap(2600, r);
+      },
+      async res(r, s) {
+        const cards = $$('.r-card', s), src = $('.r-src', s), num = $('.r-num', s);
+        cards.forEach(c => c.classList.remove('in')); src.classList.remove('in'); num.textContent = '0';
+        if (reduce) { cards.forEach(c => c.classList.add('in')); src.classList.add('in'); num.textContent = '66'; return; }
+        await nap(500, r); cards[0].classList.add('in');
+        await nap(1700, r); cards[1].classList.add('in');
+        const t0 = performance.now(); await new Promise(res => { (function step(t) { const p = Math.min(1, (t - t0) / 1100); num.textContent = Math.round(66 * (1 - Math.pow(1 - p, 3))); if (p < 1 && live(r)) requestAnimationFrame(step); else res(); })(t0); });
+        await nap(900, r); cards[2].classList.add('in');
+        await nap(1700, r); src.classList.add('in');
+        await nap(2600, r);
+      },
+      async ai(r, s) {
+        const typed = $('.ai-typed', s), time = $('.ai-time', s), items = $$('.ai-list .a-items li', s);
+        const words = de() ? 'Milch, Eier, Brot … ein paar Äpfel und Kaffee.' : 'Milk, eggs, bread… some apples and coffee.';
+        s.dataset.step = 'home'; s.classList.remove('listening'); typed.textContent = ''; time.textContent = '0:17'; items.forEach(li => li.classList.remove('in'));
+        if (reduce) { s.dataset.step = 'list'; items.forEach(li => li.classList.add('in')); return; }
+        await nap(1100, r); tapOn($('.ai-bolt', s)); await nap(420, r);
+        s.dataset.step = 'rec'; await nap(500, r); s.classList.add('listening');
+        let sec = 17; const tick = setInterval(() => { if (!live(r) || sec <= 12) return clearInterval(tick); sec--; time.textContent = '0:' + String(sec).padStart(2, '0'); }, 900);
+        for (let i = 1; i <= words.length; i++) { await nap(words[i - 1] === ' ' ? 40 : 72, r); typed.textContent = words.slice(0, i); }
+        await nap(600, r); clearInterval(tick); tapOn($('.ai-stop', s)); await nap(380, r);
+        s.classList.remove('listening'); s.dataset.step = 'think'; await nap(1500, r);
+        s.dataset.step = 'list'; await nap(350, r);
+        for (const li of items) { li.classList.add('in'); await nap(200, r); }
+        await nap(800, r); tapOn($('.ai-save', s)); await nap(300, r); confetti();
+        await nap(2200, r);
+      },
+    };
+
+    // the bar under the chosen power runs for about as long as its scene
+    const DUR = { tone: 9800, res: 10200, ai: 13200 };
+    async function select(i) {
+      cur = i; const r = ++run, b = pts[i], key = b.dataset.scene, s = scenes[key];
+      pts.forEach((p, k) => { p.setAttribute('aria-pressed', k === i ? 'true' : 'false'); p.classList.remove('run'); });
+      b.style.setProperty('--dur', DUR[key] + 'ms'); void b.offsetWidth; if (!reduce) b.classList.add('run');
+      Object.values(scenes).forEach(x => x.classList.toggle('on', x === s)); stage.classList.remove('tone-on'); tapEl.classList.remove('go');
+      gesture('salute'); speak($('.pw-name', b).textContent.trim() + '. Check!');
+      try { await SCENES[key](r, s); } catch (e) { return; }
+      if (live(r) && visible && !reduce) select((cur + 1) % pts.length);
+    }
+    pts.forEach((b, i) => b.addEventListener('click', () => select(i)));
+    // start when the stage comes into view, pause when it leaves
+    const onView = v => { visible = v; if (v) select(cur); else { run++; pts.forEach(p => p.classList.remove('run')); stage.classList.remove('tone-on'); } };
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting !== visible) onView(e.isIntersecting); }), { threshold: .35 }).observe(stage); else onView(true);
+  })();
 
   // ---------- looks ----------
   const NOTES = {
