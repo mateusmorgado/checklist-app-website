@@ -186,11 +186,13 @@
     setTimeout(() => { const n = 3 + addLi.filter(li => li.classList.contains('in')).length; count.textContent = n + ' items'; count.classList.remove('bump'); void count.offsetWidth; count.classList.add('bump'); }, silent || reduce ? 10 : 900);
   }
   function point(el, pressed) { const s = stage.getBoundingClientRect(), r = el.getBoundingClientRect(); cur.style.left = (r.left - s.left + r.width * .62) + 'px'; cur.style.top = (r.top - s.top + r.height * .55) + 'px'; }
+  // after the demo, a hand taps at the Sauna button to invite a No, and the two sauna items tremble; the first real tap ends it
+  const demoCard = $('#cond-demo'), nudge = on => demoCard.classList.toggle('nudge', on);
   async function demo() {
-    const run = ++demoRun, ok = () => run === demoRun;
+    const run = ++demoRun, ok = () => run === demoRun; nudge(false);
     Object.values(tg).forEach(b => { b.disabled = true; b.setAttribute('aria-pressed', 'false'); $('b', b).textContent = 'No'; });
     addLi.forEach(li => li.classList.remove('in')); count.textContent = '3 items'; ask.classList.remove('show'); cur.classList.remove('show', 'press'); hint.classList.remove('done');
-    if (reduce) { setAnswer('sauna', true, true); setAnswer('squat', true, true); Object.values(tg).forEach(b => { b.disabled = false; }); hint.classList.add('done'); return; }
+    if (reduce) { setAnswer('sauna', true, true); setAnswer('squat', true, true); Object.values(tg).forEach(b => { b.disabled = false; }); hint.classList.add('done'); nudge(true); return; }
     cur.style.left = '86%'; cur.style.top = '96%'; await wait(700); if (!ok()) return;
     for (const [key, text, icon, color] of [['sauna', 'Sauna?', ICON_SAUNA, 'var(--yellow)'], ['squat', 'Squat day?', ICON_BAR, 'var(--pink)']]) {
       dq.textContent = text; dic.innerHTML = icon; dic.style.background = color; $('#d-yes').classList.remove('picked'); ask.classList.add('show'); cur.classList.add('show');
@@ -200,7 +202,10 @@
     }
     cur.classList.remove('show'); await wait(900); if (!ok()) return;
     Object.values(tg).forEach(b => { b.disabled = false; }); hint.classList.add('done');
+    await wait(600); if (ok() && tg.sauna.getAttribute('aria-pressed') === 'true') nudge(true);
   }
+  tg.sauna.addEventListener('click', () => nudge(false));
+  tg.squat.addEventListener('click', () => nudge(false));
   tg.sauna.addEventListener('click', () => setAnswer('sauna', tg.sauna.getAttribute('aria-pressed') !== 'true'));
   tg.squat.addEventListener('click', () => setAnswer('squat', tg.squat.getAttribute('aria-pressed') !== 'true'));
   $('#demo-replay').addEventListener('click', demo);

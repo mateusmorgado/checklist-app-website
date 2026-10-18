@@ -1,6 +1,7 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Tap to say No": "Tippe für Nein",
 "steering and Claude Code": "am Steuer und Claude Code",
 "building. The line in the middle is what shipped. Branches are ideas tried, parked or dropped.": "beim Bauen. Die Linie in der Mitte ist das, was veröffentlicht wurde. Äste sind Ideen, die ausprobiert, geparkt oder verworfen wurden.",
 "Plays until you finish": "Läuft, bis du fertig bist",
