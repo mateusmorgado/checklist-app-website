@@ -92,11 +92,13 @@
   async function typeSub(ok) {
     const b = document.body, src = $('.hero .sub-src'), out = $('.hero .sub-type');
     $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in'));
-    b.classList.add('typing'); b.classList.remove('intro', 'intro-first');
+    b.classList.add('typing'); b.classList.remove('intro');
     const txt = src.textContent; out.textContent = '';
     await wait(450);
     for (let k = 1; k <= txt.length; k++) { if (!ok()) { b.classList.remove('typing'); return; } out.textContent = txt.slice(0, k); await wait(txt[k - 1] === ' ' ? 8 : 16); }
     await wait(150); if (!ok()) return; out.textContent = ''; b.classList.remove('typing');
+    // the header comes last, dropping in from the top once the rest is in place
+    await wait(900); b.classList.remove('intro-first');
   }
   // on small screens the headline plays in the middle of the screen, then rises to its place
   const lineBox = $('.lines'); let lift = 0;
@@ -368,6 +370,13 @@
       const up = () => { removeEventListener('pointerup', up); removeEventListener('pointercancel', up); setTimeout(() => b.classList.remove('pressed'), Math.max(0, 110 - (performance.now() - t0))); };
       addEventListener('pointerup', up); addEventListener('pointercancel', up);
     }, { passive: true });
+  })();
+
+  // ---------- past the video the header folds into just the menu button, top right ----------
+  (function () {
+    const vid = $('#video');
+    const check = () => document.body.classList.toggle('compact', !!vid && vid.getBoundingClientRect().bottom < 0);
+    check(); addEventListener('scroll', check, { passive: true }); addEventListener('resize', check);
   })();
 
   // ---------- Impressum ----------
