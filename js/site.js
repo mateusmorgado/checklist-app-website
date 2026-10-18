@@ -215,7 +215,27 @@
     const de = () => document.documentElement.lang === 'de';
     let cur = 0, run = 0, visible = false, sayRun = 0;
     const live = r => r === run;
-    const nap = (ms, r) => new Promise((res, rej) => setTimeout(() => (live(r) ? res() : rej(0)), reduce ? 0 : ms));
+    // musical notes fly out of the phone while the tone plays
+    const notesEl = $('#pw-notes'), wrap = $('.pw-phonewrap', stage);
+    const NOTE = ['<svg viewBox="0 0 24 24"><path d="M9 18a3.2 3.2 0 1 1-2-3V4.5l12-2.5v13a3.2 3.2 0 1 1-2-3V6.3L9 8z"/></svg>', '<svg viewBox="0 0 24 24"><path d="M11 18a3.4 3.4 0 1 1-2-3.1V2.5h2c.3 3.4 6 4.6 5.6 9.3-1.3-2.4-3.4-3.6-5.6-3.6z"/></svg>'];
+    let noteT = 0;
+    function notes(on) {
+      clearInterval(noteT); if (!on || reduce) return;
+      noteT = setInterval(() => {
+        if (!visible) return; const left = Math.random() < .5, n = document.createElement('i'), sz = 48 + Math.random() * 34;
+        n.className = 'note ' + ['', 'w', 'm'][Math.floor(Math.random() * 3)]; n.innerHTML = NOTE[Math.random() < .5 ? 0 : 1];
+        n.style.cssText = 'width:' + sz + 'px;height:' + sz + 'px;top:' + (8 + Math.random() * 34) + '%;' + (left ? 'left' : 'right') + ':' + (4 + Math.random() * 10) + 'px;--dx:' + ((left ? -1 : 1) * (90 + Math.random() * 110)) + 'px;--dy:' + (-(30 + Math.random() * 140)) + 'px;--r:' + ((left ? -1 : 1) * (15 + Math.random() * 35)) + 'deg';
+        notesEl.appendChild(n); setTimeout(() => n.remove(), 1900);
+      }, 380);
+    }
+    // the phone buzzes and throws the co-pilot off; he lands and reads the power back again
+    function buzz(r, again) {
+      if (reduce) return; wrap.classList.remove('buzz'); void wrap.offsetWidth; wrap.classList.add('buzz'); setTimeout(() => wrap.classList.remove('buzz'), 800);
+      setTimeout(() => { if (!live(r)) return; gesture('thrown'); speak(de() ? 'Hoppla!' : 'Whoa!'); }, 120);
+      if (again) setTimeout(() => { if (live(r)) speak(again); }, 1500);
+    }
+    const SP = .62; // the whole loop runs at this speed
+    const nap = (ms, r) => new Promise((res, rej) => setTimeout(() => (live(r) ? res() : rej(0)), reduce ? 0 : ms * SP));
 
     function tapOn(el, fx = .5, fy = .5) {
       const s = scr.getBoundingClientRect(), b = el.getBoundingClientRect();
@@ -233,7 +253,7 @@
       const me = ++sayRun; balloon.classList.remove('pop'); void balloon.offsetWidth; balloon.classList.add('pop');
       if (reduce) { say.textContent = text; return; }
       pilot.classList.add('talk'); say.textContent = '';
-      for (let i = 1; i <= text.length; i++) { if (me !== sayRun) return; say.textContent = text.slice(0, i); await wait(text[i - 1] === ' ' ? 30 : 46); }
+      for (let i = 1; i <= text.length; i++) { if (me !== sayRun) return; say.textContent = text.slice(0, i); await wait(text[i - 1] === ' ' ? 22 : 34); }
       if (me === sayRun) pilot.classList.remove('talk');
     }
     function gesture(c) { if (reduce) return; pilot.classList.remove(c); void pilot.offsetWidth; pilot.classList.add(c); setTimeout(() => pilot.classList.remove(c), 1600); }
@@ -252,14 +272,16 @@
         const items = $$('.a-items li', s), bar = $('.a-bar', s), count = $('.a-count', s);
         items.forEach(li => li.classList.remove('on')); bar.style.width = '0'; count.textContent = '0 / 4'; s.classList.remove('done');
         if (reduce) { items.forEach(li => li.classList.add('on')); bar.style.width = '100%'; count.textContent = '4 / 4'; s.classList.add('done'); return; }
-        stage.classList.add('tone-on');
-        await nap(1500, r);
+        stage.classList.add('tone-on'); notes(true);
+        const name = $('.pw-pt[data-scene="tone"] .pw-name').textContent.trim() + '. Check!';
+        await nap(1300, r); buzz(r, name); await nap(1700, r);
         for (let k = 0; k < items.length; k++) {
           tapOn($('.a-box', items[k])); await nap(320, r);
           items[k].classList.add('on'); bar.style.width = ((k + 1) / items.length * 100) + '%'; count.textContent = (k + 1) + ' / ' + items.length;
           await nap(1250, r);
+          if (k === 1) { buzz(r, name); await nap(1500, r); }
         }
-        s.classList.add('done'); stage.classList.remove('tone-on'); confetti();
+        s.classList.add('done'); stage.classList.remove('tone-on'); notes(false); confetti();
         await nap(2600, r);
       },
       async res(r, s) {
@@ -268,7 +290,7 @@
         if (reduce) { cards.forEach(c => c.classList.add('in')); src.classList.add('in'); num.textContent = '66'; return; }
         await nap(500, r); cards[0].classList.add('in');
         await nap(1700, r); cards[1].classList.add('in');
-        const t0 = performance.now(); await new Promise(res => { (function step(t) { const p = Math.min(1, (t - t0) / 1100); num.textContent = Math.round(66 * (1 - Math.pow(1 - p, 3))); if (p < 1 && live(r)) requestAnimationFrame(step); else res(); })(t0); });
+        const t0 = performance.now(); await new Promise(res => { (function step(t) { const p = Math.min(1, (t - t0) / 700); num.textContent = Math.round(66 * (1 - Math.pow(1 - p, 3))); if (p < 1 && live(r)) requestAnimationFrame(step); else res(); })(t0); });
         await nap(900, r); cards[2].classList.add('in');
         await nap(1700, r); src.classList.add('in');
         await nap(2600, r);
@@ -292,19 +314,19 @@
     };
 
     // the bar under the chosen power runs for about as long as its scene
-    const DUR = { tone: 9800, res: 10200, ai: 13200 };
+    const DUR = { tone: 8600, res: 6000, ai: 8200 };
     async function select(i) {
       cur = i; const r = ++run, b = pts[i], key = b.dataset.scene, s = scenes[key];
       pts.forEach((p, k) => { p.setAttribute('aria-pressed', k === i ? 'true' : 'false'); p.classList.remove('run'); });
       b.style.setProperty('--dur', DUR[key] + 'ms'); void b.offsetWidth; if (!reduce) b.classList.add('run');
-      Object.values(scenes).forEach(x => x.classList.toggle('on', x === s)); stage.classList.remove('tone-on'); tapEl.classList.remove('go');
+      Object.values(scenes).forEach(x => x.classList.toggle('on', x === s)); stage.classList.remove('tone-on'); notes(false); tapEl.classList.remove('go');
       gesture('salute'); speak($('.pw-name', b).textContent.trim() + '. Check!');
       try { await SCENES[key](r, s); } catch (e) { return; }
       if (live(r) && visible && !reduce) select((cur + 1) % pts.length);
     }
     pts.forEach((b, i) => b.addEventListener('click', () => select(i)));
     // start when the stage comes into view, pause when it leaves
-    const onView = v => { visible = v; if (v) select(cur); else { run++; pts.forEach(p => p.classList.remove('run')); stage.classList.remove('tone-on'); } };
+    const onView = v => { visible = v; if (v) select(cur); else { run++; notes(false); pts.forEach(p => p.classList.remove('run')); stage.classList.remove('tone-on'); } };
     if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting !== visible) onView(e.isIntersecting); }), { threshold: .35 }).observe(stage); else onView(true);
   })();
 
