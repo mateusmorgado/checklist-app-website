@@ -375,15 +375,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 :root[data-palette="cream"] { --red: #fdf0e9; --red-d: #f6dccd; --yellow: #6df5b9; --mint: #ffb4a6; --pink: #ffd9c4; --blue: #b9d3ff; --orange: #ffc247; --inkhl: #0d8a5f; }
 .mega .ink { color: var(--inkhl); }
 body, .nav, .video-missing, .d-stage, .journey { transition: background-color .35s; }
-.swatches { position: fixed; z-index: 70; left: 50%; transform: translateX(-50%); bottom: max(14px, env(safe-area-inset-bottom)); display: flex; gap: 8px; padding: 8px; background: var(--white); border: var(--b) solid var(--ink); border-radius: 999px; box-shadow: -4px -4px 0 var(--ink); }
-.swatches button { width: 32px; height: 32px; padding: 0; border-radius: 50%; border: var(--b) solid var(--ink); background: var(--sw); cursor: pointer; transition: transform .15s; position: relative; }
-.swatches button:hover { transform: scale(1.12) rotate(-6deg); }
-.swatches button[aria-pressed="true"] { transform: scale(1.12); box-shadow: 0 0 0 3px var(--white), 0 0 0 6px var(--ink); }
-.sw-sep { width: 3px; align-self: stretch; margin: 2px 2px; background: var(--ink); border-radius: 2px; opacity: .25; }
-.swatches .to-top { background: var(--yellow); display: grid; place-items: center; } .swatches .to-top svg { width: 20px; height: 20px; fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.swatches button::after { content: ''; position: absolute; inset: -9px; }
-@media (prefers-reduced-motion: reduce) { body, .nav, .video-missing, .d-stage, .journey { transition: none; } .swatches button { transition: none; } }
-@media (max-width: 520px) { .swatches { left: 50%; transform: translateX(-50%); } }
 
 /* ---------- pro powers ---------- */
 .pw-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: center; margin-top: 36px; }
@@ -679,8 +670,6 @@ a.cite:hover { background: var(--yellow); }
 .hero-down svg { width: 28px; height: 28px; fill: none; stroke: var(--ink); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
 .hero-down:hover { background: var(--yellow); }
 @keyframes down-bob { 50% { transform: translateY(8px); } }
-.swatches { transition: opacity .35s, transform .45s cubic-bezier(.3, 1.4, .5, 1); }
-.at-top .swatches { opacity: 0; transform: translate(-50%, 40px); pointer-events: none; }
 body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .hero-down { animation: none; } }
 .foot-link { display: inline-block; margin-top: 10px; font-weight: 800; color: inherit; text-decoration: underline; text-underline-offset: 4px; }
@@ -834,16 +823,6 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 @media (max-width: 1100px) { .k4, .k5, .k6 { display: none; } }
 @media (max-width: 700px) { .k2 { display: none; } }
 /* ---------- colour pile: the dots sit stacked on the left; hover or tap fans them out ---------- */
-.swatches { left: max(14px, env(safe-area-inset-left)) !important; transform: none !important; bottom: max(14px, env(safe-area-inset-bottom)); gap: 6px; }
-.at-top .swatches { opacity: 1 !important; pointer-events: auto !important; }
-.swatches button[data-p] { transition: margin .3s cubic-bezier(.3, 1.4, .5, 1), transform .3s; }
-.swatches:not(.open):not(:hover) button[data-p] { margin-left: -26px; transform: rotate(var(--r, 0deg)); }
-.swatches:not(.open):not(:hover) button[data-p]:first-child { margin-left: 0; }
-.swatches:not(.open):not(:hover) button[data-p]:nth-child(2) { --r: 8deg; } .swatches:not(.open):not(:hover) button[data-p]:nth-child(3) { --r: -6deg; } .swatches:not(.open):not(:hover) button[data-p]:nth-child(4) { --r: 12deg; }
-.swatches:not(.open):not(:hover) button[aria-pressed="true"] { z-index: 2; }
-.swatches:not(.open):not(:hover)::after { content: '›'; order: 4; align-self: center; font: 800 22px/1 var(--display); color: var(--ink); margin: 0 2px 0 4px; }
-.swatches .sw-sep { order: 5; } .swatches .to-top { order: 6; }
-@media (max-width: 640px) { .swatches { gap: 6px; padding: 6px; } .swatches button { width: 30px; height: 30px; } }
 @media (max-width: 520px) { .nav { gap: 6px; } .nav-cta { gap: 6px; } .nav-cta .btn.icon { min-width: 42px; width: 42px; padding: 0; justify-content: center; } .brand { padding-right: 8px; } }
 @media (max-width: 360px) { .brand span { font-size: 16px; } }
 .powers { overflow-x: clip; }
@@ -880,3 +859,52 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .jf-stats dt { font: 700 11.5px var(--body); opacity: .75; } .jf-stats dd { margin: 2px 0 0; font: 800 clamp(22px, 2.6vw, 32px) var(--display); color: var(--yellow); }
 @media (max-width: 760px) { .jf { grid-template-columns: 1fr; } .jf-chat { height: 260px; } }
 @media (prefers-reduced-motion: reduce) { .jf-b, .jf-dots i { animation: none; } .jf-st { transition: none; } }
+
+/* ---------- colour chips: a little stack on the left that fans out into a row ---------- */
+.swatches { position: fixed; z-index: 70; left: max(14px, env(safe-area-inset-left)); bottom: max(14px, env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 12px; }
+.sw-set { --n: 4; --s: 40px; --g: 46px; position: relative; width: 84px; height: 58px; border-radius: 99px; border: var(--b) solid transparent; transition: width .4s cubic-bezier(.3, 1.3, .5, 1), background .2s, border-color .2s, box-shadow .2s; }
+.sw-set button { position: absolute; left: 6px; top: 6px; width: var(--s); height: var(--s); padding: 0; border-radius: 50%; border: var(--b) solid var(--ink); background: var(--sw); cursor: pointer; z-index: calc(10 - var(--i, 0));
+  transform: translate(calc(var(--i, 0) * 9px), 0) scale(calc(1 - var(--i, 0) * .07)); transition: transform .4s cubic-bezier(.3, 1.3, .5, 1), box-shadow .2s; }
+.sw-set button[aria-pressed="true"] { box-shadow: -3px -3px 0 var(--ink); }
+.sw-set button[aria-pressed="true"]::before { content: ''; position: absolute; inset: 8px; border-radius: 50%; border: 2.5px solid var(--ink); background: var(--white); opacity: .9; transform: scale(.35); }
+.sw-set .sw-hint { display: none; position: absolute; right: -6px; top: -6px; z-index: 12; width: 20px; height: 20px; display: grid; place-items: center; background: var(--yellow); border: 2.5px solid var(--ink); border-radius: 50%; font: 800 13px/1 var(--display); color: var(--ink); pointer-events: none; transition: opacity .2s, transform .3s; }
+.sw-set.open, .swatches:has(:focus-visible) .sw-set { width: calc(var(--n) * var(--g) + 12px); background: var(--white); border-color: var(--ink); box-shadow: -5px -5px 0 var(--ink); }
+.sw-set.open button, .swatches:has(:focus-visible) .sw-set button { transform: translate(calc(var(--k) * var(--g)), 0); }
+.sw-set.open button:hover, .swatches:has(:focus-visible) .sw-set button:hover { transform: translate(calc(var(--k) * var(--g)), -3px) rotate(-8deg); }
+.sw-set.open .sw-hint, .swatches:has(:focus-visible) .sw-hint { opacity: 0; transform: scale(.4); }
+@media (hover: hover) and (pointer: fine) {
+  .sw-set:hover { width: calc(var(--n) * var(--g) + 12px); background: var(--white); border-color: var(--ink); box-shadow: -5px -5px 0 var(--ink); }
+  .sw-set:hover button { transform: translate(calc(var(--k) * var(--g)), 0); }
+  .sw-set:hover button:hover { transform: translate(calc(var(--k) * var(--g)), -3px) rotate(-8deg); }
+  .sw-set:hover .sw-hint { opacity: 0; transform: scale(.4); }
+}
+.swatches .to-top { --d: 5px; width: 48px; height: 48px; padding: 0; display: grid; place-items: center; background: var(--yellow); border: var(--b) solid var(--ink); border-radius: 50%; box-shadow: -5px -5px 0 var(--ink); cursor: pointer; transition: transform .09s ease-out, box-shadow .09s ease-out, opacity .3s; }
+.swatches .to-top svg { width: 22px; height: 22px; fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.at-top .swatches .to-top { opacity: 0; pointer-events: none; }
+@media (max-width: 640px) { .sw-set { --s: 36px; --g: 41px; width: 76px; height: 52px; } .swatches .to-top { width: 44px; height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .sw-set, .sw-set button { transition: none; } }
+
+/* ---------- physical buttons: pressing pushes the button into its shadow; the back edge never moves ---------- */
+.btn { --d: 6px; }
+.btn.big { --d: 8px; }
+.tab, .chip-b, .fchip, .pw-tab, .d-toggles button { --d: 4px; }
+.tone-btn { --d: 2px; } .cite { --d: 3px; } .modal-x { --d: 3px; } .foot-cta { --d: 8px; } .fab-app { --d: 5px; }
+.btn, .tab, .chip-b, .fchip, .pw-tab, .d-toggles button, .tone-btn, .cite, .foot-cta, .fab-app.show {
+  box-shadow: calc(-1 * var(--d)) calc(-1 * var(--d)) 0 0 var(--ink);
+  transition: transform .09s ease-out, box-shadow .09s ease-out, background-color .2s, opacity .25s;
+}
+/* hover: the little shake stays, the button does not lift off its shadow */
+.btn:hover, .tab:hover, .chip-b:hover, .fchip:hover, .pw-tab:hover, .d-toggles button:hover:not(:disabled), .tone-btn:hover, .cite:hover, .foot-cta:hover, .fab-app.show:hover {
+  transform: rotate(-1deg); box-shadow: calc(-1 * var(--d)) calc(-1 * var(--d)) 0 0 var(--ink);
+}
+/* selected toggles sit half way down */
+.tab[aria-selected="true"], .chip-b[aria-selected="true"], .fchip[aria-pressed="true"], .pw-tab[aria-pressed="true"], .d-toggles button[aria-pressed="true"] {
+  transform: translate(calc(var(--d) / -2), calc(var(--d) / -2)); box-shadow: calc(var(--d) / -2) calc(var(--d) / -2) 0 0 var(--ink);
+}
+/* pressed: all the way into the shadow */
+.btn:active, .btn.pressed, .tab:active, .tab.pressed, .chip-b:active, .chip-b.pressed, .fchip:active, .fchip.pressed, .pw-tab:active, .pw-tab.pressed,
+.d-toggles button:active:not(:disabled), .d-toggles button.pressed, .tone-btn:active, .tone-btn.pressed, .cite:active, .cite.pressed, .foot-cta:active, .foot-cta.pressed,
+.fab-app.show:active, .fab-app.show.pressed, .swatches .to-top:active, .swatches .to-top.pressed {
+  transform: translate(calc(-1 * var(--d)), calc(-1 * var(--d))) !important; box-shadow: 0 0 0 0 var(--ink) !important; transition-duration: .05s;
+}
+@media (prefers-reduced-motion: reduce) { body, .nav, .video-missing, .d-stage, .journey { transition: none; } }

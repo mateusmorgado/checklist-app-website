@@ -138,11 +138,13 @@
     const icon = document.querySelector('link[rel="icon"]'), base = icon && icon.getAttribute('href');
     // the tab icon takes the colours of the chosen set
     const setIcon = () => { if (!icon) return; const c = n => getComputedStyle(root).getPropertyValue(n).trim(), svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="' + c('--red') + '"/><rect x="10" y="10" width="40" height="40" rx="10" fill="#111"/><rect x="15" y="15" width="40" height="40" rx="10" fill="' + c('--yellow') + '" stroke="#111" stroke-width="4.5"/><path d="M24 35.5l7 7 14.5-16" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>'; icon.href = root.dataset.palette === 'red' ? base : 'data:image/svg+xml,' + encodeURIComponent(svg); };
-    const paint = p => { root.setAttribute('data-palette', p); setIcon(); btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false')); if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--red').trim()); };
+    // the chosen chip sits on top of the stack; the others pile up behind it in order
+    const stack = p => { let r = 1; btns.forEach((b, k) => { b.style.setProperty('--k', k); b.style.setProperty('--i', b.dataset.p === p ? 0 : r++); }); };
+    const paint = p => { stack(p); root.setAttribute('data-palette', p); setIcon(); btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false')); if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--red').trim()); };
     paint(root.getAttribute('data-palette') || 'red');
     $('#to-top').addEventListener('click', () => { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
     // on phones the dots sit in a little pile; the first tap fans them out, the next one picks a colour
-    const sw = $('#swatches'), hover = matchMedia('(hover: hover) and (pointer: fine)'); let fold = 0;
+    const sw = $('#sw-set'), hover = matchMedia('(hover: hover) and (pointer: fine)'); let fold = 0;
     const isOpen = () => sw.classList.contains('open') || (hover.matches && sw.matches(':hover'));
     btns.forEach(b => b.addEventListener('click', () => {
       if (!isOpen()) { sw.classList.add('open'); clearTimeout(fold); fold = setTimeout(() => sw.classList.remove('open'), 5000); return; }
@@ -301,6 +303,16 @@
     $('#np-journey').addEventListener('click', () => $('#open-journey').click());
     document.addEventListener('click', e => { if (!panel.hidden && !panel.contains(e.target)) set(false); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) { set(false); btn.focus(); } });
+  })();
+
+  // ---------- quick taps still show the button going down into its shadow ----------
+  (function () {
+    const SEL = '.btn, .tab, .chip-b, .fchip, .pw-tab, .d-toggles button, .tone-btn, .cite, .foot-cta, .fab-app, .to-top';
+    addEventListener('pointerdown', e => {
+      const b = e.target.closest(SEL); if (!b || b.disabled) return; const t0 = performance.now(); b.classList.add('pressed');
+      const up = () => { removeEventListener('pointerup', up); removeEventListener('pointercancel', up); setTimeout(() => b.classList.remove('pressed'), Math.max(0, 110 - (performance.now() - t0))); };
+      addEventListener('pointerup', up); addEventListener('pointercancel', up);
+    }, { passive: true });
   })();
 
   // ---------- Impressum ----------
