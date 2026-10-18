@@ -101,7 +101,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 /* video window */
-.win { max-width: 1100px; margin: 0 auto; background: var(--white); border: var(--b) solid var(--ink); border-radius: 16px; box-shadow: -12px -12px 0 var(--ink); overflow: hidden; }
+.win { max-width: 1560px; margin: 0 auto; background: var(--white); border: var(--b) solid var(--ink); border-radius: 16px; box-shadow: -12px -12px 0 var(--ink); overflow: hidden; }
 .win-bar { display: flex; align-items: center; gap: 12px; background: var(--yellow); border-bottom: var(--b) solid var(--ink); padding: 10px 16px; font: 700 15px var(--display); }
 .dots { display: flex; gap: 6px; } .dots i { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid var(--ink); background: var(--white); }
 .win-title { flex: 1; } .win-btns { letter-spacing: .2em; }
@@ -311,3 +311,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .video-box.no-teaser:not(.playing) video.main[hidden] { display: none; }
 .video-box.missing .play-btn { display: none; }
 @media (prefers-reduced-motion: reduce) { .play-btn .play { animation: none; } }
+
+/* the video section is wider than the rest on big screens */
+.wrap.wide { max-width: 1760px; padding: 0 clamp(16px, 3.5vw, 64px); }
+@media (min-width: 1100px) { .wrap.wide .win { box-shadow: -14px -14px 0 var(--ink); } }
