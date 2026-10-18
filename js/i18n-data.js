@@ -242,6 +242,7 @@ window.I18N_DE = {
 "Electric blue": "Elektrisches Blau",
 "Mint and coral": "Mint und Koralle",
 "Cream and mint": "Creme und Mint",
+"Back to the top": "Zurück nach oben",
 "ChecklistPro, back to top": "ChecklistPro, zurück nach oben",
 "Sections": "Bereiche",
 "Click sounds: on. Press to turn off.": "Klickgeräusche: an. Tippen zum Ausschalten.",

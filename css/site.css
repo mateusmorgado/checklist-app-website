@@ -355,6 +355,8 @@ body, .nav, .video-missing, .d-stage, .journey { transition: background-color .3
 .swatches button { width: 32px; height: 32px; padding: 0; border-radius: 50%; border: var(--b) solid var(--ink); background: var(--sw); cursor: pointer; transition: transform .15s; position: relative; }
 .swatches button:hover { transform: scale(1.12) rotate(-6deg); }
 .swatches button[aria-pressed="true"] { transform: scale(1.12); box-shadow: 0 0 0 3px var(--white), 0 0 0 6px var(--ink); }
+.sw-sep { width: 3px; align-self: stretch; margin: 2px 2px; background: var(--ink); border-radius: 2px; opacity: .25; }
+.swatches .to-top { background: var(--yellow); display: grid; place-items: center; } .swatches .to-top svg { width: 20px; height: 20px; fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .swatches button::after { content: ''; position: absolute; inset: -9px; }
 @media (prefers-reduced-motion: reduce) { body, .nav, .video-missing, .d-stage, .journey { transition: none; } .swatches button { transition: none; } }
 @media (max-width: 520px) { .swatches { left: 50%; transform: translateX(-50%); } }
