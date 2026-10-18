@@ -281,7 +281,8 @@
       const r = btn.getBoundingClientRect(), W = Math.min(440, innerWidth - 32); pop.style.width = W + 'px';
       const h = pop.offsetHeight, fitsY = y => y >= 8 && y + h <= innerHeight - 8, sideY = Math.max(8, Math.min(r.top - 12, innerHeight - h - 8));
       let mode, x, y;
-      if (r.right + 18 + W <= innerWidth - 12) { mode = 'side'; x = r.right + 18; y = sideY; }
+      if (w.dataset.pop === 'below') { x = Math.max(16, Math.min(r.left - 12, innerWidth - W - 16)); mode = 'below'; y = r.bottom + 14; }
+      else if (r.right + 18 + W <= innerWidth - 12) { mode = 'side'; x = r.right + 18; y = sideY; }
       else if (r.left - 18 - W >= 12) { mode = 'side-l'; x = r.left - 18 - W; y = sideY; }
       else { x = Math.max(16, Math.min(r.left - 12, innerWidth - W - 16)); mode = fitsY(r.bottom + 14) || !fitsY(r.top - 14 - h) ? 'below' : 'up'; y = mode === 'below' ? r.bottom + 14 : r.top - 14 - h; }
       pop.classList.remove('up', 'side', 'side-l'); if (mode !== 'below') pop.classList.add(mode);

@@ -1,6 +1,8 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Inspiration": "Inspiration",
+"A two-minute checklist nearly halved deaths after surgery. The same idea, now for your day.": "Eine Zwei-Minuten-Checkliste hat die Todesfälle nach Operationen fast halbiert. Dieselbe Idee, jetzt für deinen Alltag.",
 "Previous power": "Vorherige Funktion",
 "Next power": "Nächste Funktion",
 "Film": "Film",
