@@ -868,9 +868,9 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .sw-set button[aria-pressed="true"] { box-shadow: -3px -3px 0 var(--ink); }
 .sw-set button[aria-pressed="true"]::before { content: ''; position: absolute; inset: 8px; border-radius: 50%; border: 2.5px solid var(--ink); background: var(--white); opacity: .9; transform: scale(.35); }
 .sw-set .sw-hint { display: none; position: absolute; right: -6px; top: -6px; z-index: 12; width: 20px; height: 20px; display: grid; place-items: center; background: var(--yellow); border: 2.5px solid var(--ink); border-radius: 50%; font: 800 13px/1 var(--display); color: var(--ink); pointer-events: none; transition: opacity .2s, transform .3s; }
-.sw-set.open, .swatches:has(:focus-visible) .sw-set { width: calc(var(--n) * var(--g) + 12px); background: var(--white); border-color: var(--ink); box-shadow: -5px -5px 0 var(--ink); }
-.sw-set.open button, .swatches:has(:focus-visible) .sw-set button { transform: translate(calc(var(--k) * var(--g)), 0); }
-.sw-set.open button:hover, .swatches:has(:focus-visible) .sw-set button:hover { transform: translate(calc(var(--k) * var(--g)), -3px) rotate(-8deg); }
+.sw-set.open, .sw-set.early, .swatches:has(:focus-visible) .sw-set { width: calc(var(--n) * var(--g) + 12px); background: var(--white); border-color: var(--ink); box-shadow: -5px -5px 0 var(--ink); }
+.sw-set.open button, .sw-set.early button, .swatches:has(:focus-visible) .sw-set button { transform: translate(calc(var(--k) * var(--g)), 0); }
+.sw-set.open button:hover, .sw-set.early button:hover, .swatches:has(:focus-visible) .sw-set button:hover { transform: translate(calc(var(--k) * var(--g)), -3px) rotate(-8deg); }
 .sw-set.open .sw-hint, .swatches:has(:focus-visible) .sw-hint { opacity: 0; transform: scale(.4); }
 @media (hover: hover) and (pointer: fine) {
   .sw-set:hover { width: calc(var(--n) * var(--g) + 12px); background: var(--white); border-color: var(--ink); box-shadow: -5px -5px 0 var(--ink); }

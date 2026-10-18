@@ -151,7 +151,10 @@
     $('#to-top').addEventListener('click', () => { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
     // on phones the dots sit in a little pile; the first tap fans them out, the next one picks a colour
     const sw = $('#sw-set'), hover = matchMedia('(hover: hover) and (pointer: fine)'); let fold = 0;
-    const isOpen = () => sw.classList.contains('open') || (hover.matches && sw.matches(':hover'));
+    // open as a row at the top of the page, folds into the stack once "Lists that ask first" comes up
+    const ideas = $('#ideas'), early = () => sw.classList.toggle('early', !ideas || ideas.getBoundingClientRect().top > innerHeight * .7);
+    early(); addEventListener('scroll', early, { passive: true }); addEventListener('resize', early);
+    const isOpen = () => sw.classList.contains('early') || sw.classList.contains('open') || (hover.matches && sw.matches(':hover'));
     btns.forEach(b => b.addEventListener('click', () => {
       if (!isOpen()) { sw.classList.add('open'); clearTimeout(fold); fold = setTimeout(() => sw.classList.remove('open'), 5000); return; }
       paint(b.dataset.p); try { localStorage.setItem('cp-palette', b.dataset.p); } catch (e) {}
