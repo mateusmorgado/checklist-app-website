@@ -26,7 +26,7 @@
   function unpark() {
     if (dropArm) { removeEventListener('scroll', dropArm); dropArm = null; }
     parked.forEach(p => { p.ph.parentNode.insertBefore(p.l, p.ph); p.ph.remove(); }); parked = []; $$('.falling').forEach(f => f.remove());
-    lines.slice(0, 2).forEach(l => { l.classList.remove('parked', 'dropping', 'dropped'); l.removeAttribute('style'); });
+    lines.slice(0, 2).forEach(l => { l.classList.remove('parked', 'dropping', 'dropped'); l.removeAttribute('style'); }); hero.classList.remove('parked'); lines[2].classList.remove('squash');
   }
   function park() {
     const hr = hero.getBoundingClientRect(), f = lines.slice(0, 2).map(l => ({ l, r: l.getBoundingClientRect() }));
@@ -36,14 +36,17 @@
       lot.appendChild(l); parked.push({ l, ph });
     });
     void hero.offsetHeight;
+    // they come to rest leaning in the two bottom corners, like props: / on the left, \ on the right
+    const PX = 28, A = 76 * Math.PI / 180, cw = document.documentElement.clientWidth, base = Math.min(hero.offsetHeight, innerHeight) - 36;
     f.forEach(({ l }, i) => {
-      const right = i === 1, cw = document.documentElement.clientWidth;
-      l.classList.add('parked'); l.style.transition = ''; l.style.fontSize = '28px';
-      l.style.setProperty('--rot', right ? '90deg' : '-90deg'); l.style.setProperty('--end', right ? '150deg' : '-150deg'); l.style.setProperty('--dx', right ? '.12' : '-.12');
-      if (right) { l.style.left = (cw - 16) + 'px'; l.style.top = '130px'; l.style.transform = 'rotate(90deg)'; }
-      else { l.style.left = '12px'; l.style.top = (Math.min(hero.offsetHeight, innerHeight) - 80) + 'px'; l.style.transform = 'rotate(-90deg)'; }
-      l.style.transitionDelay = (i * 160) + 'ms';
+      const right = i === 1, L = l.offsetWidth * PX / parseFloat(getComputedStyle(l).fontSize);
+      l.classList.add('parked'); l.style.transition = ''; l.style.fontSize = PX + 'px';
+      l.style.setProperty('--rot', right ? '76deg' : '-76deg'); l.style.setProperty('--end', right ? '150deg' : '-150deg'); l.style.setProperty('--dx', right ? '.12' : '-.12');
+      if (right) { l.style.left = (cw - 10 - L * Math.cos(A)) + 'px'; l.style.top = (base - L * Math.sin(A)) + 'px'; l.style.transform = 'rotate(76deg)'; }
+      else { l.style.left = '8px'; l.style.top = base + 'px'; l.style.transform = 'rotate(-76deg)'; }
+      l.style.transitionDelay = (i * 120) + 'ms';
     });
+    hero.classList.add('parked');
     parked.forEach(({ ph }) => { ph.style.height = '0px'; ph.style.marginBottom = '0px'; });
     if (reduce) return;
     // only a scroll down after the lines have landed lets them go
@@ -71,8 +74,9 @@
     await wait(650); if (!ok()) return; lines[1].classList.add('show');
     await wait(900); if (!ok()) return; lines[1].classList.add('struck');
     await wait(750); if (!ok()) return; lines[2].classList.add('show'); burst();
-    await wait(500); if (!ok()) return;
-    if (canPark()) park(); else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
+    await wait(240); if (!ok()) return;
+    // the big line hits the struck ones: it squashes on impact and springs back while they are shoved aside
+    if (canPark()) { lines[2].classList.add('squash'); lines[2].addEventListener('animationend', () => lines[2].classList.remove('squash'), { once: true }); park(); } else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
     await wait(500); if (!ok()) return; $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in'));
   }
   $('#replay').addEventListener('click', intro);
@@ -109,7 +113,10 @@
   // ---------- colour set switch ----------
   (function () {
     const root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]'), btns = $$('#swatches button[data-p]');
-    const paint = p => { root.setAttribute('data-palette', p); btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false')); if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--red').trim()); };
+    const icon = document.querySelector('link[rel="icon"]'), base = icon && icon.getAttribute('href');
+    // the tab icon takes the colours of the chosen set
+    const setIcon = () => { if (!icon) return; const c = n => getComputedStyle(root).getPropertyValue(n).trim(), svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="' + c('--red') + '"/><rect x="10" y="10" width="40" height="40" rx="10" fill="#111"/><rect x="15" y="15" width="40" height="40" rx="10" fill="' + c('--yellow') + '" stroke="#111" stroke-width="4.5"/><path d="M24 35.5l7 7 14.5-16" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>'; icon.href = root.dataset.palette === 'red' ? base : 'data:image/svg+xml,' + encodeURIComponent(svg); };
+    const paint = p => { root.setAttribute('data-palette', p); setIcon(); btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false')); if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--red').trim()); };
     paint(root.getAttribute('data-palette') || 'red');
     $('#to-top').addEventListener('click', () => { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
     btns.forEach(b => b.addEventListener('click', () => { paint(b.dataset.p); try { localStorage.setItem('cp-palette', b.dataset.p); } catch (e) {} }));
