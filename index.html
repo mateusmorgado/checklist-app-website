@@ -16,6 +16,8 @@
   if (P.indexOf(pal) < 0) pal = 'red';
   if (L.indexOf(lang) < 0) lang = (navigator.language || 'en').toLowerCase().indexOf('de') === 0 ? 'de' : 'en';
   d.setAttribute('data-palette', pal); d.setAttribute('data-lang', lang); d.lang = lang;
+  // a reload always starts at the top, without the browser scrolling back down (or smooth-scrolling up) to an old position
+  try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; if (location.hash && location.hash !== '#journey') history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   d.classList.add('booting'); // hides the header and controls until the hero intro takes over
 })();
 </script>
