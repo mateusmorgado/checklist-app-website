@@ -57,11 +57,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .reveal.in { opacity: 1; transform: none; }
 
 /* hero */
-.hero { position: relative; min-height: 100svh; padding: 120px 0 60px; display: flex; align-items: center; overflow: hidden; }
+.hero { position: relative; min-height: 100svh; padding: 110px 0 90px; display: flex; align-items: center; overflow: hidden; }
 .hero-in { position: relative; z-index: 3; width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 var(--pad); }
 .eyebrow { font: 700 16px var(--display); margin: 0 0 28px; letter-spacing: .02em; }
 .eyebrow span { background: var(--ink); color: var(--white); padding: 3px 10px; border-radius: 6px; margin-right: 6px; }
-.lines { font: 800 clamp(36px, 6.4vw, 104px)/.95 var(--display); font-stretch: 75%; text-transform: uppercase; letter-spacing: -.025em; }
+.lines { font: 800 clamp(36px, 5.5vw, 104px)/.95 var(--display); font-stretch: 75%; text-transform: uppercase; letter-spacing: -.025em; }
 .line { display: block; margin-bottom: .12em; opacity: 0; transform: translateY(70px) scale(.94) rotate(-1.5deg); transform-origin: 0 100%; }
 .line.show { opacity: 1; transform: none; transition: opacity .35s, transform .55s cubic-bezier(.2, 1.4, .4, 1); }
 .line .w { display: inline-block; }
@@ -71,7 +71,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .line.struck .strike { width: 108%; transition: width .45s cubic-bezier(.7, 0, .2, 1); }
 .line.struck .t { opacity: .55; transition: opacity .4s .2s; }
 .line.struck .chip { background: var(--pink); transition: background .3s .2s; }
-.line.l3 { margin-top: .1em; }
+.line.l3 { margin-top: .1em; } .line.l1, .line.l2 { white-space: nowrap; font-size: .78em; }
 .lines .big { display: block; margin-top: .06em; font-size: 1.28em; line-height: 1.02; }
 .lines .big .hl { display: inline-block; margin-bottom: .1em; transform: rotate(-1.2deg); }
 .lines .big .hl2 { transform: rotate(1.4deg); background: var(--mint); }
@@ -79,8 +79,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
 .replay { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; font: 700 16px var(--display); text-decoration: underline; text-underline-offset: 4px; min-height: 48px; padding: 0 8px; }
 .replay svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
-.hero-phone { position: absolute; right: max(2vw, 20px); bottom: -70px; z-index: 2; transform: rotate(8deg); }
-@media (min-width: 1001px) { .hero-in { padding-right: clamp(280px, 24vw, 380px); } }
+.hero-phone { position: absolute; right: max(2.5vw, 24px); top: 50%; z-index: 2; transform: translateY(-46%) rotate(6deg); display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.hero-phone .screen { background: #111; touch-action: pan-y; cursor: grab; } .hero-phone .screen.drag { cursor: grabbing; }
+.swipe { display: flex; width: 100%; height: 100%; transition: transform .7s cubic-bezier(.6, 0, .15, 1); will-change: transform; }
+.swipe.drag { transition: none; }
+.hero-phone .swipe img { position: static; flex: 0 0 100%; width: 100%; height: 100%; opacity: 1; transform: none; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+.swipe-meta { display: flex; align-items: center; gap: 12px; transform: rotate(-6deg); }
+.swipe-name { font: 800 16px var(--display); background: var(--yellow); color: var(--ink); border: 3px solid var(--ink); border-radius: 10px; padding: 3px 12px; box-shadow: -3px -3px 0 var(--ink); }
+.swipe-dots { display: inline-flex; gap: 6px; } .swipe-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--ink); opacity: .3; transition: opacity .3s, transform .3s; } .swipe-dots i.on { opacity: 1; transform: scale(1.35); }
+/* the first two lines fall off to the left and the rest moves up */
+.line.fell { transform: translate(-70vw, 120px) rotate(-24deg); opacity: 0; transition: transform .9s cubic-bezier(.5, 0, 1, .6), opacity .5s .45s; }
+.line.gone { height: 0 !important; margin: 0 !important; overflow: hidden; visibility: hidden; transition: height .6s cubic-bezier(.6, 0, .2, 1), margin .6s; }
+@media (min-width: 1001px) { .hero-in { padding-right: clamp(320px, 26vw, 420px); } }
 @media (max-width: 1000px) { .hero-phone { display: none; } }
 
 /* stickers */
@@ -331,3 +341,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @keyframes nudge { 50% { transform: translateX(-50%) rotate(-2deg) translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) { .tap-ring, .press-hint { animation: none; } .tap-ring { opacity: 1; } }
 .live .flow-phone { padding-bottom: 50px; }
+
+/* colour sets, like the app's Modern palettes. The page uses these variables everywhere. */
+:root { --inkhl: #fff; }
+:root[data-palette="blue"] { --red: #2f8bff; --red-d: #1f74e6; --yellow: #f6d800; --mint: #1de9c8; --pink: #ffb3c7; --blue: #bfe0ff; --orange: #ffb347; --inkhl: #fff; }
+:root[data-palette="mint"] { --red: #d9f4e6; --red-d: #bdebd3; --yellow: #ff7a59; --mint: #7be8a4; --pink: #ffc9b8; --blue: #b9e8ff; --orange: #ffc247; --inkhl: #e0481f; }
+:root[data-palette="cream"] { --red: #fdf0e9; --red-d: #f6dccd; --yellow: #6df5b9; --mint: #ffb4a6; --pink: #ffd9c4; --blue: #b9d3ff; --orange: #ffc247; --inkhl: #0d8a5f; }
+.mega .ink { color: var(--inkhl); }
+body, .nav, .video-missing, .d-stage, .journey { transition: background-color .35s; }
+.swatches { position: fixed; z-index: 70; left: 50%; transform: translateX(-50%); bottom: max(14px, env(safe-area-inset-bottom)); display: flex; gap: 8px; padding: 8px; background: var(--white); border: var(--b) solid var(--ink); border-radius: 999px; box-shadow: -4px -4px 0 var(--ink); }
+.swatches button { width: 32px; height: 32px; padding: 0; border-radius: 50%; border: var(--b) solid var(--ink); background: var(--sw); cursor: pointer; transition: transform .15s; position: relative; }
+.swatches button:hover { transform: scale(1.12) rotate(-6deg); }
+.swatches button[aria-pressed="true"] { transform: scale(1.12); box-shadow: 0 0 0 3px var(--white), 0 0 0 6px var(--ink); }
+.swatches button::after { content: ''; position: absolute; inset: -9px; }
+@media (prefers-reduced-motion: reduce) { body, .nav, .video-missing, .d-stage, .journey { transition: none; } .swatches button { transition: none; } }
+@media (max-width: 520px) { .swatches { left: 50%; transform: translateX(-50%); } }

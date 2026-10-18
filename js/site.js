@@ -12,23 +12,25 @@
 
   // ---------- hero intro ----------
   const lines = $$('.lines .line'), confetti = $('#confetti');
-  const COLORS = ['#ffe14d', '#6df5b9', '#ffffff', '#ffc2c2', '#6db7ff', '#ffb347'];
+  const cv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   function burst() {
-    if (reduce) return; confetti.innerHTML = '';
+    if (reduce) return; confetti.innerHTML = ''; const COLORS = [cv('--yellow'), cv('--mint'), '#ffffff', cv('--pink'), cv('--blue'), cv('--orange')];
     for (let i = 0; i < 46; i++) { const p = document.createElement('i'); const w = 8 + Math.random() * 10; p.style.cssText = 'left:' + (Math.random() * 100) + '%;width:' + w + 'px;height:' + (w * 1.4) + 'px;background:' + COLORS[i % COLORS.length] + ';border-radius:' + (i % 3 === 0 ? '50%' : '3px') + ';animation-delay:' + (Math.random() * .7) + 's;animation-duration:' + (1.8 + Math.random() * 1.4) + 's'; confetti.appendChild(p); }
     setTimeout(() => { confetti.innerHTML = ''; }, 4200);
   }
   let introRun = 0;
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;
-    lines.forEach(l => l.classList.remove('show', 'struck')); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
-    if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')); return; }
+    lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
+    if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines.slice(0, 2).forEach(l => l.classList.add('gone')); lines[2].classList.remove('struck'); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')); return; }
     await wait(300); if (!ok()) return; lines[0].classList.add('show');
     await wait(900); if (!ok()) return; lines[0].classList.add('struck');
     await wait(650); if (!ok()) return; lines[1].classList.add('show');
     await wait(900); if (!ok()) return; lines[1].classList.add('struck');
     await wait(750); if (!ok()) return; lines[2].classList.add('show'); burst();
-    await wait(650); if (!ok()) return; $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in'));
+    await wait(500); if (!ok()) return; lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); });
+    await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone'));
+    await wait(500); if (!ok()) return; $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in'));
   }
   $('#replay').addEventListener('click', intro);
   intro();
@@ -39,12 +41,35 @@
     addEventListener('pointermove', e => { const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5; stk.forEach((s, i) => { s.style.transform = 'translate(' + (x * depth[i % 6] * -2) + 'px,' + (y * depth[i % 6] * -2) + 'px)'; }); });
   }
 
+  // ---------- hero phone: every look, swiped through ----------
+  (function () {
+    const track = $('#hero-swipe'), scr = track.parentElement, nameEl = $('#swipe-name'), dotsEl = $('#swipe-dots'), L = window.FRAMES.looks;
+    let cur = 0, timer = 0, x0 = null, dx = 0, w = 1, pause = 0;
+    L.forEach((l, i) => { const im = new Image(); im.src = 'img/frames/' + l.img + '.webp'; im.alt = ''; im.width = 780; im.height = 1688; im.draggable = false; track.appendChild(im); const d = document.createElement('i'); dotsEl.appendChild(d); });
+    const go = i => { cur = (i + L.length) % L.length; track.style.transform = 'translateX(' + (-cur * 100) + '%)'; nameEl.textContent = L[cur].name === 'Minimalist' || L[cur].name.startsWith('Air') || L[cur].name === 'Boeing' || L[cur].name === 'Embraer' ? L[cur].name : 'Modern ' + L[cur].name; $$('i', dotsEl).forEach((d, k) => d.classList.toggle('on', k === cur)); };
+    go(0);
+    const loop = () => { clearInterval(timer); if (reduce) return; timer = setInterval(() => { if (document.hidden || Date.now() < pause) return; go(cur + 1); }, 2400); };
+    loop();
+    scr.addEventListener('pointerdown', e => { x0 = e.clientX; dx = 0; w = scr.offsetWidth; pause = Date.now() + 6000; track.classList.add('drag'); scr.classList.add('drag'); scr.setPointerCapture(e.pointerId); });
+    scr.addEventListener('pointermove', e => { if (x0 == null) return; dx = e.clientX - x0; track.style.transform = 'translateX(' + (-cur * w + dx) + 'px)'; });
+    const end = () => { if (x0 == null) return; const moved = dx; x0 = null; track.classList.remove('drag'); scr.classList.remove('drag'); track.style.transform = ''; go(Math.abs(moved) > w * .18 ? cur + (moved < 0 ? 1 : -1) : cur); pause = Date.now() + 6000; };
+    scr.addEventListener('pointerup', end); scr.addEventListener('pointercancel', end);
+  })();
+
   // 3D tilt for phones
   $$('.tilt').forEach(p => {
     if (reduce || !matchMedia('(pointer: fine)').matches) return; const host = p.parentElement;
     host.addEventListener('pointermove', e => { const r = host.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; p.style.transform = 'rotateY(' + (x * 14) + 'deg) rotateX(' + (-y * 10) + 'deg)'; });
     host.addEventListener('pointerleave', () => { p.style.transform = ''; });
   });
+
+  // ---------- colour set switch ----------
+  (function () {
+    const root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]'), btns = $$('#swatches button');
+    const paint = p => { root.setAttribute('data-palette', p); btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false')); if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--red').trim()); };
+    paint(root.getAttribute('data-palette') || 'red');
+    btns.forEach(b => b.addEventListener('click', () => { paint(b.dataset.p); try { localStorage.setItem('cp-palette', b.dataset.p); } catch (e) {} }));
+  })();
 
   // ---------- video: a silent teaser loops until someone presses play, then the full ad starts from the beginning ----------
   const box = $('#video-box'), vid = $('#ad'), teaser = $('#teaser'), playBtn = $('#play-main');
@@ -94,7 +119,7 @@
     addLi.forEach(li => li.classList.remove('in')); count.textContent = '3 items'; ask.classList.remove('show'); cur.classList.remove('show', 'press'); hint.classList.remove('done');
     if (reduce) { setAnswer('sauna', true, true); setAnswer('squat', true, true); Object.values(tg).forEach(b => { b.disabled = false; }); hint.classList.add('done'); return; }
     cur.style.left = '86%'; cur.style.top = '96%'; await wait(700); if (!ok()) return;
-    for (const [key, text, icon, color] of [['sauna', 'Sauna?', ICON_SAUNA, '#ffe14d'], ['squat', 'Squat day?', ICON_BAR, '#ffc2c2']]) {
+    for (const [key, text, icon, color] of [['sauna', 'Sauna?', ICON_SAUNA, 'var(--yellow)'], ['squat', 'Squat day?', ICON_BAR, 'var(--pink)']]) {
       dq.textContent = text; dic.innerHTML = icon; dic.style.background = color; $('#d-yes').classList.remove('picked'); ask.classList.add('show'); cur.classList.add('show');
       await wait(800); if (!ok()) return; point($('#d-yes')); await wait(900); if (!ok()) return;
       cur.classList.add('press'); $('#d-yes').classList.add('picked'); await wait(280); if (!ok()) return; cur.classList.remove('press'); await wait(260); if (!ok()) return;

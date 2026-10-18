@@ -6,6 +6,18 @@
 <title>ChecklistPro: the checklist prompt app</title>
 <meta name="description" content="Not a to-do app. Not a habits app. ChecklistPro is a checklist prompt app: build a list once, run it whenever you need it, with one thumb.">
 <meta name="theme-color" content="#ff4a4a">
+<script>
+/* Colour set and language are applied before the first paint, so there is no flash. ?palette=blue and ?lang=de also work. */
+(function () {
+  var P = ['red', 'blue', 'mint', 'cream'], L = ['en', 'de'], q = {}, d = document.documentElement;
+  try { var u = new URLSearchParams(location.search); q.palette = u.get('palette'); q.lang = u.get('lang'); } catch (e) {}
+  var pal = q.palette, lang = q.lang;
+  try { pal = pal || localStorage.getItem('cp-palette'); lang = lang || localStorage.getItem('cp-lang'); } catch (e) {}
+  if (P.indexOf(pal) < 0) pal = 'red';
+  if (L.indexOf(lang) < 0) lang = (navigator.language || 'en').toLowerCase().indexOf('de') === 0 ? 'de' : 'en';
+  d.setAttribute('data-palette', pal); d.setAttribute('data-lang', lang); d.lang = lang;
+})();
+</script>
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +41,13 @@
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
+<div class="swatches" id="swatches" role="group" aria-label="Colours">
+  <button type="button" data-p="red" style="--sw:#ff4a4a" aria-label="Bold red" title="Bold red" aria-pressed="true"></button>
+  <button type="button" data-p="blue" style="--sw:#2f8bff" aria-label="Electric blue" title="Electric blue" aria-pressed="false"></button>
+  <button type="button" data-p="mint" style="--sw:#7be8a4" aria-label="Mint and coral" title="Mint and coral" aria-pressed="false"></button>
+  <button type="button" data-p="cream" style="--sw:#fdf0e9" aria-label="Cream and mint" title="Cream and mint" aria-pressed="false"></button>
+</div>
+
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="nav" id="top">
@@ -74,7 +93,10 @@
       <button class="replay" id="replay" type="button" aria-label="Replay the intro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
     </div>
   </div>
-  <div class="hero-phone" aria-hidden="true"><div class="phone tilt" style="--pw:250px"><div class="screen"><img src="img/frames/hero-run.webp" alt="" width="780" height="1688"></div></div></div>
+  <div class="hero-phone" id="hero-phone" aria-hidden="true">
+    <div class="phone tilt" style="--pw:270px"><div class="screen"><div class="swipe" id="hero-swipe"></div></div></div>
+    <div class="swipe-meta"><span class="swipe-name" id="swipe-name">Minimalist</span><span class="swipe-dots" id="swipe-dots"></span></div>
+  </div>
 </section>
 
 <div class="ticker" aria-hidden="true"><div class="ticker-in">
@@ -116,17 +138,17 @@
     <div class="ideas-grid">
       <div class="ideas-small">
         <article class="idea reveal" data-tick>
-          <h3><span class="ic" style="--c:#ffe14d"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16v11H4zM9 8V5h6v3M4 13h16"/></svg></span>Trip packing</h3>
+          <h3><span class="ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16v11H4zM9 8V5h6v3M4 13h16"/></svg></span>Trip packing</h3>
           <ul class="mini"><li><span>Passport</span><i class="bx"></i></li><li><span>Charger</span><i class="bx"></i></li><li><span>Toothbrush</span><i class="bx"></i></li></ul>
         </article>
         <article class="idea reveal" data-tick>
-          <h3><span class="ic" style="--c:#ffc2c2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 10v9h12v-9M10 19v-5h4v5"/></svg></span>Leaving home</h3>
+          <h3><span class="ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 10v9h12v-9M10 19v-5h4v5"/></svg></span>Leaving home</h3>
           <ul class="mini"><li><span>Keys</span><i class="bx"></i></li><li><span>Wallet</span><i class="bx"></i></li><li><span>Stove off</span><i class="bx"></i></li></ul>
         </article>
       </div>
       <article class="idea demo reveal" id="cond-demo" aria-labelledby="demo-title">
         <header class="d-head">
-          <h3 id="demo-title"><span class="ic" style="--c:#6df5b9"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg></span>Gym bag</h3>
+          <h3 id="demo-title"><span class="ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg></span>Gym bag</h3>
           <button class="replay small" id="demo-replay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
         </header>
         <div class="d-stage" id="d-stage">
