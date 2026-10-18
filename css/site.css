@@ -1008,3 +1008,13 @@ body.intro .hero .sub, body.intro .hero .cta-row, body.intro .hero-down, body.in
 .nav { transition: transform .6s cubic-bezier(.3, 1.3, .5, 1), opacity .4s, background-color .35s; }
 body.intro-first .nav { transform: translateY(-110%); opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { body.intro-first .nav { transform: none; opacity: 1; } }
+
+/* the line under the headline is typed out, bold, then the chip, buttons, arrow and colours follow in order */
+.hero .sub { font-weight: 800; }
+.sub-type { display: none; }
+body.typing .hero .sub-src { display: none; }
+body.typing .hero .sub-type { display: inline; }
+body.typing .hero .sub-type::after { content: ''; display: inline-block; width: .08em; height: 1em; margin-left: 2px; vertical-align: -.12em; background: currentColor; animation: blink .6s steps(2) infinite; }
+body.typing .hero .sub .cite-wrap, body.typing .hero .cta-row, body.typing .hero-down, body.typing .swatches { opacity: 0 !important; transform: translateY(24px) !important; pointer-events: none; }
+.hero .sub .cite-wrap { transition: opacity .45s ease, transform .55s cubic-bezier(.3, 1.3, .5, 1); }
+.hero .cta-row { transition-delay: .18s; } .hero-down { transition-delay: .4s; } .swatches { transition-delay: .6s; }

@@ -88,10 +88,20 @@
       a.onfinish = () => { l.classList.add('dropped'); if (--left === 0) { parked.forEach(p => { p.l.getAnimations().forEach(x => x.cancel()); lot.appendChild(p.l); }); fall.remove(); } };
     });
   }
+  // after the headline lands: the header slides in, then the line under it is typed out, then the rest follows in order
+  async function typeSub(ok) {
+    const b = document.body, src = $('.hero .sub-src'), out = $('.hero .sub-type');
+    $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in'));
+    b.classList.add('typing'); b.classList.remove('intro', 'intro-first');
+    const txt = src.textContent; out.textContent = '';
+    await wait(450);
+    for (let k = 1; k <= txt.length; k++) { if (!ok()) { b.classList.remove('typing'); return; } out.textContent = txt.slice(0, k); await wait(txt[k - 1] === ' ' ? 8 : 16); }
+    await wait(150); if (!ok()) return; out.textContent = ''; b.classList.remove('typing');
+  }
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;
     // the text, buttons, arrow and colour chips wait until the headline has landed
-    document.body.classList.add('intro'); if (run === 1) document.body.classList.add('intro-first');
+    document.body.classList.remove('typing'); document.body.classList.add('intro'); if (run === 1) document.body.classList.add('intro-first');
     unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone', 'hit', 'broke'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
     if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); if (canPark()) park(); else lines.slice(0, 2).forEach(l => l.classList.add('gone')); ($$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')), document.body.classList.remove('intro', 'intro-first')); return; }
     await wait(300); if (!ok()) return; lines[0].classList.add('show');
@@ -107,7 +117,7 @@
     lines[2].classList.remove('broke'); void lines[2].offsetWidth; lines[2].classList.add('broke'); setTimeout(() => lines[2].classList.remove('broke'), 1300);
     if (!canPark()) lines.slice(0, 2).forEach(l => l.classList.remove('hit'));
     if (canPark()) { lines[2].classList.add('squash'); lines[2].addEventListener('animationend', () => lines[2].classList.remove('squash'), { once: true }); park(); } else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
-    await wait(500); if (!ok()) return; ($$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')), document.body.classList.remove('intro', 'intro-first'));
+    await wait(500); if (!ok()) return; typeSub(ok);
   }
   $('#replay').addEventListener('click', () => { nextFall(); intro(); });
   intro();
