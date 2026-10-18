@@ -999,3 +999,12 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .pw-tab:not([aria-pressed="true"]) { padding: 4px; }
 .pw-arrow:last-child { margin-left: auto; }
 .pw-tab .pw-ic { flex: none; width: 36px; height: 36px; }
+
+/* while the hero headline animates, everything else in view waits */
+.hero .sub, .hero .cta-row, .hero-down, .swatches { transition: opacity .5s ease, transform .6s cubic-bezier(.3, 1.3, .5, 1); }
+body.intro .hero .sub, body.intro .hero .cta-row, body.intro .hero-down, body.intro .swatches { opacity: 0 !important; transform: translateY(24px) !important; pointer-events: none; }
+.hero .cta-row { transition-delay: .12s; } .hero-down { transition-delay: .3s; } .swatches { transition-delay: .45s; }
+@media (max-width: 640px) { .hero-down { left: auto; right: 16px; margin-left: 0; } }
+.nav { transition: transform .6s cubic-bezier(.3, 1.3, .5, 1), opacity .4s, background-color .35s; }
+body.intro-first .nav { transform: translateY(-110%); opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { body.intro-first .nav { transform: none; opacity: 1; } }
