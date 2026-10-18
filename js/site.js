@@ -135,9 +135,22 @@
   intro();
 
   // mouse parallax for the stickers and the hero phone
-  if (!reduce && matchMedia('(pointer: fine)').matches) {
-    const stk = $$('.stk'); const depth = [14, 22, 10, 18, 26, 12];
-    addEventListener('pointermove', e => { const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5; stk.forEach((s, i) => { s.style.transform = 'translate(' + (x * depth[i % 6] * -2) + 'px,' + (y * depth[i % 6] * -2) + 'px)'; }); });
+  const stk = $$('.stk'), depth = [14, 22, 10, 18, 26, 12];
+  const drift = (x, y) => stk.forEach((s, i) => { s.style.transform = 'translate(' + (x * depth[i % 6] * -2) + 'px,' + (y * depth[i % 6] * -2) + 'px)'; });
+  if (!reduce && matchMedia('(pointer: fine)').matches) addEventListener('pointermove', e => drift(e.clientX / innerWidth - .5, e.clientY / innerHeight - .5));
+  // on phones the stickers follow the tilt of the phone instead (iPhone asks for permission on the first tap)
+  if (!reduce && !matchMedia('(pointer: fine)').matches && 'DeviceOrientationEvent' in window) {
+    let base = null, raf = 0, gx = 0, gy = 0;
+    const onTilt = e => {
+      if (e.beta == null || e.gamma == null) return; if (base == null) base = e.beta;
+      gx = Math.max(-1, Math.min(1, e.gamma / 30)) * .8; gy = Math.max(-1, Math.min(1, (e.beta - base) / 30)) * .8;
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; drift(gx, gy); });
+    };
+    const listen = () => addEventListener('deviceorientation', onTilt);
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      const ask = () => { removeEventListener('pointerdown', ask); DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') listen(); }).catch(() => {}); };
+      addEventListener('pointerdown', ask);
+    } else listen();
   }
 
   // ---------- hero phone: every look, swiped through ----------
