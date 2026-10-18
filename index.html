@@ -83,7 +83,6 @@
     <svg class="stk k6" viewBox="0 0 48 48"><path d="M24 4l4 6 7-3 1 7 7 1-3 7 6 4-6 4 3 7-7 1-1 7-7-3-4 6-4-6-7 3-1-7-7-1 3-7-6-4 6-4-3-7 7-1 1-7 7 3z"/><circle cx="24" cy="24" r="5"/></svg>
   </div>
   <div class="hero-in">
-    <p class="eyebrow"><span>ChecklistPro</span> · one-handed · built for your thumb</p>
     <h1 id="hero-title" class="sr-only">This is not a to-do app. This is not a habits app. This is a checklist prompt app.</h1>
     <div class="lines" aria-hidden="true">
       <div class="line l1"><span class="w">This is not a</span> <span class="chip"><span class="t">To-Do</span><i class="strike"></i></span> <span class="w">app</span></div>
@@ -92,7 +91,7 @@
     </div>
     <div class="confetti" id="confetti" aria-hidden="true"></div>
     <p class="sub reveal">Build a list once. Run it whenever you need it. The way pilots and surgeons do, now in your pocket.
-      <span class="cite-wrap" data-pop="below"><a class="cite" href="https://www.google.com/search?q=The+Checklist+Manifesto+Atul+Gawande" target="_blank" rel="noopener" aria-describedby="book-gawande">The Checklist Manifesto, 2009</a><span class="book-pop" id="book-gawande" role="tooltip">
+      <span class="cite-wrap"><a class="cite" href="https://www.google.com/search?q=The+Checklist+Manifesto+Atul+Gawande" target="_blank" rel="noopener" aria-describedby="book-gawande">The Checklist Manifesto, 2009</a><span class="book-pop" id="book-gawande" role="tooltip">
         <span class="book3d" aria-hidden="true"><span class="b-cover gw"><small>Atul Gawande</small><b>The Checklist Manifesto</b><i></i></span></span>
         <span class="book-txt"><small class="book-k">Reference</small><span class="book-ref" data-no-i18n>Gawande, A. (2009). <i>The checklist manifesto: How to get things right</i>. Metropolitan Books.</span><span class="book-note">A surgeon shows how short checklists cut mistakes in operating rooms, cockpits and on building sites.</span><span class="book-go">Click to look it up</span></span>
       </span></span></p>
@@ -131,7 +130,7 @@
         </div>
       </div>
     </div>
-    <p class="cap reveal">Cockpit, operating room, then your pocket.</p>
+    <p class="cap reveal">Made by me, with the help of Gemini Omni 1.1 API in Google Flow.</p>
   </div>
 </section>
 
@@ -362,49 +361,53 @@
   </div>
 </section>
 
-<!-- LOOKS -->
+<!-- LOOKS + TRY IT -->
 <section class="section red2" id="looks" aria-labelledby="looks-title">
   <div class="wrap">
     <h2 id="looks-title" class="mega reveal"><span>Make it</span> <span class="hl">yours.</span></h2>
     <p class="lead reveal">Three designs, three cockpit styles and four colour sets. Same app, a different mood.</p>
     <div class="looks-grid">
-      <div class="flow-phone"><div class="phone tilt" id="looks-phone" style="--pw:min(300px, 72vw)"><div class="screen" id="looks-screen"></div></div></div>
+      <div class="flow-phone">
+        <a class="phone-link" id="live-link" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener" aria-label="Open the real ChecklistPro app in a new tab">
+          <div class="phone tilt" id="looks-phone" style="--pw:min(300px, 72vw)"><div class="screen" id="looks-screen"></div></div>
+          <span class="press-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 11V5a2 2 0 0 1 4 0v6l3.5.7a2 2 0 0 1 1.5 2.3l-1 5.5a2 2 0 0 1-2 1.5H10a2 2 0 0 1-1.6-.8L4 14.5a1.7 1.7 0 0 1 2.6-2.2L9 14.5"/></svg>Press to try the real thing</span>
+        </a>
+      </div>
       <div class="look-side">
         <div class="chips" id="look-chips" role="tablist" aria-label="Looks"></div>
         <dl class="look-notes" id="look-note"></dl>
+        <p class="muted-line">This is the real app. It opens in a new tab, and your lists stay on your own device.</p>
+        <a class="btn big yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Try the real thing</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- LIVE -->
-<section class="section dark" id="live" aria-labelledby="live-title">
-  <div class="wrap live">
-    <div class="live-text">
-      <h2 id="live-title" class="mega reveal"><span>Try the</span> <span class="hl">real thing.</span></h2>
-      <p class="lead reveal">This is the actual app. Press the phone to open it and try it yourself.</p>
-      <p class="muted-line reveal">It opens in a new tab. Your lists stay on your own device.</p>
-      <a class="btn big yellow reveal" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Open the app</a>
+<!-- INSTALL -->
+<section class="section" id="install" aria-labelledby="install-title">
+  <div class="wrap">
+    <h2 id="install-title" class="mega reveal"><span>Put it on</span> <span class="hl">your device.</span></h2>
+    <p class="lead reveal">ChecklistPro is a web app. Install it once and it opens like any other app, full screen and even offline. No app store needed.</p>
+    <div class="inst-grid">
+      <article class="inst reveal" data-os="ios">
+        <h3><span class="inst-ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>iPhone &amp; iPad</h3>
+        <ol><li>Open the app in <b>Safari</b>.</li><li>Tap <b>Share</b> <span class="k">⬆︎</span>.</li><li>Tap <b>Add to Home Screen</b>.</li></ol>
+      </article>
+      <article class="inst reveal" data-os="android">
+        <h3><span class="inst-ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2"/><path d="M6.5 6h11M6.5 18h11"/></svg></span>Android</h3>
+        <ol><li>Open the app in <b>Chrome</b>.</li><li>Tap the menu <span class="k">⋮</span>.</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li></ol>
+      </article>
+      <article class="inst reveal" data-os="windows">
+        <h3><span class="inst-ic" style="--c:var(--blue)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>Windows</h3>
+        <ol><li>Open the app in <b>Chrome</b> or <b>Edge</b>.</li><li>Click the <b>install</b> icon in the address bar.</li><li>Click <b>Install</b>. It lands in the Start menu.</li></ol>
+      </article>
+      <article class="inst reveal" data-os="mac">
+        <h3><span class="inst-ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24"><path d="M4 5h16v10H4zM2 18h20"/></svg></span>Mac</h3>
+        <ol><li>In <b>Safari</b>: File, then <b>Add to Dock</b>.</li><li>In <b>Chrome</b>: the <b>install</b> icon in the address bar.</li><li>It opens from the Dock or Launchpad.</li></ol>
+      </article>
     </div>
-    <div class="flow-phone">
-      <a class="phone-link" id="live-link" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener" aria-label="Open the real ChecklistPro app in a new tab">
-        <div class="phone tilt" style="--pw:min(310px, 76vw)"><div class="screen" id="live-screen"><img class="on" src="img/frames/run-0.webp" alt="" width="780" height="1688"><i class="tap-ring" id="live-ring" aria-hidden="true"></i></div></div>
-        <span class="press-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 11V5a2 2 0 0 1 4 0v6l3.5.7a2 2 0 0 1 1.5 2.3l-1 5.5a2 2 0 0 1-2 1.5H10a2 2 0 0 1-1.6-.8L4 14.5a1.7 1.7 0 0 1 2.6-2.2L9 14.5"/></svg>Press to open the app</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- WHY -->
-<section class="section" id="why" aria-labelledby="why-title">
-  <div class="wrap why">
-    <h2 id="why-title" class="mega reveal"><span>From cockpits</span> <span class="ink">to your pocket.</span></h2>
-    <div class="why-cards">
-      <article class="card reveal"><h3>Born in the cockpit</h3><p>In 1935 a new bomber crashed on take-off, because it was too complex to remember. Pilots answered with a short list, and aviation never stopped using one.</p></article>
-      <article class="card reveal"><h3>Proven in the operating room</h3><p>Hospitals borrowed the idea, and surgical and intensive-care checklists have been studied for the lives they help protect.</p></article>
-      <article class="card reveal"><h3>Made for ordinary days</h3><p>Packing, leaving home, the gym bag, launch day. The same trick, built for one thumb.</p></article>
-    </div>
-    <div class="center reveal"><button class="btn big white" id="open-journey-2" type="button">See how this was made</button> <a class="btn big yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Open the app</a></div>
+    <p class="muted-line mid reveal">In the app you can also tap <b>Settings</b>, then <b>Install app</b>, for the same steps.</p>
+    <div class="center reveal"><a class="btn big yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Open the app</a> <button class="btn big white" id="open-journey-2" type="button">See how this was made</button></div>
   </div>
 </section>
 
@@ -412,14 +415,34 @@
 
 <footer class="foot">
   <div class="wrap">
-    <p class="foot-big">Check it.<br>Run it.<br><span class="hl">Done.</span></p>
+    <div class="foot-top"><p class="foot-big">Check it.<br>Run it.<br><span class="hl">Done.</span></p>
+      <a class="foot-cta wait" id="foot-cta" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="9" width="40" height="40" rx="10" fill="#111"/><rect x="14" y="14" width="40" height="40" rx="10" class="fab-box"/><path d="M23 34.5l7 7 14.5-16" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Open the app</span></a></div>
     <div class="foot-row">
-      <p>Designed and coded by <b>Mateus Morgado</b> with Claude Code.<br>Plain React in a single file. No build step.</p>
+      <p>Designed and coded by <b>Mateus Morgado</b> with Claude Code.<br>Plain React in a single file. No build step.<br><a class="foot-link" href="https://morgado.tech" target="_blank" rel="noopener">Portfolio: morgado.tech ↗</a> · <button class="foot-link as-link" id="open-imprint" type="button">Impressum</button></p>
       <p><button class="btn white" id="open-report" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 0h11l-2 4 2 4H5"/></svg>Report a bug</button></p>
       <p class="small">The 1935 and hospital stories come from Gawande (2009), Pronovost et al. (2006) and Haynes et al. (2009). Full sources are in the app’s Manifesto.</p>
     </div>
   </div>
 </footer>
+
+<!-- IMPRESSUM -->
+<div class="modal" id="imprint" role="dialog" aria-modal="true" aria-labelledby="imprint-title" hidden>
+  <div class="modal-card imprint" lang="de">
+    <button class="modal-x btn white" id="close-imprint" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="imprint-title">Impressum</h2>
+    <div data-no-i18n>
+      <h3>Angaben gemäß § 5 DDG</h3>
+      <p>Mateus Morgado<br><span class="fill">[Straße und Hausnummer]</span><br><span class="fill">[PLZ und Ort]</span><br>Deutschland</p>
+      <h3>Kontakt</h3>
+      <p>E-Mail: <span class="fill">[E-Mail-Adresse]</span><br>Oder über das Formular „Report a bug“ unten auf dieser Seite.</p>
+      <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+      <p>Mateus Morgado, Anschrift wie oben.</p>
+      <h3>Haftung für Links</h3>
+      <p>Diese Seite enthält Links zu externen Websites. Für deren Inhalte sind ausschließlich die jeweiligen Anbieter verantwortlich.</p>
+      <p class="small-note">Privates, nicht kommerzielles Projekt. Die App speichert deine Listen nur lokal auf deinem Gerät.</p>
+    </div>
+  </div>
+</div>
 
 <!-- REPORT -->
 <div class="modal" id="report" role="dialog" aria-modal="true" aria-labelledby="report-title" hidden>

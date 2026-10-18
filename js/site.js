@@ -187,28 +187,29 @@
   const stage = $('#d-stage'), ask = $('#d-ask'), cur = $('#d-cursor'), dq = $('#d-q'), dic = $('#d-ic'), count = $('#d-count'), hint = $('#d-hint');
   const tg = { sauna: $('#t-sauna'), squat: $('#t-squat') }, addLi = $$('#d-list .add'); let demoRun = 0;
   function setAnswer(key, yes, silent) {
-    addLi.filter(li => li.dataset.if === key).forEach((li, i) => { setTimeout(() => li.classList.toggle('in', yes), silent || reduce ? 0 : i * 380); });
+    addLi.filter(li => li.dataset.if === key).forEach((li, i) => { setTimeout(() => li.classList.toggle('in', yes), silent || reduce ? 0 : i * 170); });
     tg[key].setAttribute('aria-pressed', yes ? 'true' : 'false'); $('b', tg[key]).textContent = yes ? 'Yes' : 'No';
-    setTimeout(() => { const n = 3 + addLi.filter(li => li.classList.contains('in')).length; count.textContent = n + ' items'; count.classList.remove('bump'); void count.offsetWidth; count.classList.add('bump'); }, silent || reduce ? 10 : 900);
+    setTimeout(() => { const n = 3 + addLi.filter(li => li.classList.contains('in')).length; count.textContent = n + ' items'; count.classList.remove('bump'); void count.offsetWidth; count.classList.add('bump'); }, silent || reduce ? 10 : 420);
   }
   function point(el, pressed) { const s = stage.getBoundingClientRect(), r = el.getBoundingClientRect(); cur.style.left = (r.left - s.left + r.width * .62) + 'px'; cur.style.top = (r.top - s.top + r.height * .55) + 'px'; }
   // after the demo, a hand taps at the Sauna button to invite a No, and the two sauna items tremble; the first real tap ends it
   const demoCard = $('#cond-demo'), nudge = on => demoCard.classList.toggle('nudge', on);
+  const dw = ms => wait(ms * .55); // the demo runs at this speed
   async function demo() {
     const run = ++demoRun, ok = () => run === demoRun; nudge(false);
     Object.values(tg).forEach(b => { b.disabled = true; b.setAttribute('aria-pressed', 'false'); $('b', b).textContent = 'No'; });
     addLi.forEach(li => li.classList.remove('in')); count.textContent = '3 items'; ask.classList.remove('show'); cur.classList.remove('show', 'press'); hint.classList.remove('done');
     if (reduce) { setAnswer('sauna', true, true); setAnswer('squat', true, true); Object.values(tg).forEach(b => { b.disabled = false; }); hint.classList.add('done'); nudge(true); return; }
-    cur.style.left = '86%'; cur.style.top = '96%'; await wait(700); if (!ok()) return;
+    cur.style.left = '86%'; cur.style.top = '96%'; await dw(700); if (!ok()) return;
     for (const [key, text, icon, color] of [['sauna', 'Sauna?', ICON_SAUNA, 'var(--yellow)'], ['squat', 'Squat day?', ICON_BAR, 'var(--pink)']]) {
       dq.textContent = text; dic.innerHTML = icon; dic.style.background = color; $('#d-yes').classList.remove('picked'); ask.classList.add('show'); cur.classList.add('show');
-      await wait(800); if (!ok()) return; point($('#d-yes')); await wait(900); if (!ok()) return;
-      cur.classList.add('press'); $('#d-yes').classList.add('picked'); await wait(280); if (!ok()) return; cur.classList.remove('press'); await wait(260); if (!ok()) return;
-      ask.classList.remove('show'); await wait(420); if (!ok()) return; setAnswer(key, true); await wait(key === 'sauna' ? 400 : 1200); if (!ok()) return;
+      await dw(800); if (!ok()) return; point($('#d-yes')); await dw(900); if (!ok()) return;
+      cur.classList.add('press'); $('#d-yes').classList.add('picked'); await dw(280); if (!ok()) return; cur.classList.remove('press'); await dw(260); if (!ok()) return;
+      ask.classList.remove('show'); await dw(420); if (!ok()) return; setAnswer(key, true); await dw(key === 'sauna' ? 400 : 1200); if (!ok()) return;
     }
-    cur.classList.remove('show'); await wait(900); if (!ok()) return;
+    cur.classList.remove('show'); await dw(900); if (!ok()) return;
     Object.values(tg).forEach(b => { b.disabled = false; }); hint.classList.add('done');
-    await wait(600); if (ok() && tg.sauna.getAttribute('aria-pressed') === 'true') nudge(true);
+    await dw(600); if (ok() && tg.sauna.getAttribute('aria-pressed') === 'true') nudge(true);
   }
   tg.sauna.addEventListener('click', () => nudge(false));
   tg.squat.addEventListener('click', () => nudge(false));
@@ -220,32 +221,69 @@
   // ---------- reference cards: placed by the reference, below it when there is room ----------
   $$('.cite-wrap').forEach(w => {
     const pop = $('.book-pop', w), btn = $('.cite', w);
+    // beside the reference when there is room, so the card never sits on the text; otherwise below, then above
     const place = () => {
       const r = btn.getBoundingClientRect(), W = Math.min(440, innerWidth - 32); pop.style.width = W + 'px';
-      const h = pop.offsetHeight, x = Math.max(16, Math.min(r.left - 12, innerWidth - W - 16)), below = w.dataset.pop === 'below' || r.bottom + 14 + h <= innerHeight - 8 || r.top - 14 - h < 8;
-      pop.classList.toggle('up', !below);
-      pop.style.setProperty('--px', x + 'px'); pop.style.setProperty('--py', (below ? r.bottom + 14 : r.top - 14 - h) + 'px');
+      const h = pop.offsetHeight, fitsY = y => y >= 8 && y + h <= innerHeight - 8, sideY = Math.max(8, Math.min(r.top - 12, innerHeight - h - 8));
+      let mode, x, y;
+      if (r.right + 18 + W <= innerWidth - 12) { mode = 'side'; x = r.right + 18; y = sideY; }
+      else if (r.left - 18 - W >= 12) { mode = 'side-l'; x = r.left - 18 - W; y = sideY; }
+      else { x = Math.max(16, Math.min(r.left - 12, innerWidth - W - 16)); mode = fitsY(r.bottom + 14) || !fitsY(r.top - 14 - h) ? 'below' : 'up'; y = mode === 'below' ? r.bottom + 14 : r.top - 14 - h; }
+      pop.classList.remove('up', 'side', 'side-l'); if (mode !== 'below') pop.classList.add(mode);
+      pop.style.setProperty('--px', x + 'px'); pop.style.setProperty('--py', y + 'px');
       pop.style.setProperty('--ax', Math.max(16, Math.min(W - 34, r.left + r.width / 2 - x - 9)) + 'px');
+      pop.style.setProperty('--ay', Math.max(14, Math.min(h - 32, r.top + r.height / 2 - y - 9)) + 'px');
     };
     w.addEventListener('pointerenter', place); w.addEventListener('focusin', place); btn.addEventListener('click', place);
+    // the whole card opens the search too, not only the chip
+    if (btn.href) { pop.style.cursor = 'pointer'; pop.addEventListener('click', () => window.open(btn.href, '_blank', 'noopener')); }
     addEventListener('scroll', () => { if (w.matches(':hover, :focus-within, .open')) place(); }, { passive: true });
   });
 
-  // ---------- once the hero's Open the app button scrolls away, it flies into an app icon in the corner ----------
+  // ---------- once the hero's Open the app button scrolls away, it flies into an app icon in the corner;
+  // at the bottom of the page the icon flies on into the big button next to "Check it. Run it. Done." ----------
   (function () {
-    const cta = $('.hero .cta-row .btn.yellow'), fab = $('#fab-app'); if (!cta || !fab) return;
-    let shown = false, ghost = null;
-    function morph() {
-      const a = cta.getBoundingClientRect(); fab.style.transition = 'none'; fab.style.transform = 'none'; const b = fab.getBoundingClientRect(); fab.style.transform = ''; void fab.offsetWidth; fab.style.transition = '';
-      if (ghost) ghost.remove(); ghost = document.createElement('div'); ghost.className = 'fab-ghost'; ghost.textContent = cta.textContent; ghost.setAttribute('aria-hidden', 'true'); document.body.appendChild(ghost);
-      const g = ghost, box = (r, rad) => ({ left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: rad });
-      g.animate([Object.assign(box(a, '14px'), { color: 'var(--ink)', transform: 'rotate(0deg)' }), Object.assign(box({ left: (a.left + b.left) / 2, top: Math.max(a.top, 0) + (b.top - Math.max(a.top, 0)) * .45, width: 120, height: 64 }, '18px'), { color: 'transparent', transform: 'rotate(-12deg)', offset: .5 }), Object.assign(box(b, '18px'), { color: 'transparent', transform: 'rotate(0deg)' })],
-        { duration: 650, easing: 'cubic-bezier(.6, 0, .3, 1)', fill: 'forwards' }).onfinish = () => { g.remove(); if (ghost === g) ghost = null; if (shown) { fab.classList.add('show', 'hint'); setTimeout(() => fab.classList.remove('hint'), 2200); } };
+    const cta = $('.hero .cta-row .btn.yellow'), fab = $('#fab-app'), foot = $('#foot-cta'); if (!cta || !fab) return;
+    let heroGone = false, footIn = false, shown = false, ghost = null;
+    const fabRect = () => { fab.style.transition = 'none'; fab.style.transform = 'none'; const b = fab.getBoundingClientRect(); fab.style.transform = ''; void fab.offsetWidth; fab.style.transition = ''; return b; };
+    function fly(a, b, text, fromRad, toRad, done) {
+      if (ghost) ghost.remove(); const g = ghost = document.createElement('div'); g.className = 'fab-ghost'; g.textContent = text; g.setAttribute('aria-hidden', 'true'); document.body.appendChild(g);
+      const box = (r, rad, extra) => Object.assign({ left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: rad }, extra);
+      const mid = { left: (a.left + b.left) / 2, top: Math.min(a.top, b.top) + Math.abs(b.top - a.top) * .45, width: (a.width + b.width) / 2, height: (a.height + b.height) / 2 };
+      g.animate([box(a, fromRad, { color: text ? 'var(--ink)' : 'transparent', transform: 'rotate(0deg)' }), box(mid, '18px', { color: 'transparent', transform: 'rotate(-12deg)', offset: .5 }), box(b, toRad, { color: 'transparent', transform: 'rotate(0deg)' })],
+        { duration: 650, easing: 'cubic-bezier(.6, 0, .3, 1)', fill: 'forwards' }).onfinish = () => { g.remove(); if (ghost === g) ghost = null; done(); };
     }
-    new IntersectionObserver(es => es.forEach(e => {
-      if (!e.isIntersecting && e.boundingClientRect.top < 0) { if (!shown) { shown = true; if (reduce) fab.classList.add('show'); else morph(); } }
-      else if (e.isIntersecting && shown) { shown = false; fab.classList.remove('show', 'hint'); if (ghost) { ghost.remove(); ghost = null; } }
-    }), { threshold: 0, rootMargin: '-80px 0px 0px 0px' }).observe(cta);
+    function update() {
+      const want = heroGone && !footIn;
+      if (want && !shown) {
+        shown = true;
+        const hint = () => { if (shown) { fab.classList.add('show', 'hint'); setTimeout(() => fab.classList.remove('hint'), 2200); } };
+        if (reduce) fab.classList.add('show'); else if (cta.getBoundingClientRect().bottom < 120) fly(cta.getBoundingClientRect(), fabRect(), cta.textContent, '14px', '18px', hint); else hint();
+      } else if (!want && shown) {
+        shown = false;
+        if (footIn && foot && !reduce) { const a = fabRect(); fab.classList.remove('show', 'hint'); fly(a, foot.getBoundingClientRect(), '', '18px', '18px', () => { foot.classList.remove('wait'); foot.classList.remove('bump'); void foot.offsetWidth; foot.classList.add('bump'); }); }
+        else { fab.classList.remove('show', 'hint'); if (ghost) { ghost.remove(); ghost = null; } }
+      }
+      if (footIn && foot && (!ghost || reduce)) foot.classList.remove('wait');
+    }
+    new IntersectionObserver(es => es.forEach(e => { heroGone = !e.isIntersecting && e.boundingClientRect.top < 0; update(); }), { threshold: 0, rootMargin: '-80px 0px 0px 0px' }).observe(cta);
+    if (foot) new IntersectionObserver(es => es.forEach(e => { footIn = e.isIntersecting; update(); }), { threshold: .6 }).observe(foot);
+  })();
+
+  // ---------- install: the card for this device stands out ----------
+  (function () {
+    const ua = navigator.userAgent, os = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? 'ios' : /Android/.test(ua) ? 'android' : /Windows/.test(ua) ? 'windows' : /Macintosh/.test(ua) ? 'mac' : '';
+    const card = os && $('.inst[data-os="' + os + '"]'); if (card) { card.classList.add('mine'); card.insertAdjacentHTML('afterbegin', '<span class="inst-you">Your device</span>'); }
+  })();
+
+  // ---------- Impressum ----------
+  (function () {
+    const m = $('#imprint'); let last = null;
+    const open = () => { last = document.activeElement; m.hidden = false; document.body.classList.add('lock'); requestAnimationFrame(() => { m.classList.add('open'); $('#close-imprint').focus(); }); };
+    const close = () => { m.classList.remove('open'); document.body.classList.remove('lock'); setTimeout(() => { m.hidden = true; }, 300); if (last) last.focus(); };
+    $('#open-imprint').addEventListener('click', open); $('#close-imprint').addEventListener('click', close);
+    m.addEventListener('pointerdown', e => { if (e.target === m) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !m.hidden) close(); });
   })();
 
   // ---------- why a checklist: a big WHY? turns into the answer, line by line ----------
@@ -420,8 +458,6 @@
   let lVis = false; if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { lVis = e.isIntersecting; }), { threshold: .3 }).observe($('#looks-phone'));
   setInterval(() => { if (lVis && !reduce && Date.now() > lHold) pickLook((look + 1) % F.looks.length); }, 2400);
 
-  // ---------- live app link: a pulsing finger-tap where to press ----------
-  (function () { const ring = $('#live-ring'); const t = (window.FRAMES && window.FRAMES.run && window.FRAMES.run[0].tap) || [.6, .85]; ring.style.left = (t[0] * 100) + '%'; ring.style.top = (t[1] * 100) + '%'; })();
 
   // ---------- button click sound: the same quiet, physical click as the app's Modern design ----------
   let clickCtx = null, clickNoise = null, soundOn = true;
