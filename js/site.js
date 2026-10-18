@@ -324,7 +324,7 @@
 
   // ---------- quick taps still show the button going down into its shadow ----------
   (function () {
-    const SEL = '.btn, .tab, .chip-b, .fchip, .pw-tab, .d-toggles button, .tone-btn, .cite, .foot-cta, .fab-app, .to-top';
+    const SEL = '.pw-arrow, .btn, .tab, .chip-b, .fchip, .pw-tab, .d-toggles button, .tone-btn, .cite, .foot-cta, .fab-app, .to-top';
     addEventListener('pointerdown', e => {
       const b = e.target.closest(SEL); if (!b || b.disabled) return; const t0 = performance.now(); b.classList.add('pressed');
       const up = () => { removeEventListener('pointerup', up); removeEventListener('pointercancel', up); setTimeout(() => b.classList.remove('pressed'), Math.max(0, 110 - (performance.now() - t0))); };
@@ -549,6 +549,7 @@
       if (live(r) && visible && !reduce) select((cur + 1) % n);
     }
     tabs.forEach((b, i) => b.addEventListener('click', () => select(i)));
+    $('#pw-prev').addEventListener('click', () => select((cur + n - 1) % n)); $('#pw-next').addEventListener('click', () => select((cur + 1) % n));
     // swipe the deck left or right
     let sx = null;
     deck.addEventListener('pointerdown', e => { if (e.target.closest('button, a')) return; sx = e.clientX; });

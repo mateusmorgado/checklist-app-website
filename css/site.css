@@ -763,7 +763,7 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .pw-card.run .pw-time { animation: fillbar var(--dur, 9s) linear forwards; }
 .pw-card .pw-next { position: absolute; right: 16px; bottom: 14px; font: 800 13px var(--display); opacity: .55; }
 @media (max-width: 1020px) { .pw-deck { margin-right: 36px; } }
-@media (max-width: 640px) { .pw-tab span { display: none; } .pw-tab { padding: 4px; } .pw-tabs { justify-content: center; } .pw-card { padding: 16px 16px 24px; } }
+@media (max-width: 640px) { .pw-tab > span:not(.pw-ic) { display: none; } .pw-tab { padding: 4px; } .pw-tabs { justify-content: center; } .pw-card { padding: 16px 16px 24px; } }
 @media (prefers-reduced-motion: reduce) { .pw-card, .pw-card.leaving { transition: none; } .tone-btn.playing { animation: none; } }
 
 /* ---------- SAFE: the co-pilot falls into the phone and can't get out ---------- */
@@ -985,3 +985,17 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .credits p { margin: 0; display: flex; gap: 12px; align-items: baseline; }
 .cr-k { flex: none; width: 58px; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .14em; text-align: center; padding: 2px 8px; border: 2px solid currentColor; border-radius: 99px; }
 @media (max-width: 520px) { .credits { font-size: 13px; } }
+
+/* < > around the power tabs */
+.pw-tabs { align-items: center; }
+.pw-arrow { --d: 4px; flex: none; width: 48px; height: 48px; display: grid; place-items: center; padding: 0; background: var(--yellow); color: var(--ink); border: var(--b) solid var(--ink); border-radius: 50%; box-shadow: -4px -4px 0 var(--ink); cursor: pointer; transition: transform .09s ease-out, box-shadow .09s ease-out; }
+.pw-arrow svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.pw-arrow:hover { transform: rotate(-4deg); }
+.pw-arrow:active, .pw-arrow.pressed { transform: translate(-4px, -4px) !important; box-shadow: none; }
+@media (max-width: 640px) { .pw-tabs { flex-wrap: nowrap; justify-content: space-between; } .pw-arrow { width: 44px; height: 44px; } }
+.pw-tabs { flex-wrap: nowrap; gap: 8px; }
+.pw-tab { flex: none; }
+.pw-tab:not([aria-pressed="true"]) > span:not(.pw-ic) { display: none; }
+.pw-tab:not([aria-pressed="true"]) { padding: 4px; }
+.pw-arrow:last-child { margin-left: auto; }
+.pw-tab .pw-ic { flex: none; width: 36px; height: 36px; }
