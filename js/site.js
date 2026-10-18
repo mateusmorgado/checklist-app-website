@@ -142,11 +142,12 @@
     paint(root.getAttribute('data-palette') || 'red');
     $('#to-top').addEventListener('click', () => { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
     // on phones the dots sit in a little pile; the first tap fans them out, the next one picks a colour
-    const sw = $('#swatches'), small = matchMedia('(max-width: 640px)'); let fold = 0;
+    const sw = $('#swatches'), hover = matchMedia('(hover: hover) and (pointer: fine)'); let fold = 0;
+    const isOpen = () => sw.classList.contains('open') || (hover.matches && sw.matches(':hover'));
     btns.forEach(b => b.addEventListener('click', () => {
-      if (small.matches && !sw.classList.contains('open')) { sw.classList.add('open'); clearTimeout(fold); fold = setTimeout(() => sw.classList.remove('open'), 5000); return; }
+      if (!isOpen()) { sw.classList.add('open'); clearTimeout(fold); fold = setTimeout(() => sw.classList.remove('open'), 5000); return; }
       paint(b.dataset.p); try { localStorage.setItem('cp-palette', b.dataset.p); } catch (e) {}
-      if (small.matches) { clearTimeout(fold); fold = setTimeout(() => sw.classList.remove('open'), 900); }
+      clearTimeout(fold); fold = setTimeout(() => sw.classList.remove('open'), 900);
     }));
   })();
 
@@ -605,12 +606,39 @@
 
   // ---------- journey overlay ----------
   const ov = $('#journey'); let lastFocus = null;
+  // ---------- the film at the top of the work tree: prompts and plans fly back and forth while the app takes shape ----------
+  const film = (function () {
+    const chat = $('#jf-chat'), fill = $('#jf-fill'), sts = $$('.jf-st'), rows = (window.JOURNEY_ROWS || []).filter(r => r.says || r.title);
+    const mark = $('.journey-intro .claude-mark') ? $('.journey-intro .claude-mark').outerHTML : '';
+    const CODE = ['+ <div className="stack">', '+ const items = list.filter(i => i.on)', '- items.sort(byDone)', '+ .item { min-height: 56px }', '+ onPointerDown={startDrag}', '+ <Question if="sauna" add={towel} />', '+ playTone("heart", 0.6)', '- position: absolute', '+ :root[data-design="modern"] {', '+ localStorage.setItem(KEY, json)', '+ fetch("/api/quick", { audio })', '+ confetti({ from: "bottom" })', '+ <Progress value={done / all} />', '+ @media (max-width: 380px)', '- setTimeout(moveToTop, 1000)', '+ aria-pressed={on}'];
+    let t = 0, i = 0, alive = false;
+    const add = (cls, html) => { const b = document.createElement('div'); b.className = 'jf-b ' + cls; b.innerHTML = html; chat.appendChild(b); while (chat.children.length > 14) chat.firstChild.remove(); return b; };
+    const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+    function step() {
+      if (!alive) return; const r = rows[i % rows.length], p = (i % rows.length) / (rows.length - 1);
+      if (r.says) add('u', '“' + esc(r.says) + '”');
+      const dots = document.createElement('div'); dots.className = 'jf-dots'; dots.innerHTML = '<i></i><i></i><i></i>'; chat.appendChild(dots);
+      t = setTimeout(() => {
+        dots.remove(); if (!alive) return;
+        add('c', mark + '<b>Plan:</b> ' + esc(r.title));
+        let k = 0; const burst = () => { if (!alive || k++ > 2) { i++; t = setTimeout(step, 500); return; } const c = CODE[(i * 3 + k) % CODE.length]; add('code' + (c[0] === '-' ? ' del' : ''), esc(c)); t = setTimeout(burst, 140); };
+        t = setTimeout(burst, 260);
+      }, 650);
+      fill.style.width = (p * 100) + '%';
+      const stage = p < .34 ? 0 : p < .67 ? 1 : 2; sts.forEach((s, k) => { s.classList.toggle('on', k <= stage); s.classList.toggle('now', k === stage); });
+    }
+    return {
+      start() { if (reduce) { sts.forEach(s => s.classList.add('on')); fill.style.width = '100%'; rows.slice(-4).forEach(r => { if (r.says) add('u', '“' + esc(r.says) + '”'); add('c', mark + '<b>Plan:</b> ' + esc(r.title)); }); return; } if (alive) return; alive = true; chat.innerHTML = ''; i = 0; step(); },
+      stop() { alive = false; clearTimeout(t); },
+    };
+  })();
   function openJourney(push) {
+    film.start();
     lastFocus = document.activeElement; window.Journey.build(); ov.hidden = false; document.body.classList.add('lock');
     requestAnimationFrame(() => { ov.classList.add('open'); setTimeout(() => { window.Journey.draw(true); }, 120); $('#close-journey').focus(); });
     if (push !== false && location.hash !== '#journey') history.pushState(null, '', '#journey');
   }
-  function closeJourney(push) { ov.classList.remove('open'); document.body.classList.remove('lock'); setTimeout(() => { ov.hidden = true; }, 450); if (lastFocus) lastFocus.focus(); if (push !== false && location.hash === '#journey') history.pushState(null, '', location.pathname + location.search); }
+  function closeJourney(push) { film.stop(); ov.classList.remove('open'); document.body.classList.remove('lock'); setTimeout(() => { ov.hidden = true; }, 450); if (lastFocus) lastFocus.focus(); if (push !== false && location.hash === '#journey') history.pushState(null, '', location.pathname + location.search); }
   $('#open-journey').addEventListener('click', () => openJourney()); $('#open-journey-2').addEventListener('click', () => openJourney()); $('#close-journey').addEventListener('click', () => closeJourney());
   addEventListener('keydown', e => {
     if (!ov.classList.contains('open')) return;
