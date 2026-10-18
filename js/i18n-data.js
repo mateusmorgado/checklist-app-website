@@ -1,6 +1,7 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Down to the video": "Runter zum Video",
 "Short tones at random moments helped people keep their goal in mind and get back to the task.": "Kurze Töne zu zufälligen Momenten halfen Menschen, ihr Ziel im Kopf zu behalten und zur Aufgabe zurückzufinden.",
 "Study": "Studie",
 "A surgeon shows how short checklists cut mistakes in operating rooms, cockpits and on building sites.": "Ein Chirurg zeigt, wie kurze Checklisten Fehler im OP, im Cockpit und auf der Baustelle verringern.",

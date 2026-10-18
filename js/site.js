@@ -163,6 +163,12 @@
   }
   function backToTeaser() { vid.pause(); vid.hidden = true; box.classList.remove('playing'); if (teaserOk) { teaser.hidden = false; playTeaser(); } }
   playBtn.addEventListener('click', startMain); teaser.addEventListener('click', startMain);
+  // the hero's Watch the video button scrolls down and starts the film with sound; the arrow only scrolls down
+  const toVideo = () => box.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  $('#watch-btn').addEventListener('click', e => { e.preventDefault(); toVideo(); startMain(); });
+  $('#hero-down').addEventListener('click', e => { e.preventDefault(); toVideo(); });
+  const atTop = () => document.body.classList.toggle('at-top', scrollY < 40);
+  atTop(); addEventListener('scroll', atTop, { passive: true });
   vid.addEventListener('ended', backToTeaser);
   setTimeout(() => { if (teaser.networkState === 3) { teaserOk = false; teaser.hidden = true; box.classList.add('no-teaser'); checkMissing(); } }, 2500);
 
@@ -210,6 +216,37 @@
   tg.squat.addEventListener('click', () => setAnswer('squat', tg.squat.getAttribute('aria-pressed') !== 'true'));
   $('#demo-replay').addEventListener('click', demo);
   if ('IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); demo(); } }), { threshold: .45 }).observe($('#cond-demo')); else demo();
+
+  // ---------- reference cards: placed by the reference, below it when there is room ----------
+  $$('.cite-wrap').forEach(w => {
+    const pop = $('.book-pop', w), btn = $('.cite', w);
+    const place = () => {
+      const r = btn.getBoundingClientRect(), W = Math.min(440, innerWidth - 32); pop.style.width = W + 'px';
+      const h = pop.offsetHeight, x = Math.max(16, Math.min(r.left - 12, innerWidth - W - 16)), below = w.dataset.pop === 'below' || r.bottom + 14 + h <= innerHeight - 8 || r.top - 14 - h < 8;
+      pop.classList.toggle('up', !below);
+      pop.style.setProperty('--px', x + 'px'); pop.style.setProperty('--py', (below ? r.bottom + 14 : r.top - 14 - h) + 'px');
+      pop.style.setProperty('--ax', Math.max(16, Math.min(W - 34, r.left + r.width / 2 - x - 9)) + 'px');
+    };
+    w.addEventListener('pointerenter', place); w.addEventListener('focusin', place); btn.addEventListener('click', place);
+    addEventListener('scroll', () => { if (w.matches(':hover, :focus-within, .open')) place(); }, { passive: true });
+  });
+
+  // ---------- once the hero's Open the app button scrolls away, it flies into an app icon in the corner ----------
+  (function () {
+    const cta = $('.hero .cta-row .btn.yellow'), fab = $('#fab-app'); if (!cta || !fab) return;
+    let shown = false, ghost = null;
+    function morph() {
+      const a = cta.getBoundingClientRect(); fab.style.transition = 'none'; fab.style.transform = 'none'; const b = fab.getBoundingClientRect(); fab.style.transform = ''; void fab.offsetWidth; fab.style.transition = '';
+      if (ghost) ghost.remove(); ghost = document.createElement('div'); ghost.className = 'fab-ghost'; ghost.textContent = cta.textContent; ghost.setAttribute('aria-hidden', 'true'); document.body.appendChild(ghost);
+      const g = ghost, box = (r, rad) => ({ left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: rad });
+      g.animate([Object.assign(box(a, '14px'), { color: 'var(--ink)', transform: 'rotate(0deg)' }), Object.assign(box({ left: (a.left + b.left) / 2, top: Math.max(a.top, 0) + (b.top - Math.max(a.top, 0)) * .45, width: 120, height: 64 }, '18px'), { color: 'transparent', transform: 'rotate(-12deg)', offset: .5 }), Object.assign(box(b, '18px'), { color: 'transparent', transform: 'rotate(0deg)' })],
+        { duration: 650, easing: 'cubic-bezier(.6, 0, .3, 1)', fill: 'forwards' }).onfinish = () => { g.remove(); if (ghost === g) ghost = null; if (shown) { fab.classList.add('show', 'hint'); setTimeout(() => fab.classList.remove('hint'), 2200); } };
+    }
+    new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting && e.boundingClientRect.top < 0) { if (!shown) { shown = true; if (reduce) fab.classList.add('show'); else morph(); } }
+      else if (e.isIntersecting && shown) { shown = false; fab.classList.remove('show', 'hint'); if (ghost) { ghost.remove(); ghost = null; } }
+    }), { threshold: 0, rootMargin: '-80px 0px 0px 0px' }).observe(cta);
+  })();
 
   // ---------- why a checklist: a big WHY? turns into the answer, line by line ----------
   (function () {

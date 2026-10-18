@@ -42,6 +42,7 @@
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
+<a class="fab-app" id="fab-app" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener" aria-label="Open the app"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="9" width="40" height="40" rx="10" fill="#111"/><rect x="14" y="14" width="40" height="40" rx="10" class="fab-box"/><path d="M23 34.5l7 7 14.5-16" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="fab-tip">Open the app</span></a>
 <div class="swatches" id="swatches" role="group" aria-label="Colours">
   <button type="button" data-p="red" style="--sw:#ff4a4a" aria-label="Bold red" title="Bold red" aria-pressed="true"></button>
   <button type="button" data-p="blue" style="--sw:#2f8bff" aria-label="Electric blue" title="Electric blue" aria-pressed="false"></button>
@@ -91,16 +92,17 @@
     </div>
     <div class="confetti" id="confetti" aria-hidden="true"></div>
     <p class="sub reveal">Build a list once. Run it whenever you need it. The way pilots and surgeons do, now in your pocket.
-      <span class="cite-wrap"><a class="cite" href="https://www.google.com/search?q=The+Checklist+Manifesto+Atul+Gawande" target="_blank" rel="noopener" aria-describedby="book-gawande">The Checklist Manifesto, 2009</a><span class="book-pop" id="book-gawande" role="tooltip">
+      <span class="cite-wrap" data-pop="below"><a class="cite" href="https://www.google.com/search?q=The+Checklist+Manifesto+Atul+Gawande" target="_blank" rel="noopener" aria-describedby="book-gawande">The Checklist Manifesto, 2009</a><span class="book-pop" id="book-gawande" role="tooltip">
         <span class="book3d" aria-hidden="true"><span class="b-cover gw"><small>Atul Gawande</small><b>The Checklist Manifesto</b><i></i></span></span>
         <span class="book-txt"><small class="book-k">Reference</small><span class="book-ref" data-no-i18n>Gawande, A. (2009). <i>The checklist manifesto: How to get things right</i>. Metropolitan Books.</span><span class="book-note">A surgeon shows how short checklists cut mistakes in operating rooms, cockpits and on building sites.</span><span class="book-go">Click to look it up</span></span>
       </span></span></p>
     <div class="cta-row reveal">
       <a class="btn big yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Open the app</a>
-      <a class="btn big white" href="#video">Watch the video</a>
+      <a class="btn big white" id="watch-btn" href="#video">Watch the video</a>
       <button class="replay" id="replay" type="button" aria-label="Replay the intro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
     </div>
   </div>
+  <a class="hero-down" id="hero-down" href="#video" aria-label="Down to the video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M5.5 12.5L12 19l6.5-6.5"/></svg></a>
   <div class="hero-phone" id="hero-phone" aria-hidden="true">
     <div class="phone tilt" style="--pw:270px"><div class="screen"><div class="swipe" id="hero-swipe"></div></div></div>
     <div class="swipe-meta"><span class="swipe-name" id="swipe-name">Minimalist</span><span class="swipe-dots" id="swipe-dots"></span></div>

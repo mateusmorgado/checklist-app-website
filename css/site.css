@@ -585,7 +585,8 @@ body, .nav, .video-missing, .d-stage, .journey { transition: background-color .3
 
 /* ---------- why a checklist ---------- */
 .wq { background: var(--yellow); color: var(--ink); border-top: var(--b) solid var(--ink); border-bottom: var(--b) solid var(--ink); overflow: hidden; }
-.wq .hl { background: var(--white); }
+.wq .hl { background: var(--white); box-shadow: -3px -3px 0 var(--ink); padding: 0 .1em; }
+.wq-lines { line-height: 1.34 !important; }
 .wq-stage { position: relative; min-height: clamp(420px, 52vw, 640px); display: grid; align-content: center; }
 .wq-why { position: absolute; left: 50%; top: 50%; margin: 0; font: 800 clamp(120px, 24vw, 340px)/.85 var(--display); font-stretch: 75%; text-transform: uppercase; letter-spacing: -.03em; transform: translate(-50%, -50%) scale(0); transition: top .7s cubic-bezier(.6, 0, .2, 1), left .7s cubic-bezier(.6, 0, .2, 1), font-size .7s cubic-bezier(.6, 0, .2, 1), transform .7s cubic-bezier(.3, 1.5, .5, 1); -webkit-text-stroke: 0; text-shadow: -.04em -.04em 0 var(--red); }
 .wq-why span { display: inline-block; }
@@ -630,8 +631,10 @@ a.cite:hover { background: var(--yellow); }
 .book-go { font: 700 13px var(--display); text-decoration: underline; text-underline-offset: 3px; }
 .wq-stage.done .cite { animation: cite-hey .6s cubic-bezier(.3, 1.6, .5, 1) 2; }
 @keyframes cite-hey { 50% { transform: translateY(-6px) rotate(-3deg); } }
-.book-pop { position: absolute; z-index: 30; left: -12px; bottom: calc(100% + 14px); width: min(440px, 86vw); display: flex; gap: 18px; align-items: center; padding: 16px 18px; background: var(--white); color: var(--ink); border: var(--b) solid var(--ink); border-radius: 16px; box-shadow: -8px -8px 0 var(--ink); font: 500 15px/1.4 var(--body); letter-spacing: 0; text-align: left; opacity: 0; visibility: hidden; transform: translateY(10px) scale(.96); transform-origin: 30px 100%; transition: opacity .2s, transform .3s cubic-bezier(.3, 1.4, .5, 1), visibility 0s .3s; }
-.book-pop::after { content: ''; position: absolute; left: 34px; bottom: -12px; width: 18px; height: 18px; background: var(--white); border: solid var(--ink); border-width: 0 var(--b) var(--b) 0; transform: rotate(45deg); }
+.book-pop { position: fixed; z-index: 80; left: var(--px, 0); top: var(--py, 0); width: min(440px, calc(100vw - 32px)); display: flex; gap: 18px; align-items: center; padding: 16px 18px; background: var(--white); color: var(--ink); border: var(--b) solid var(--ink); border-radius: 16px; box-shadow: -8px -8px 0 var(--ink); font: 500 15px/1.4 var(--body); letter-spacing: 0; text-align: left; opacity: 0; visibility: hidden; transform: translateY(-8px) scale(.96); transform-origin: var(--ax, 30px) 0; transition: opacity .2s, transform .3s cubic-bezier(.3, 1.4, .5, 1), visibility 0s .3s; }
+.book-pop::after { content: ''; position: absolute; left: var(--ax, 34px); top: -12px; width: 18px; height: 18px; background: var(--white); border: solid var(--ink); border-width: 0 var(--b) var(--b) 0; transform: rotate(225deg); }
+.book-pop.up { transform: translateY(8px) scale(.96); transform-origin: var(--ax, 30px) 100%; }
+.book-pop.up::after { top: auto; bottom: -12px; transform: rotate(45deg); }
 .cite-wrap:hover .book-pop, .cite-wrap:focus-within .book-pop, .cite-wrap.open .book-pop { opacity: 1; visibility: visible; transform: none; transition: opacity .2s, transform .3s cubic-bezier(.3, 1.4, .5, 1); }
 .book3d { flex: none; perspective: 500px; }
 .b-cover { position: relative; display: flex; flex-direction: column; justify-content: space-between; width: 96px; height: 140px; padding: 12px 10px 10px 16px; background: #1e2a4f; color: #fff; border: 3px solid var(--ink); border-radius: 3px 8px 8px 3px; box-shadow: 6px 6px 0 var(--ink); transform: rotateY(-18deg); transition: transform .4s; }
@@ -645,8 +648,6 @@ a.cite:hover { background: var(--yellow); }
 .book-ref { font-size: 14px; }
 .book-note { font-weight: 600; }
 @media (max-width: 640px) {
-  .cite-wrap.open .book-pop, .cite-wrap:focus-within .book-pop, .cite-wrap:hover .book-pop { position: fixed; left: 16px; right: 16px; bottom: 96px; width: auto; transform: none; }
-  .book-pop::after { display: none; }
   .b-cover { width: 72px; height: 106px; } .b-cover b { font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { .wq-why, .wq-l, .wq-l.in, .wq-x::after, .book-pop { transition: none !important; } .wq-why span, .cite { animation: none !important; } }
@@ -660,3 +661,25 @@ a.cite:hover { background: var(--yellow); }
 .b-cover.paper small { font-size: 7px; letter-spacing: .06em; }
 .b-cover.paper::before { display: none; } .b-cover.paper i { order: -1; width: 100%; height: 4px; background: var(--ink); }
 .b-cover { overflow: hidden; } .b-cover b { font-size: 11.5px; overflow-wrap: break-word; hyphens: auto; } .b-cover small { overflow-wrap: anywhere; }
+
+/* ---------- the hero's Open the app button becomes an app icon in the corner ---------- */
+.fab-app { position: fixed; z-index: 70; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); width: 64px; height: 64px; border-radius: 18px; background: var(--red); border: var(--b) solid var(--ink); box-shadow: -5px -5px 0 var(--ink); display: grid; place-items: center; text-decoration: none; opacity: 0; transform: scale(.2) rotate(-25deg); pointer-events: none; transition: transform .45s cubic-bezier(.3, 1.6, .5, 1), opacity .2s, box-shadow .2s; }
+.fab-app.show { opacity: 1; transform: none; pointer-events: auto; }
+.fab-app.show:hover { transform: translate(-2px, -2px) rotate(-5deg); box-shadow: -8px -8px 0 var(--ink); }
+.fab-app svg { width: 42px; height: 42px; overflow: visible; }
+.fab-box { fill: var(--yellow); stroke: #111; stroke-width: 4.5; }
+.fab-tip { position: absolute; right: calc(100% + 14px); top: 50%; white-space: nowrap; background: var(--yellow); color: var(--ink); border: 3px solid var(--ink); border-radius: 10px; box-shadow: -3px -3px 0 var(--ink); padding: 4px 12px; font: 800 16px var(--display); opacity: 0; transform: translate(8px, -50%); transition: opacity .2s, transform .25s; pointer-events: none; }
+.fab-app:hover .fab-tip, .fab-app:focus-visible .fab-tip, .fab-app.hint .fab-tip { opacity: 1; transform: translate(0, -50%); }
+.fab-ghost { position: fixed; z-index: 69; pointer-events: none; display: grid; place-items: center; overflow: hidden; white-space: nowrap; background: var(--yellow); color: var(--ink); border: var(--b) solid var(--ink); box-shadow: -5px -5px 0 var(--ink); font: 800 20px var(--display); }
+@media (max-width: 520px) { .fab-app { width: 56px; height: 56px; border-radius: 16px; } .fab-app svg { width: 36px; height: 36px; } }
+@media (prefers-reduced-motion: reduce) { .fab-app { transition: opacity .2s; transform: none; } }
+
+/* ---------- arrow down to the video; at the very top it takes the colour pill's place ---------- */
+.hero-down { position: absolute; z-index: 5; left: 50%; bottom: 16px; width: 56px; height: 56px; margin-left: -28px; display: grid; place-items: center; background: var(--white); border: var(--b) solid var(--ink); border-radius: 50%; box-shadow: -4px -4px 0 var(--ink); animation: down-bob 1.6s ease-in-out infinite; transition: opacity .3s; }
+.hero-down svg { width: 28px; height: 28px; fill: none; stroke: var(--ink); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.hero-down:hover { background: var(--yellow); }
+@keyframes down-bob { 50% { transform: translateY(8px); } }
+.swatches { transition: opacity .35s, transform .45s cubic-bezier(.3, 1.4, .5, 1); }
+.at-top .swatches { opacity: 0; transform: translate(-50%, 40px); pointer-events: none; }
+body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .hero-down { animation: none; } }
