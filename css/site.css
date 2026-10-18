@@ -971,3 +971,11 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .jf-stats { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
 @media (max-width: 760px) { .jw { grid-template-columns: 1fr; } .jw-stats { grid-template-columns: repeat(2, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .jw-rec { animation: none; } }
+
+/* black cursors, on mouse screens only */
+@media (hover: hover) and (pointer: fine) {
+  html, body { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M5%203l20%2011.5-8.6%202.2%205.2%209.3-4.2%202.3-5.2-9.4L6%2025z%22%20fill%3D%22%23111%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.2%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E") 5 3, auto; }
+  a, button, [role="button"], label, summary, .sw-set button, .phone-link, .pilot, .cite, .book-pop, .hero-phone .screen, input[type=radio] + span { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M11.5%204.5a2.4%202.4%200%200%201%204.8%200v9.3l.6-2.2a2.3%202.3%200%200%201%204.4%201.1l-.2%201.6a2.3%202.3%200%200%201%204.4.9l-.2%201.3a2.3%202.3%200%200%201%204.3%201.1l-.6%205.6c-.6%204.6-4%207.3-8.3%207.3h-2.8c-3%200-5-1.3-6.9-3.9L5%2020.7a2.3%202.3%200%200%201%203.5-3l3%203.4z%22%20fill%3D%22%23111%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E") 13 3, pointer !important; }
+  input[type=email], input[type=text], textarea { cursor: text !important; }
+  button:disabled { cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20d%3D%22M5%203l20%2011.5-8.6%202.2%205.2%209.3-4.2%202.3-5.2-9.4L6%2025z%22%20fill%3D%22%23111%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.2%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E") 5 3, not-allowed; }
+}
