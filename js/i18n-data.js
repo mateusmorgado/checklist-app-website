@@ -1,6 +1,22 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Short tones at random moments helped people keep their goal in mind and get back to the task.": "Kurze Töne zu zufälligen Momenten halfen Menschen, ihr Ziel im Kopf zu behalten und zur Aufgabe zurückzufinden.",
+"Study": "Studie",
+"A surgeon shows how short checklists cut mistakes in operating rooms, cockpits and on building sites.": "Ein Chirurg zeigt, wie kurze Checklisten Fehler im OP, im Cockpit und auf der Baustelle verringern.",
+"Click to look it up": "Klicken, um es nachzuschlagen",
+"Why a checklist?": "Warum eine Checkliste?",
+"Why?": "Warum?",
+"A checklist is not for people who": "Eine Checkliste ist nicht für Leute, die sich",
+"can’t remember": "nichts merken können",
+"It’s for people who don’t want to waste their": "Sie ist für Leute, die ihr",
+"thinking": "Denken",
+"on remembering.": "nicht ans Erinnern verschwenden wollen.",
+"Hand the remembering to": "Überlass das Erinnern",
+"Keep the thinking for": "Heb dir das Denken auf für",
+"things that matter.": "das, was zählt.",
+"Reference": "Quelle",
+"Capture what you need to remember in a trusted place outside your head, and your mind is free to think.": "Halte fest, was du dir merken musst, an einem verlässlichen Ort außerhalb deines Kopfes. Dann ist dein Kopf frei zum Denken.",
 "Tap to say No": "Tippe für Nein",
 "steering and Claude Code": "am Steuer und Claude Code",
 "building. The line in the middle is what shipped. Branches are ideas tried, parked or dropped.": "beim Bauen. Die Linie in der Mitte ist das, was veröffentlicht wurde. Äste sind Ideen, die ausprobiert, geparkt oder verworfen wurden.",

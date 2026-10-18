@@ -90,7 +90,11 @@
       <div class="line l3"><span class="w">This is a</span><span class="big"><span class="hl">Checklist prompt</span> <span class="hl hl2">app</span></span></div>
     </div>
     <div class="confetti" id="confetti" aria-hidden="true"></div>
-    <p class="sub reveal">Build a list once. Run it whenever you need it. The way pilots and surgeons do, now in your pocket.</p>
+    <p class="sub reveal">Build a list once. Run it whenever you need it. The way pilots and surgeons do, now in your pocket.
+      <span class="cite-wrap"><a class="cite" href="https://www.google.com/search?q=The+Checklist+Manifesto+Atul+Gawande" target="_blank" rel="noopener" aria-describedby="book-gawande">The Checklist Manifesto, 2009</a><span class="book-pop" id="book-gawande" role="tooltip">
+        <span class="book3d" aria-hidden="true"><span class="b-cover gw"><small>Atul Gawande</small><b>The Checklist Manifesto</b><i></i></span></span>
+        <span class="book-txt"><small class="book-k">Reference</small><span class="book-ref" data-no-i18n>Gawande, A. (2009). <i>The checklist manifesto: How to get things right</i>. Metropolitan Books.</span><span class="book-note">A surgeon shows how short checklists cut mistakes in operating rooms, cockpits and on building sites.</span><span class="book-go">Click to look it up</span></span>
+      </span></span></p>
     <div class="cta-row reveal">
       <a class="btn big yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Open the app</a>
       <a class="btn big white" href="#video">Watch the video</a>
@@ -126,6 +130,27 @@
       </div>
     </div>
     <p class="cap reveal">Cockpit, operating room, then your pocket.</p>
+  </div>
+</section>
+
+<!-- WHY A CHECKLIST -->
+<section class="section wq" id="why-q" aria-labelledby="wq-title">
+  <div class="wrap">
+    <h2 id="wq-title" class="sr-only">Why a checklist?</h2>
+    <div class="wq-stage" id="wq-stage">
+      <p class="wq-why" aria-hidden="true"><span>Why?</span></p>
+      <ol class="wq-lines">
+        <li class="wq-l">A checklist is not for people who <span class="wq-x">can’t remember</span>.</li>
+        <li class="wq-l">It’s for people who don’t want to waste their <span class="hl">thinking</span> on remembering.</li>
+        <li class="wq-l">Hand the remembering to <b>ChecklistPro</b>.</li>
+        <li class="wq-l">Keep the thinking for <span class="hl">things that matter.</span>
+          <span class="cite-wrap"><button class="cite" id="wq-cite" type="button" aria-expanded="false" aria-describedby="book-pop">Forte, 2022</button><span class="book-pop" id="book-pop" role="tooltip">
+            <span class="book3d" aria-hidden="true"><span class="b-cover"><small>Tiago Forte</small><b>Building a Second Brain</b><i></i></span></span>
+            <span class="book-txt"><small class="book-k">Reference</small><span class="book-ref" data-no-i18n>Forte, T. (2022). <i>Building a second brain: A proven method to organize your digital life and unlock your creative potential</i>. Atria Books.</span><span class="book-note">Capture what you need to remember in a trusted place outside your head, and your mind is free to think.</span></span>
+          </span></span></li>
+      </ol>
+    </div>
+    <button class="replay small wq-replay" id="wq-replay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
   </div>
 </section>
 
@@ -294,30 +319,40 @@
 
       <div class="pw-side">
         <div class="pw-points" id="pw-points" role="group" aria-label="Pro powers">
-          <button class="pw-pt" type="button" data-scene="tone" aria-pressed="true">
-            <span class="pw-ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10zM16 9a4 4 0 0 1 0 6M18.6 6.5a7.6 7.6 0 0 1 0 11"/></svg></span>
-            <span class="pw-name">Attention tone</span>
-            <span class="pw-sub">A sound that keeps you on task.</span>
-            <span class="pw-more">Switch it on for a list and a soft tone plays while you run it. A little pressure, so you don’t drift off to another app. It stops the moment the last item is ticked.
-              <span class="pw-tags"><span>Heart monitor</span><span>Sonar</span><span>Cabin hum</span><span>Metronome</span><span>Alarm</span></span></span>
-            <i class="pw-time"></i>
-          </button>
-          <button class="pw-pt" type="button" data-scene="res" aria-pressed="false">
-            <span class="pw-ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M9 8h7M9 12h5"/></svg></span>
-            <span class="pw-name">Research based</span>
-            <span class="pw-sub">Built on studies, not hunches.</span>
-            <span class="pw-more">Checklists come from cockpits and operating rooms, where they are measured in lives. The app’s Manifesto tells that story, and its features name the research behind them, with the full sources inside.
-              <span class="pw-tags"><span>Gawande</span><span>Pronovost</span><span>Haynes</span><span>Posner</span><span>MacLeod</span></span></span>
-            <i class="pw-time"></i>
-          </button>
-          <button class="pw-pt" type="button" data-scene="ai" aria-pressed="false">
-            <span class="pw-ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4M19.5 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span>
-            <span class="pw-name">AI quick list</span>
-            <span class="pw-sub">Say it. Get a checklist.</span>
-            <span class="pw-more">Tap the bolt and say what’s on your mind, for up to 17 seconds. AI turns your words into a checklist you can edit before you save it. Good for groceries, packing, anything on the fly.
-              <span class="pw-tags"><span>17 seconds</span><span>Edit before saving</span><span>3 a day</span></span></span>
-            <i class="pw-time"></i>
-          </button>
+          <div class="pw-item">
+            <button class="pw-pt" type="button" data-scene="tone" aria-pressed="true">
+              <span class="pw-ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10zM16 9a4 4 0 0 1 0 6M18.6 6.5a7.6 7.6 0 0 1 0 11"/></svg></span>
+              <span class="pw-name">Attention tone</span>
+              <span class="pw-sub">A sound that keeps you on task.</span>
+              <span class="pw-more">Switch it on for a list and a soft tone plays while you run it. A little pressure, so you don’t drift off to another app. It stops the moment the last item is ticked.
+                <span class="pw-tags"><span>Heart monitor</span><span>Sonar</span><span>Cabin hum</span><span>Metronome</span><span>Alarm</span></span></span>
+              <i class="pw-time"></i>
+            </button>
+            <span class="cite-wrap pw-cite"><a class="cite" href="https://scholar.google.com/scholar?q=Manly+2004+%22An+electronic+knot+in+the+handkerchief%22" target="_blank" rel="noopener" aria-describedby="paper-manly">Manly et al., 2004</a><span class="book-pop" id="paper-manly" role="tooltip">
+              <span class="book3d" aria-hidden="true"><span class="b-cover paper"><small>Neuropsychological Rehabilitation</small><b>An electronic knot in the handkerchief</b><i></i></span></span>
+              <span class="book-txt"><small class="book-k">Study</small><span class="book-ref" data-no-i18n>Manly, T., Heutink, J., Davison, B., Gaynord, B., Greenfield, E., Parr, A., Ridgeway, V., &amp; Robertson, I. H. (2004). An electronic knot in the handkerchief: “Content free cueing” and the maintenance of attentive control. <i>Neuropsychological Rehabilitation, 14</i>(1–2), 89–116.</span><span class="book-note">Short tones at random moments helped people keep their goal in mind and get back to the task.</span><span class="book-go">Click to look it up</span></span>
+            </span></span>
+          </div>
+          <div class="pw-item">
+            <button class="pw-pt" type="button" data-scene="res" aria-pressed="false">
+              <span class="pw-ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5M9 8h7M9 12h5"/></svg></span>
+              <span class="pw-name">Research based</span>
+              <span class="pw-sub">Built on studies, not hunches.</span>
+              <span class="pw-more">Checklists come from cockpits and operating rooms, where they are measured in lives. The app’s Manifesto tells that story, and its features name the research behind them, with the full sources inside.
+                <span class="pw-tags"><span>Gawande</span><span>Pronovost</span><span>Haynes</span><span>Posner</span><span>MacLeod</span></span></span>
+              <i class="pw-time"></i>
+            </button>
+          </div>
+          <div class="pw-item">
+            <button class="pw-pt" type="button" data-scene="ai" aria-pressed="false">
+              <span class="pw-ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4M19.5 2.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg></span>
+              <span class="pw-name">AI quick list</span>
+              <span class="pw-sub">Say it. Get a checklist.</span>
+              <span class="pw-more">Tap the bolt and say what’s on your mind, for up to 17 seconds. AI turns your words into a checklist you can edit before you save it. Good for groceries, packing, anything on the fly.
+                <span class="pw-tags"><span>17 seconds</span><span>Edit before saving</span><span>3 a day</span></span></span>
+              <i class="pw-time"></i>
+            </button>
+          </div>
         </div>
         <p class="hint-line">Tap a power to see it. The co-pilot reads it back.</p>
       </div>

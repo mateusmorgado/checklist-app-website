@@ -211,6 +211,26 @@
   $('#demo-replay').addEventListener('click', demo);
   if ('IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); demo(); } }), { threshold: .45 }).observe($('#cond-demo')); else demo();
 
+  // ---------- why a checklist: a big WHY? turns into the answer, line by line ----------
+  (function () {
+    const st = $('#wq-stage'), ls = $$('.wq-l', st), cw = $('.cite-wrap', st), cite = $('#wq-cite'); let wr = 0;
+    async function play() {
+      const r = ++wr, ok = () => r === wr;
+      st.className = 'wq-stage'; ls.forEach(l => l.classList.remove('in', 'fin'));
+      if (reduce) { st.classList.add('s-lines', 'done'); ls.forEach(l => l.classList.add('in', 'fin')); return; }
+      await wait(200); if (!ok()) return; st.classList.add('s-why');
+      await wait(1700); if (!ok()) return; st.classList.replace('s-why', 's-lines');
+      for (const l of ls) { await wait(650); if (!ok()) return; l.classList.add('in'); setTimeout(() => l.classList.add('fin'), 1000); await wait(1250); if (!ok()) return; }
+      st.classList.add('done');
+    }
+    $('#wq-replay').addEventListener('click', play);
+    // tap opens the book card on touch screens; hover and focus open it everywhere
+    cite.addEventListener('click', e => { e.stopPropagation(); const o = cw.classList.toggle('open'); cite.setAttribute('aria-expanded', o ? 'true' : 'false'); });
+    document.addEventListener('click', e => { if (!cw.contains(e.target)) { cw.classList.remove('open'); cite.setAttribute('aria-expanded', 'false'); } });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { cw.classList.remove('open'); cite.setAttribute('aria-expanded', 'false'); if (cw.contains(document.activeElement)) cite.blur(); } });
+    if ('IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); play(); } }), { threshold: .4 }).observe(st); else play();
+  })();
+
   // ---------- pro powers: animated scenes in the phone, a pilot robot reads the chosen power back ----------
   const F = window.FRAMES;
   (function () {
