@@ -75,7 +75,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .lines .big { display: block; margin-top: .06em; font-size: 1.28em; line-height: 1.02; }
 .lines .big .hl { display: inline-block; margin-bottom: .1em; transform: rotate(-1.2deg); }
 .lines .big .hl2 { transform: rotate(1.4deg); background: var(--mint); }
-.sub { font: 600 clamp(20px, 2.4vw, 32px)/1.25 var(--body); max-width: 26em; margin: 36px 0 28px; }
+.sub { font: 600 clamp(20px, 2.4vw, 32px)/1.25 var(--body); max-width: 26em; margin: 28px 0 22px; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
 .replay { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; font: 700 16px var(--display); text-decoration: underline; text-underline-offset: 4px; min-height: 48px; padding: 0 8px; }
 .replay svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
@@ -111,8 +111,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .stk { position: absolute; width: 70px; height: 70px; fill: var(--yellow); stroke: var(--ink); stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; animation: floaty 6s ease-in-out infinite alternate; will-change: transform; }
 .stk .line { fill: none; stroke-width: 4.5; } .stk .o { fill: none; stroke-width: 13; } .stk .i { fill: none; stroke: var(--mint); stroke-width: 6.5; }
 .k1 { top: 14%; left: 3%; width: 96px; height: 96px; } .k2 { top: 22%; right: 30%; width: 104px; height: 104px; animation-delay: -2s; }
-.k3 { top: 56%; right: 31%; width: 54px; height: 54px; fill: var(--white); animation-delay: -3s; } .k4 { top: 12%; right: 12%; fill: var(--white); animation-delay: -4s; }
-.k5 { bottom: 9%; left: 6%; width: 110px; height: 110px; animation-delay: -1s; } .k6 { bottom: 5%; right: 36%; fill: var(--pink); width: 90px; height: 90px; animation-delay: -5s; }
+.k3 { top: 13%; right: 38%; width: 54px; height: 54px; fill: var(--white); animation-delay: -3s; } .k4 { top: 12%; right: 12%; fill: var(--white); animation-delay: -4s; }
+.k5 { bottom: 9%; left: 6%; width: 110px; height: 110px; animation-delay: -1s; } .k6 { top: 9%; right: 25%; fill: var(--pink); width: 90px; height: 90px; animation-delay: -5s; }
 @keyframes floaty { from { translate: 0 0; rotate: -4deg; } to { translate: 0 -16px; rotate: 8deg; } }
 .confetti { position: absolute; inset: 0; pointer-events: none; z-index: 4; overflow: hidden; }
 .confetti i { position: absolute; top: -20px; width: 14px; height: 20px; border: 2.5px solid var(--ink); animation: fall 2.4s cubic-bezier(.3, .1, .6, 1) forwards; }
@@ -579,7 +579,7 @@ body, .nav, .video-missing, .d-stage, .journey { transition: background-color .3
   .b-all, .b-shadow, .b-light, .ecg, .mon-heart, .ai-mic::before, .ai-mic::after, .ai-spark, .ai-think p, .pw-stage .pw-waves path { animation: none !important; }
   .pw-pt.run .pw-time { animation: none; }
 }
-.claude-mark { display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -.15em; margin: 0 .05em; animation: claude-spin 14s linear infinite; }
+.claude-mark { display: inline-block; width: 1.2em; height: 1.2em; overflow: visible; vertical-align: -.15em; margin: 0 .05em; animation: claude-spin 14s linear infinite; }
 @keyframes claude-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .claude-mark { animation: none; } }
 
@@ -603,13 +603,27 @@ body, .nav, .video-missing, .d-stage, .journey { transition: background-color .3
 .wq-l.in .wq-x::after { width: 106%; transition: width .5s cubic-bezier(.7, 0, .2, 1) 1s; }
 .wq-l.in .wq-x { color: rgba(17, 17, 17, .6); transition: color .3s 1.2s; }
 .wq-replay { margin-top: 24px; }
+/* the end: only the last line stays, bigger, in a slimmer yellow band */
+.wq { transition: padding .8s cubic-bezier(.6, 0, .2, 1); }
+.wq-stage { transition: min-height .8s cubic-bezier(.6, 0, .2, 1); }
+.wq-lines { transition: padding .8s cubic-bezier(.6, 0, .2, 1), gap .8s; }
+.wq-l { transition: height .7s cubic-bezier(.6, 0, .2, 1), opacity .4s, margin .7s; }
+.wq.final { padding: clamp(44px, 6vw, 80px) 0; overflow: visible; }
+.wq.final .wrap { text-align: center; }
+.wq-stage.final { min-height: 0; }
+.wq-stage.final .wq-why { opacity: 0; transition: opacity .3s; }
+.wq-stage.final .wq-lines { padding-top: 0; gap: 0; }
+.wq-stage.final .wq-l:not(:last-child) { opacity: 0; overflow: hidden; }
+.wq-stage.final .wq-l:last-child { text-wrap: balance; font-size: 1.2em; transition: font-size .8s cubic-bezier(.3, 1.3, .5, 1) .2s; }
+.wq.final .wq-replay { margin-top: 14px; }
+.wq.instant, .wq.instant * { transition: none !important; }
 /* the reference and its book card */
 .cite-wrap { position: relative; display: inline-block; vertical-align: middle; }
 .cite { font: 700 16px var(--body); color: var(--ink); background: var(--white); border: 3px solid var(--ink); border-radius: 99px; padding: 4px 12px; box-shadow: -3px -3px 0 var(--ink); cursor: help; letter-spacing: 0; }
 .cite::before { content: '📖 '; }
 a.cite { display: inline-block; text-decoration: none; cursor: pointer; }
 a.cite:hover { background: var(--yellow); }
-.sub .cite-wrap { margin-left: 4px; vertical-align: 3px; }
+.sub .cite-wrap { display: block; width: max-content; max-width: 100%; margin: 14px 0 0; }
 .b-cover.gw { background: #f6f1e6; color: var(--ink); }
 .b-cover.gw::before { background: rgba(0, 0, 0, .12); }
 .b-cover.gw i { background: var(--red); width: 40%; }
@@ -631,7 +645,7 @@ a.cite:hover { background: var(--yellow); }
 .book-ref { font-size: 14px; }
 .book-note { font-weight: 600; }
 @media (max-width: 640px) {
-  .cite-wrap.open .book-pop, .cite-wrap:focus-within .book-pop { position: fixed; left: 16px; right: 16px; bottom: 96px; width: auto; transform: none; }
+  .cite-wrap.open .book-pop, .cite-wrap:focus-within .book-pop, .cite-wrap:hover .book-pop { position: fixed; left: 16px; right: 16px; bottom: 96px; width: auto; transform: none; }
   .book-pop::after { display: none; }
   .b-cover { width: 72px; height: 106px; } .b-cover b { font-size: 12px; }
 }
@@ -645,4 +659,4 @@ a.cite:hover { background: var(--yellow); }
 .b-cover.paper b { font-size: 11px; line-height: 1.1; text-transform: none; }
 .b-cover.paper small { font-size: 7px; letter-spacing: .06em; }
 .b-cover.paper::before { display: none; } .b-cover.paper i { order: -1; width: 100%; height: 4px; background: var(--ink); }
-.b-cover { overflow: hidden; } .b-cover b { font-size: 13px; overflow-wrap: anywhere; } .b-cover small { overflow-wrap: anywhere; }
+.b-cover { overflow: hidden; } .b-cover b { font-size: 11.5px; overflow-wrap: break-word; hyphens: auto; } .b-cover small { overflow-wrap: anywhere; }

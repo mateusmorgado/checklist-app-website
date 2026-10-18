@@ -214,14 +214,23 @@
   // ---------- why a checklist: a big WHY? turns into the answer, line by line ----------
   (function () {
     const st = $('#wq-stage'), ls = $$('.wq-l', st), cw = $('.cite-wrap', st), cite = $('#wq-cite'); let wr = 0;
+    const sec = $('#why-q');
+    // at the end everything but the last line folds away and the yellow band shrinks around it
+    function focus(now) {
+      ls.slice(0, -1).forEach(l => { l.style.height = l.offsetHeight + 'px'; });
+      void st.offsetHeight; sec.classList.add('final'); st.classList.add('final');
+      ls.slice(0, -1).forEach(l => { l.style.height = '0px'; });
+      if (now) sec.classList.add('instant');
+    }
     async function play() {
       const r = ++wr, ok = () => r === wr;
-      st.className = 'wq-stage'; ls.forEach(l => l.classList.remove('in', 'fin'));
-      if (reduce) { st.classList.add('s-lines', 'done'); ls.forEach(l => l.classList.add('in', 'fin')); return; }
+      sec.classList.remove('final', 'instant'); st.className = 'wq-stage'; ls.forEach(l => { l.classList.remove('in', 'fin'); l.style.height = ''; });
+      if (reduce) { st.classList.add('s-lines', 'done'); ls.forEach(l => l.classList.add('in', 'fin')); focus(true); return; }
       await wait(200); if (!ok()) return; st.classList.add('s-why');
       await wait(1700); if (!ok()) return; st.classList.replace('s-why', 's-lines');
       for (const l of ls) { await wait(650); if (!ok()) return; l.classList.add('in'); setTimeout(() => l.classList.add('fin'), 1000); await wait(1250); if (!ok()) return; }
-      st.classList.add('done');
+      await wait(1800); if (!ok()) return; focus();
+      await wait(900); if (!ok()) return; st.classList.add('done');
     }
     $('#wq-replay').addEventListener('click', play);
     // tap opens the book card on touch screens; hover and focus open it everywhere
