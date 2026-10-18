@@ -1,6 +1,10 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Why you need it": "Warum du sie brauchst",
+"Your phone pulls you in ten directions.": "Dein Handy zieht dich in zehn Richtungen.",
+"A checklist brings you back to one.": "Eine Checkliste bringt dich zurück zu einer.",
+"Make a list once for the things you do again and again. Nothing slips while notifications fight for your attention: less remembering, fewer distractions, more done.": "Leg einmal eine Liste an für alles, was du immer wieder tust. Nichts rutscht durch, während Benachrichtigungen um deine Aufmerksamkeit kämpfen: weniger merken, weniger Ablenkung, mehr erledigt.",
 "Inspiration": "Inspiration",
 "A two-minute checklist nearly halved deaths after surgery. The same idea, now for your day.": "Eine Zwei-Minuten-Checkliste hat die Todesfälle nach Operationen fast halbiert. Dieselbe Idee, jetzt für deinen Alltag.",
 "Previous power": "Vorherige Funktion",

@@ -1055,3 +1055,10 @@ body.compact .nav-panel { pointer-events: auto; }
   100% { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) { .line.l1.show { animation: none !important; } }
+
+/* grey band after the video: why you need it */
+.focus-band { background: #e4e4e4; color: var(--ink); border-top: var(--b) solid var(--ink); border-bottom: var(--b) solid var(--ink); padding: clamp(36px, 6vw, 72px) 0; }
+.focus-in { max-width: 980px; }
+.fb-big { margin: 0; font: 800 clamp(28px, 4.2vw, 56px)/1.05 var(--display); letter-spacing: -.02em; }
+.fb-big .hl { display: inline-block; margin-top: .22em; box-shadow: -4px -4px 0 var(--ink); padding: 0 .12em; }
+.fb-small { margin: 18px 0 0; max-width: 40em; font: 600 clamp(16px, 1.6vw, 20px)/1.45 var(--body); }
