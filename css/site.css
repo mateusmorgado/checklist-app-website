@@ -1033,11 +1033,7 @@ body:not(.typing) .hero .sub-type { display: none; }
 .insp-t { margin: 0; flex: 1 1 280px; font: 700 clamp(16px, 1.6vw, 20px)/1.35 var(--body); }
 .b-cover b { font-size: 10.5px; overflow-wrap: normal; word-break: normal; hyphens: manual; }
 /* the first line shoots up from the very bottom of the screen */
-.line.l1:not(.show) { transform: translateY(100vh) rotate(-4deg); opacity: 1; }
-.line.l1.show { transition: transform .5s cubic-bezier(.15, 1.25, .35, 1), opacity .1s; }
 .hero .sub { background: #ececec; }
-@media (prefers-reduced-motion: reduce) { .line.l1:not(.show) { transform: none; } }
-.line.l1:not(.show) { transition: none; }
 html.booting .nav, html.booting .swatches, html.booting .hero .sub, html.booting .hero .cta-row, html.booting .hero-down { opacity: 0 !important; transition: none !important; }
 
 /* compact header: only the menu button stays, top right */
@@ -1048,3 +1044,14 @@ body.compact .nav .brand, body.compact .nav-links, body.compact .nav-cta > :not(
 body.compact .menu-btn { display: inline-flex !important; pointer-events: auto; animation: menu-in .45s cubic-bezier(.3, 1.6, .5, 1); }
 body.compact .nav-panel { pointer-events: auto; }
 @keyframes menu-in { from { transform: scale(.5) rotate(-20deg); } }
+/* the first line is thrown up from below the bottom edge of the screen, spinning, and lands with a bounce */
+.line.l1.show:not(.hit):not(.struck) { animation: throw-in .8s cubic-bezier(.2, .75, .3, 1) both; }
+.line.l1.show { transition: opacity 0s; }
+@keyframes throw-in {
+  0% { transform: translate(-25vw, 110vh) rotate(-40deg) scale(.8); }
+  55% { transform: translate(3vw, -60px) rotate(8deg) scale(1.08); }
+  75% { transform: translate(-1vw, 10px) rotate(-3deg) scale(.98); }
+  90% { transform: translate(0, -4px) rotate(1deg); }
+  100% { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .line.l1.show { animation: none !important; } }
