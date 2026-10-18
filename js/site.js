@@ -676,7 +676,7 @@
   // ---------- the website's stop-motion: one screenshot per commit, played like a flip book ----------
   const flip = (function () {
     const img = $('#jw-img'), time = $('#jw-time'), fill = $('#jw-fill'), tabs = $$('.jw-tab'), dds = $$('.jw-stats dd'), E = window.EVO || {};
-    const order = ['hero', 'pro', 'page']; let c = 'hero', i = 0, t = 0, alive = false, counted = false;
+    const order = ['hero', 'page']; let c = 'hero', i = 0, t = 0, alive = false, counted = false;
     Object.values(E).forEach(list => list.forEach(([f]) => { const im = new Image(); im.src = 'img/evo/' + f; }));
     const show = () => { const list = E[c], [f, tm] = list[i]; img.src = 'img/evo/' + f; time.textContent = tm; fill.style.width = ((i + 1) / list.length * 100) + '%'; };
     function step() {
