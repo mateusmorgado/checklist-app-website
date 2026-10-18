@@ -370,7 +370,7 @@
     cite.addEventListener('click', e => { e.stopPropagation(); const o = cw.classList.toggle('open'); cite.setAttribute('aria-expanded', o ? 'true' : 'false'); });
     document.addEventListener('click', e => { if (!cw.contains(e.target)) { cw.classList.remove('open'); cite.setAttribute('aria-expanded', 'false'); } });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') { cw.classList.remove('open'); cite.setAttribute('aria-expanded', 'false'); if (cw.contains(document.activeElement)) cite.blur(); } });
-    if ('IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); play(); } }), { threshold: .4 }).observe(st); else play();
+    if ('IntersectionObserver' in window) new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { o.disconnect(); play(); } }), { rootMargin: '-42% 0px -42% 0px' }).observe(st); else play(); // starts only when the yellow band reaches the middle of the screen
   })();
 
   // ---------- pro powers: animated scenes in the phone, a pilot robot reads the chosen power back ----------
