@@ -47,6 +47,7 @@
   const nextFall = () => { try { fallIdx = (parseInt(localStorage.getItem('cp-fall') || '-1', 10) + 1) % FALLS.length; localStorage.setItem('cp-fall', fallIdx); } catch (e) { fallIdx = (fallIdx + 1 + Math.floor(Math.random() * 2)) % FALLS.length; } };
   nextFall();
   function park() {
+    lines.slice(0, 2).forEach(l => l.classList.remove('hit'));
     const P = FALLS[fallIdx], PX = 28, hr = hero.getBoundingClientRect(), f = lines.slice(0, 2).map(l => ({ l, r: l.getBoundingClientRect() }));
     f.forEach(({ l, r }) => {
       const ph = document.createElement('div'); ph.className = 'line-ph'; ph.style.height = r.height + 'px'; ph.style.marginBottom = getComputedStyle(l).marginBottom; l.parentNode.insertBefore(ph, l);
@@ -89,15 +90,18 @@
   }
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;
-    unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
+    unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone', 'hit'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
     if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); if (canPark()) park(); else lines.slice(0, 2).forEach(l => l.classList.add('gone')); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')); return; }
     await wait(300); if (!ok()) return; lines[0].classList.add('show');
     await wait(900); if (!ok()) return; lines[0].classList.add('struck');
     await wait(650); if (!ok()) return; lines[1].classList.add('show');
+    // the second line flies up into the first: both knock and stay tilted, each its own way
+    await wait(230); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('hit')); hero.classList.remove('shake'); void hero.offsetWidth; hero.classList.add('shake');
     await wait(900); if (!ok()) return; lines[1].classList.add('struck');
     await wait(750); if (!ok()) return; lines[2].classList.add('show'); burst();
     await wait(240); if (!ok()) return;
     // the big line hits the struck ones: it squashes on impact and springs back while they are shoved aside
+    if (!canPark()) lines.slice(0, 2).forEach(l => l.classList.remove('hit'));
     if (canPark()) { lines[2].classList.add('squash'); lines[2].addEventListener('animationend', () => lines[2].classList.remove('squash'), { once: true }); park(); } else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
     await wait(500); if (!ok()) return; $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in'));
   }
