@@ -1133,3 +1133,6 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 .peek.in .b-arm-r { transform: rotate(-96deg); transition: transform .4s .45s cubic-bezier(.3, 1.6, .5, 1); }
 .peek .b-all { animation: none; } .peek .b-shadow { display: none; }
 @media (max-width: 640px) { .peek { width: 76px; } }
+/* phones: he comes in from the right edge instead, mirrored so he still points at the words */
+.peek.right { left: auto; right: 0; transform-origin: 50% 80%; transform: translateX(110%) scaleX(-1) rotate(-14deg); }
+.peek.right.in { transform: translateX(calc(var(--hide, .4) * 100%)) scaleX(-1) rotate(6deg); }

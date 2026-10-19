@@ -104,14 +104,15 @@
     await wait(900); b.classList.remove('intro-first');
     if (!peeked) { peeked = true; await wait(4000); if (ok()) peek(); }
   }
-  // four seconds after the intro the co-pilot sneaks in from the left, points at "Checklist prompt" and ducks back out
+  // four seconds after the intro the co-pilot sneaks in from the left (the right on phones), points at "Checklist prompt" and ducks back out
   let peeked = false;
   function peek() {
     const bot = $('#pilot .bot'), target = $('.hero .l3 .hl'); if (!bot || !target || reduce || scrollY > innerHeight * .3) return;
     const p = document.createElement('div'); p.className = 'peek'; p.setAttribute('aria-hidden', 'true'); p.appendChild(bot.cloneNode(true)); document.body.appendChild(p);
-    const r = target.getBoundingClientRect(), w = p.offsetWidth;
+    const fromRight = matchMedia('(max-width: 640px)').matches; p.classList.toggle('right', fromRight); // phones: he sneaks in from the right
+    const r = target.getBoundingClientRect(), w = p.offsetWidth, gap = fromRight ? innerWidth - r.right : r.left;
     p.style.top = (r.top + r.height / 2 - w * 142 / 200) + 'px'; // shoulder level with the words
-    p.style.setProperty('--hide', Math.min(.62, Math.max(.4, .8 - (r.left - 4) / w))); // where the headline starts near the edge, more of him stays hidden so his body never covers the words
+    p.style.setProperty('--hide', Math.min(.62, Math.max(.4, .8 - (gap - 4) / w))); // where the headline starts near the edge, more of him stays hidden so his body never covers the words
     void p.offsetWidth; p.classList.add('in');
     setTimeout(() => p.classList.remove('in'), 650 + 2500);
     setTimeout(() => p.remove(), 650 + 2500 + 900);
