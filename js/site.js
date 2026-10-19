@@ -102,6 +102,18 @@
     setTimeout(() => { b.classList.remove('caret-hold'); out.textContent = ''; }, 2000); // the cursor keeps blinking for two seconds
     // the header comes last, dropping in from the top once the rest is in place
     await wait(900); b.classList.remove('intro-first');
+    if (!peeked) { peeked = true; await wait(4000); if (ok()) peek(); }
+  }
+  // four seconds after the intro the co-pilot sneaks in from the left, points at "Checklist prompt" and ducks back out
+  let peeked = false;
+  function peek() {
+    const bot = $('#pilot .bot'), target = $('.hero .l3 .hl'); if (!bot || !target || reduce || scrollY > innerHeight * .3) return;
+    const p = document.createElement('div'); p.className = 'peek'; p.setAttribute('aria-hidden', 'true'); p.appendChild(bot.cloneNode(true)); document.body.appendChild(p);
+    const r = target.getBoundingClientRect(), w = p.offsetWidth;
+    p.style.top = (r.top + r.height / 2 - w * 142 / 200) + 'px'; // shoulder level with the words
+    void p.offsetWidth; p.classList.add('in');
+    setTimeout(() => p.classList.remove('in'), 650 + 2500);
+    setTimeout(() => p.remove(), 650 + 2500 + 900);
   }
   // on small screens the headline plays in the middle of the screen, then rises to its place
   const lineBox = $('.lines'); let lift = 0;
