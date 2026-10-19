@@ -1128,8 +1128,11 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 
 /* hero: the co-pilot peeks in from the left edge and points at the headline */
 .peek { position: fixed; left: 0; z-index: 40; width: clamp(110px, 12vw, 160px); pointer-events: none; --navy: #27357a; transform: translateX(-110%) rotate(-14deg); transform-origin: 0 80%; transition: transform .55s cubic-bezier(.5, 0, .75, 0); }
-.peek.in { transform: translateX(-40%) rotate(6deg); transition: transform .6s cubic-bezier(.3, 1.4, .5, 1); }
+.peek.in { transform: translateX(calc(var(--hide, .4) * -100%)) rotate(6deg); transition: transform .6s cubic-bezier(.3, 1.4, .5, 1); }
 .peek .b-arm-r { transition: transform .3s ease-in; }
 .peek.in .b-arm-r { transform: rotate(-96deg); transition: transform .4s .45s cubic-bezier(.3, 1.6, .5, 1); }
 .peek .b-all { animation: none; } .peek .b-shadow { display: none; }
-@media (max-width: 640px) { .peek { width: 88px; } .peek.in { transform: translateX(-52%) rotate(6deg); } }
+@media (max-width: 640px) { .peek { width: 76px; } }
+/* phones: he comes in from the right edge instead, mirrored so he still points at the words */
+.peek.right { left: auto; right: 0; transform-origin: 50% 80%; transform: translateX(110%) scaleX(-1) rotate(-14deg); }
+.peek.right.in { transform: translateX(calc(var(--hide, .4) * 100%)) scaleX(-1) rotate(6deg); }
