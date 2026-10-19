@@ -111,6 +111,7 @@
     const p = document.createElement('div'); p.className = 'peek'; p.setAttribute('aria-hidden', 'true'); p.appendChild(bot.cloneNode(true)); document.body.appendChild(p);
     const r = target.getBoundingClientRect(), w = p.offsetWidth;
     p.style.top = (r.top + r.height / 2 - w * 142 / 200) + 'px'; // shoulder level with the words
+    p.style.setProperty('--hide', Math.min(.62, Math.max(.4, .8 - (r.left - 4) / w))); // where the headline starts near the edge, more of him stays hidden so his body never covers the words
     void p.offsetWidth; p.classList.add('in');
     setTimeout(() => p.classList.remove('in'), 650 + 2500);
     setTimeout(() => p.remove(), 650 + 2500 + 900);
