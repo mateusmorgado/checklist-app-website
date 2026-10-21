@@ -318,7 +318,11 @@
   function backToTeaser() { vid.pause(); vid.hidden = true; box.classList.remove('playing'); if (teaserOk) { teaser.hidden = false; playTeaser(); } }
   playBtn.addEventListener('click', startMain); teaser.addEventListener('click', startMain);
   // ---------- the animated story right under the hero: English or German to match the page ----------
-  const sBox = $('#story-box'), sVid = $('#story-vid');
+  const sBox = $('#story-box'), sVid = $('#story-vid'), sTeaser = $('#story-teaser');
+  // a silent loop of the action scenes plays until someone presses play
+  const playStoryTeaser = () => { if (sBox.classList.contains('playing') || !wantsMotion) return; const p = sTeaser.play(); if (p && p.catch) p.catch(() => {}); };
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playStoryTeaser(); else sTeaser.pause(); }), { threshold: .25 }).observe(sBox);
+  sTeaser.addEventListener('click', () => startStory());
   function storyLang() {
     const l = document.documentElement.lang === 'de' ? 'de' : 'en', src = 'video/alex-story-' + l + '.mp4';
     if (sVid.dataset.lang === l) return; sVid.dataset.lang = l;
@@ -327,11 +331,11 @@
     sVid.load(); if (at) sVid.currentTime = at; if (playing) { const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
   }
   storyLang(); new MutationObserver(storyLang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-  function startStory() { vid.pause(); sBox.classList.add('playing'); sVid.controls = true; sVid.currentTime = 0; const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
+  function startStory() { vid.pause(); sTeaser.pause(); sTeaser.hidden = true; sVid.hidden = false; sBox.classList.add('playing'); sVid.controls = true; sVid.currentTime = 0; const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
   $('#play-story').addEventListener('click', startStory);
   sVid.addEventListener('play', () => { sBox.classList.add('playing'); sVid.controls = true; vid.pause(); });
   vid.addEventListener('play', () => sVid.pause());
-  sVid.addEventListener('ended', () => { sBox.classList.remove('playing'); sVid.controls = false; });
+  sVid.addEventListener('ended', () => { sBox.classList.remove('playing'); sVid.controls = false; sVid.hidden = true; sTeaser.hidden = false; playStoryTeaser(); });
 
   // the hero's Watch the video button scrolls down and starts the story with sound; the arrow only scrolls down
   const toVideo = () => sBox.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });

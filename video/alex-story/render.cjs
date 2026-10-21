@@ -7,7 +7,7 @@ const { chromium } = require(process.env.PW || 'playwright');
 const { spawn, execFileSync } = require('child_process');
 const path = require('path');
 const FPS = 30, DIR = __dirname, TMP = path.join(DIR, 'frames.mp4'), OUT = path.join(DIR, 'alex-story.mp4');
-const URL = (process.env.SITE || 'http://localhost:8000') + '/video/alex-story/index.html?render';
+const URL = (process.env.SITE || 'http://localhost:8000') + '/video/alex-story/index.html?render&look=3d';
 
 (async () => {
   const browser = await chromium.launch(process.env.CHROME ? { executablePath: process.env.CHROME } : {});
