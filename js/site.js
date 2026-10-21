@@ -521,20 +521,25 @@
     const sec = $('#why-q');
     // at the end everything but the last line folds away and the yellow band shrinks around it
     function focus(now) {
+      const last = ls[ls.length - 1], mid = () => { const r = last.getBoundingClientRect(); return r.top + r.height / 2; }, m0 = mid();
       ls.slice(0, -1).forEach(l => { l.style.height = l.offsetHeight + 'px'; });
       void st.offsetHeight; sec.classList.add('final'); st.classList.add('final');
       ls.slice(0, -1).forEach(l => { l.style.height = '0px'; });
       if (now) sec.classList.add('instant');
+      // the last line stays exactly where it is: the band's top edge is pushed down as its content shrinks, so it closes in from above and below
+      const t0 = performance.now(), run = n => { sec.style.marginTop = Math.max(0, (parseFloat(sec.style.marginTop) || 0) + m0 - mid()) + 'px'; if (!now && n - t0 < 900) requestAnimationFrame(run); };
+      run(t0);
     }
     async function play() {
       const r = ++wr, ok = () => r === wr; document.dispatchEvent(new Event('wq-start'));
-      sec.classList.remove('final', 'instant'); st.className = 'wq-stage'; ls.forEach(l => { l.classList.remove('in', 'fin'); l.style.height = ''; });
+      sec.classList.add('instant'); sec.style.marginTop = ''; sec.classList.remove('final'); st.className = 'wq-stage'; ls.forEach(l => { l.classList.remove('in', 'fin'); l.style.height = ''; });
+      void sec.offsetHeight; if (!reduce) sec.classList.remove('instant');
       if (reduce) { st.classList.add('s-lines', 'done'); ls.forEach(l => l.classList.add('in', 'fin')); focus(true); return; }
       await wait(100); if (!ok()) return; st.classList.add('s-why');
       await wait(850); if (!ok()) return; st.classList.replace('s-why', 's-lines');
       for (const l of ls) { await wait(325); if (!ok()) return; l.classList.add('in'); setTimeout(() => l.classList.add('fin'), 500); await wait(625); if (!ok()) return; }
-      await wait(450); if (!ok()) return; focus();
-      await wait(450); if (!ok()) return; st.classList.add('done');
+      await wait(900); if (!ok()) return; focus();
+      await wait(800); if (!ok()) return; st.classList.add('done');
     }
     $('#wq-replay').addEventListener('click', play);
     // tap opens the book card on touch screens; hover and focus open it everywhere

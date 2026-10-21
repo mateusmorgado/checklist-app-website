@@ -597,17 +597,17 @@ body, .nav, .video-missing, .d-stage, .journey { transition: background-color .3
 .wq-l.in .wq-x { color: rgba(17, 17, 17, .6); transition: color 0.15s 0.6s; }
 .wq-replay { margin-top: 24px; }
 /* the end: only the last line stays, bigger, in a slimmer yellow band */
-.wq { transition: padding 0.4s cubic-bezier(.6, 0, .2, 1); }
-.wq-stage { transition: min-height 0.4s cubic-bezier(.6, 0, .2, 1); }
-.wq-lines { transition: padding 0.4s cubic-bezier(.6, 0, .2, 1), gap 0.4s; }
-.wq-l { transition: height 0.35s cubic-bezier(.6, 0, .2, 1), opacity 0.2s, margin 0.35s; }
+.wq { --wq-t: .7s; --wq-e: cubic-bezier(.22, 1, .36, 1); transition: padding var(--wq-t) var(--wq-e); overflow-anchor: none; }
+.wq-stage { transition: min-height var(--wq-t) var(--wq-e); }
+.wq-lines { transition: padding var(--wq-t) var(--wq-e), gap var(--wq-t) var(--wq-e); }
+.wq-l { transition: height var(--wq-t) var(--wq-e), opacity .25s, margin var(--wq-t) var(--wq-e); }
 .wq.final { padding: clamp(44px, 6vw, 80px) 0; overflow: visible; }
 .wq.final .wrap { text-align: center; }
 .wq-stage.final { min-height: 0; }
 .wq-stage.final .wq-why { opacity: 0; transition: opacity .3s; }
 .wq-stage.final .wq-lines { padding-top: 0; gap: 0; }
 .wq-stage.final .wq-l:not(:last-child) { opacity: 0; overflow: hidden; }
-.wq-stage.final .wq-l:last-child { text-wrap: balance; font-size: 1.2em; transition: font-size 0.4s cubic-bezier(.3, 1.3, .5, 1) 0.1s; }
+.wq-stage.final .wq-l:last-child { text-wrap: balance; font-size: 1.2em; transition: font-size var(--wq-t) var(--wq-e); }
 .wq.final .wq-replay { margin-top: 14px; }
 .wq.instant, .wq.instant * { transition: none !important; }
 /* the reference and its book card */
