@@ -1157,10 +1157,10 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 .landing { position: absolute; inset: 0; z-index: 4; pointer-events: none; overflow: visible; }
 .landing .line { letter-spacing: 0; }
 
-/* desktop: the hand that swipes the hero phone and picks the blue chip */
-.hand { position: fixed; left: 0; top: 0; z-index: 80; width: 0; height: 0; pointer-events: none; transform-origin: 0 0; opacity: 0; will-change: transform; }
-.hand svg { position: absolute; left: -60px; top: -20px; overflow: visible; filter: drop-shadow(-4px -4px 0 rgba(17, 17, 17, .35)); transform-origin: 60px 20px; }
-.hand-ring { position: fixed; z-index: 79; width: 0; height: 0; pointer-events: none; }
-.hand-ring::after { content: ''; position: absolute; left: -26px; top: -26px; width: 52px; height: 52px; border-radius: 50%; border: 4px solid var(--ink); opacity: 0; transform: scale(.3); }
-.hand-ring.go::after { animation: hand-tap .6s ease-out; }
-@keyframes hand-tap { 0% { opacity: 1; transform: scale(.3); } 100% { opacity: 0; transform: scale(1.5); } }
+/* desktop: the pointer sticker swipes the hero phone and picks the blue chip */
+.ptr { position: fixed; left: 0; top: 0; z-index: 80; width: 0; height: 0; pointer-events: none; transform-origin: 0 0; opacity: 0; will-change: transform; }
+.ptr svg { position: absolute; fill: var(--white); stroke: var(--ink); stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; overflow: visible; transform-origin: 0 0; }
+.ptr-ring { position: fixed; z-index: 79; width: 0; height: 0; pointer-events: none; }
+.ptr-ring::after { content: ''; position: absolute; left: -26px; top: -26px; width: 52px; height: 52px; border-radius: 50%; border: 4px solid var(--ink); opacity: 0; transform: scale(.3); }
+.ptr-ring.go::after { animation: ptr-tap .6s ease-out; }
+@keyframes ptr-tap { 0% { opacity: 1; transform: scale(.3); } 100% { opacity: 0; transform: scale(1.5); } }
