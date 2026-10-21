@@ -1109,24 +1109,38 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 :root[data-lang="de"] .inst.bam::after { content: 'Dein Gerät!'; }
 .inst-grid.fanning .inst { transition: transform .8s cubic-bezier(.3, 1.3, .5, 1); }
 
-/* the looks wheel */
-.look-side { display: flex; flex-direction: column; align-items: center; }
-.wheel-wrap { position: relative; width: min(440px, 86vw); aspect-ratio: 1; }
-.wheel { position: absolute; inset: 0; border-radius: 50%; border: var(--b) solid var(--ink); box-shadow: -8px -8px 0 var(--ink); transition: transform 1s cubic-bezier(.2, .9, .25, 1.12); touch-action: none; cursor: grab; outline-offset: 8px; }
-.wheel:active { cursor: grabbing; }
-.wheel-lab { position: absolute; left: 50%; top: 50%; width: 46%; margin: 0; padding: 0 6px 0 0; text-align: right; transform-origin: 0 50%; transform: rotate(calc(var(--a) - 90deg)) translateY(-50%); background: none; border: 0; font: 800 clamp(13px, 1.5vw, 17px) var(--display); text-transform: uppercase; letter-spacing: .02em; cursor: pointer; }
-.wheel::after { content: ''; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: repeating-conic-gradient(from -22.5deg, transparent 0 44.4deg, var(--ink) 44.4deg 45deg); }
-.wheel-hub { position: absolute; left: 50%; top: 50%; width: 40%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: var(--yellow); border: var(--b) solid var(--ink); box-shadow: -5px -5px 0 var(--ink); display: grid; place-content: center; text-align: center; pointer-events: none; padding: 8px; }
-.wheel-hub small { font: 800 12px var(--display); text-transform: uppercase; letter-spacing: .12em; opacity: .7; }
-.wheel-hub b { font: 800 clamp(18px, 2.2vw, 26px)/1.05 var(--display); text-transform: uppercase; }
-.wheel-pin { position: absolute; z-index: 3; left: 50%; top: -18px; width: 0; height: 0; transform: translateX(-50%); border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 30px solid var(--ink); filter: drop-shadow(0 -3px 0 var(--white)); }
-.wheel-wrap.land .wheel-hub { animation: hub-pop .45s cubic-bezier(.3, 1.8, .5, 1); }
-.wheel-wrap.land .wheel-pin { animation: pin-tick .4s ease-out; }
-@keyframes hub-pop { 40% { transform: translate(-50%, -50%) scale(1.12); } }
-@keyframes pin-tick { 30% { transform: translateX(-50%) rotate(-14deg); } }
+/* the looks wheel: a horizontal drum, like a phone's timer picker turned on its side */
+.look-side { display: flex; flex-direction: column; align-items: center; width: 100%; min-width: 0; }
+.drum-wrap { width: min(580px, 100%); display: flex; flex-direction: column; align-items: center; gap: 26px; }
+.drum { --cw: clamp(88px, 9vw, 112px); --ch: calc(var(--cw) * 1.3); position: relative; width: 100%; height: calc(var(--ch) + 70px); background: var(--ink); border: var(--b) solid var(--ink); border-radius: 24px; box-shadow: -8px -8px 0 var(--white), -8px -8px 0 var(--b) var(--ink); overflow: hidden; perspective: 1000px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; outline-offset: 8px; }
+.drum.grab { cursor: grabbing; }
+/* the curve: shade both ends so the chips roll away round the back */
+.drum::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(90deg, rgba(17,17,17,.95), rgba(17,17,17,0) 30%, rgba(17,17,17,0) 70%, rgba(17,17,17,.95)), linear-gradient(rgba(255,255,255,.1), rgba(255,255,255,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,.3)); }
+.drum-ticks { --tk: 28px; position: absolute; inset: 9px 0; pointer-events: none; background: repeating-linear-gradient(90deg, rgba(255,255,255,.45) 0 2px, transparent 2px var(--tk)) 0 0 / 100% 9px no-repeat, repeating-linear-gradient(90deg, rgba(255,255,255,.45) 0 2px, transparent 2px var(--tk)) 0 100% / 100% 9px no-repeat; }
+.drum-row { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; } /* the chips sit behind this plane in 3D, so let taps through to them */
+.drum-chip { position: absolute; pointer-events: auto; left: calc(50% - var(--cw) / 2); top: calc(50% - var(--ch) / 2); width: var(--cw); height: var(--ch); margin: 0; padding: 10px 7px 10px 9px; display: flex; flex-direction: column; justify-content: space-between; text-align: left; background: var(--c); color: #111; border: var(--b) solid var(--ink); border-radius: 14px; box-shadow: 0 0 0 2px rgba(255,255,255,.9), inset 0 -6px 0 rgba(0,0,0,.12); font: 800 calc(var(--cw) * .12)/1 var(--display); text-transform: uppercase; letter-spacing: 0; backface-visibility: hidden; will-change: transform, opacity; }
+.drum-chip.dark { color: #fff; }
+.drum-chip i { display: grid; gap: 5px; pointer-events: none; }
+.drum-chip i b { display: block; height: 6px; border-radius: 3px; background: var(--a); }
+.drum-chip i b:first-child { width: 14px; height: 14px; border-radius: 4px; border: 2px solid var(--a); background: none; }
+.drum-chip i b:nth-child(2) { width: 82%; } .drum-chip i b:nth-child(3) { width: 58%; opacity: .7; }
+.drum-chip span { pointer-events: none; }
+.drum-chip.on i b:first-child { background: var(--a); }
+/* the slot in the middle, with a pin at the top and the bottom */
+.drum-window { position: absolute; z-index: 3; top: 16px; bottom: 16px; left: calc(50% - var(--cw) / 2 - 12px); width: calc(var(--cw) + 24px); border: var(--b) solid var(--yellow); border-radius: 20px; pointer-events: none; box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--ink); }
+.drum-window::before, .drum-window::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); border-left: 11px solid transparent; border-right: 11px solid transparent; }
+.drum-window::before { top: -17px; border-top: 16px solid var(--yellow); }
+.drum-window::after { bottom: -17px; border-bottom: 16px solid var(--yellow); }
+.drum.tick .drum-window { animation: slot-tick .16s ease-out; }
+@keyframes slot-tick { 40% { transform: scale(1.035); } }
+.drum-read { min-width: min(260px, 80%); padding: 10px 24px 12px; text-align: center; background: var(--yellow); border: var(--b) solid var(--ink); border-radius: 14px; box-shadow: -5px -5px 0 var(--ink); display: grid; gap: 2px; }
+.drum-read small { font: 800 12px var(--display); text-transform: uppercase; letter-spacing: .12em; opacity: .7; min-height: 1.2em; }
+.drum-read b { font: 800 clamp(20px, 2.4vw, 28px)/1.05 var(--display); text-transform: uppercase; }
+.drum-wrap.land .drum-read { animation: read-pop .45s cubic-bezier(.3, 1.8, .5, 1); }
+@keyframes read-pop { 40% { transform: scale(1.08) rotate(-1.5deg); } }
 .wheel-hint { margin: 20px 0 0; font: 800 14px var(--display); text-transform: uppercase; letter-spacing: .1em; opacity: .7; }
-@media (prefers-reduced-motion: reduce) { .wheel { transition: none; } }
-#looks { overflow-x: clip; } /* the spinning wheel’s rotated box must not widen the page */
+@media (prefers-reduced-motion: reduce) { .drum.tick .drum-window, .drum-wrap.land .drum-read { animation: none; } }
+#looks { overflow-x: clip; } /* the drum’s far chips must not widen the page */
 
 /* hero: the co-pilot peeks in from the left edge and points at the headline */
 .peek { position: fixed; left: 0; z-index: 40; width: clamp(110px, 12vw, 160px); pointer-events: none; --navy: #27357a; transform: translateX(-110%) rotate(-14deg); transform-origin: 0 80%; transition: transform .55s cubic-bezier(.5, 0, .75, 0); }
