@@ -170,19 +170,11 @@
     });
     const pressTo = (v, ms) => tween({ x: pos.x, y: pos.y }, ms, t => t, 0, t => { press = v ? t : 1 - t; draw(); });
     const fire = (name, detail) => window.dispatchEvent(new CustomEvent(name, { detail }));
-    const pr = phone.getBoundingClientRect(), sy = pr.top + pr.height * .55, sx = pr.left + pr.width * .72;
     await wait(250);
-    await tween({ x: sx, y: sy }, 800, ease.io, 50, null, 0);                                // leaves its spot and lands on the phone
-    if (live()) { await wait(150); await pressTo(1, 110); fire('cp:swipe', { phase: 'move', dx: 0 });
-      await tween({ x: sx - 130, y: sy - 4 }, 520, ease.io, 0, t => fire('cp:swipe', { phase: 'move', dx: -130 * ease.io(t) }));
-      fire('cp:swipe', { phase: 'end', dx: -130 }); await pressTo(0, 110); }                       // drags the phone to the next look
-    await wait(200);
     if (live()) { const b = blue.getBoundingClientRect(), target = { x: b.left + b.width / 2 - 2, y: b.top + b.height / 2 - 2 };
       await tween(target, 1150, ease.io, -80);                                                // glides to the blue chip like a mouse
       if (live()) { await wait(150); await pressTo(1, 100); ring.style.left = pos.x + 'px'; ring.style.top = pos.y + 'px'; ring.classList.add('go'); fire('cp:pick', 'blue'); await wait(150); await pressTo(0, 110); } }
     await wait(600);
-    const saved = (() => { try { return localStorage.getItem('cp-palette'); } catch (e) { return null; } })(); // a returning visitor gets their own colour back
-    if (saved && saved !== 'blue') setTimeout(() => fire('cp:pick', saved), 1200);
     const h1 = home(); await tween({ x: h1.x, y: h1.y }, 900, ease.io, 60, null, h1.rot); // and floats back home
     stick.style.visibility = ''; el.remove(); ring.remove();
   }
@@ -737,11 +729,13 @@
     Red: ['Modern: Bold red', 'This site. Loud, big and happy.'],
   };
   // a horizontal drum of looks, like a phone's timer wheel on its side: drag, swipe, flick, scroll, arrow keys or tap a chip, and the look in the slot lands on the phone
-  const lScreen = $('#looks-screen'), wheel = $('#wheel'), row = $('#drum-row'), ticks = $('.drum-ticks', wheel), wName = $('#wheel-name'), wKind = $('#wheel-kind'); let look = 7, lHold = 0;
+  const lScreen = $('#looks-screen'), wheel = $('#wheel'), row = $('#drum-row'), ticks = $('.drum-ticks', wheel), wName = $('#wheel-name'), wKind = $('#wheel-kind'); let lHold = 0;
   const SW = { Minimalist: '#ffffff', Airbus: '#0b1e2d', Boeing: '#151515', Embraer: '#2b3138', Mint: '#7be8a4', Blue: '#2f8bff', Cream: '#fdf0e9', Red: '#ff4a4a' };
   const ACC = { Minimalist: '#111111', Airbus: '#3fe07a', Boeing: '#3fe07a', Embraer: '#4fd8ff', Mint: '#ff7a6b', Blue: '#ffe14d', Cream: '#2fc98a', Red: '#ffe14d' };
-  const N = F.looks.length, STEP = 24, rad = STEP * Math.PI / 180;   // degrees between chips round the drum
-  const chips = F.looks.map((l, i) => {
+  const LK = F.looks.slice(); for (let i = LK.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [LK[i], LK[j]] = [LK[j], LK[i]]; } // the drum comes in a new order on every visit
+  const START = LK.findIndex(l => l.name === 'Red'); let look = START;
+  const N = LK.length, STEP = 24, rad = STEP * Math.PI / 180;   // degrees between chips round the drum
+  const chips = LK.map((l, i) => {
     const im = new Image(); im.src = 'img/frames/' + l.img + '.webp'; im.alt = l.name + ' look of the ChecklistPro home screen'; im.width = 780; im.height = 1688; lScreen.appendChild(im);
     const c = document.createElement('button'); c.type = 'button'; c.tabIndex = -1; c.className = 'drum-chip' + (['Airbus', 'Boeing', 'Embraer'].includes(l.name) ? ' dark' : '');
     c.style.setProperty('--c', SW[l.name]); c.style.setProperty('--a', ACC[l.name]);
@@ -749,7 +743,7 @@
     c.addEventListener('click', () => { if (moved) return; spinTo(i); lHold = Date.now() + 9000; }); row.appendChild(c);
     return c;
   });
-  let pos = 7, W = 120, R = 300, anim = 0, drag = null, moved = false, userSpin = false;
+  let pos = START, W = 120, R = 300, anim = 0, drag = null, moved = false, userSpin = false;
   const wrapD = d => ((d % N) + N + N / 2) % N - N / 2;   // -N/2 .. N/2: how far a chip is from the slot
   const idxAt = p => ((Math.round(p) % N) + N) % N;
   function measure() { W = chips[0].offsetWidth * 1.14; R = W / Math.sin(rad); ticks.style.setProperty('--tk', (W / 4) + 'px'); }
@@ -771,8 +765,8 @@
   }
   function pickLook(i) {
     look = i; $$('img', lScreen).forEach((im, k) => im.classList.toggle('on', k === i));
-    const n = NOTES[F.looks[i].name][0].split(': '); wKind.textContent = n.length > 1 ? n[0] : ''; wName.textContent = n[n.length - 1];
-    wheel.setAttribute('aria-valuenow', i + 1); wheel.setAttribute('aria-valuetext', NOTES[F.looks[i].name][0]);
+    const n = NOTES[LK[i].name][0].split(': '); wKind.textContent = n.length > 1 ? n[0] : ''; wName.textContent = n[n.length - 1];
+    wheel.setAttribute('aria-valuenow', i + 1); wheel.setAttribute('aria-valuetext', NOTES[LK[i].name][0]);
   }
   function land() {
     pos = ((Math.round(pos) % N) + N) % N; render(); userSpin = false;
@@ -827,7 +821,7 @@
     if (to === null) return; e.preventDefault(); lHold = Date.now() + 9000;
     rollTo(Math.round(pos) + wrapD(to - look), 420);
   });
-  measure(); pickLook(7); render();
+  measure(); pickLook(START); render();
   addEventListener('resize', () => { measure(); render(); });
   let lVis = false; if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { lVis = e.isIntersecting; }), { threshold: .3 }).observe($('#looks-phone'));
   setInterval(() => { if (lVis && !reduce && Date.now() > lHold && !drag && !anim) rollTo(Math.round(pos) + 1, 700); }, 2600);
