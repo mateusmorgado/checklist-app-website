@@ -579,11 +579,11 @@ body, .nav, .video-missing, .d-stage, .journey { transition: background-color .3
 @media (prefers-reduced-motion: reduce) { .claude-mark { animation: none; } }
 
 /* ---------- why a checklist ---------- */
-.wq { background: var(--yellow); color: var(--ink); border-top: var(--b) solid var(--ink); border-bottom: var(--b) solid var(--ink); overflow: hidden; }
+.wq { --wq-s: 1.5; background: var(--yellow); color: var(--ink); border-top: var(--b) solid var(--ink); border-bottom: var(--b) solid var(--ink); overflow: hidden; }
 .wq .hl { background: var(--white); box-shadow: -3px -3px 0 var(--ink); padding: 0 .1em; }
 .wq-lines { line-height: 1.34 !important; }
 .wq-stage { position: relative; min-height: clamp(420px, 52vw, 640px); display: grid; align-content: center; }
-.wq-why { position: absolute; left: 50%; top: 50%; margin: 0; font: 800 clamp(120px, 24vw, 340px)/.85 var(--display); font-stretch: 75%; text-transform: uppercase; letter-spacing: -.03em; transform: translate(-50%, -50%) scale(0); transition: top 0.35s cubic-bezier(.6, 0, .2, 1), left 0.35s cubic-bezier(.6, 0, .2, 1), font-size 0.35s cubic-bezier(.6, 0, .2, 1), transform 0.35s cubic-bezier(.3, 1.5, .5, 1); -webkit-text-stroke: 0; text-shadow: -.04em -.04em 0 var(--red); }
+.wq-why { position: absolute; left: 50%; top: 50%; margin: 0; font: 800 clamp(120px, 24vw, 340px)/.85 var(--display); font-stretch: 75%; text-transform: uppercase; letter-spacing: -.03em; transform: translate(-50%, -50%) scale(0); transition: top calc(.35s * var(--wq-s)) cubic-bezier(.6, 0, .2, 1), left calc(.35s * var(--wq-s)) cubic-bezier(.6, 0, .2, 1), font-size calc(.35s * var(--wq-s)) cubic-bezier(.6, 0, .2, 1), transform calc(.35s * var(--wq-s)) cubic-bezier(.3, 1.5, .5, 1); -webkit-text-stroke: 0; text-shadow: -.04em -.04em 0 var(--red); }
 .wq-why span { display: inline-block; }
 .wq-stage.s-why .wq-why { transform: translate(-50%, -50%) scale(1); }
 .wq-stage.s-why .wq-why span { animation: why-rock 1s ease-in-out infinite alternate; }
@@ -592,15 +592,15 @@ body, .nav, .video-missing, .d-stage, .journey { transition: background-color .3
 .wq-lines { list-style: none; margin: 0; padding: clamp(36px, 5vw, 70px) 0 0; display: grid; gap: clamp(14px, 2vw, 24px); font: 800 clamp(26px, 3.6vw, 52px)/1.12 var(--display); letter-spacing: -.015em; }
 .wq-l { opacity: 0; transform: translateY(30px); clip-path: inset(-20% 100% -20% 0); }
 .wq-l.fin { clip-path: none !important; }
-.wq-l.in { opacity: 1; transform: none; clip-path: inset(-20% -10% -40% -5%); transition: opacity 0.1s, transform 0.3s cubic-bezier(.3, 1.4, .5, 1), clip-path 0.45s cubic-bezier(.6, 0, .2, 1); }
+.wq-l.in { opacity: 1; transform: none; clip-path: inset(-20% -10% -40% -5%); transition: opacity calc(.1s * var(--wq-s)), transform calc(.3s * var(--wq-s)) cubic-bezier(.3, 1.4, .5, 1), clip-path calc(.45s * var(--wq-s)) cubic-bezier(.6, 0, .2, 1); }
 .wq-l b { background: var(--ink); color: var(--yellow); padding: 0 .15em; border-radius: 8px; }
 .wq-x { position: relative; white-space: nowrap; }
 .wq-x::after { content: ''; position: absolute; left: -3%; top: 52%; height: .13em; width: 0; background: var(--red); border-radius: 4px; transform: rotate(-3deg); transform-origin: 0 50%; }
-.wq-l.in .wq-x::after { width: 106%; transition: width 0.25s cubic-bezier(.7, 0, .2, 1) 0.5s; }
-.wq-l.in .wq-x { color: rgba(17, 17, 17, .6); transition: color 0.15s 0.6s; }
+.wq-l.in .wq-x::after { width: 106%; transition: width calc(.25s * var(--wq-s)) cubic-bezier(.7, 0, .2, 1) calc(.5s * var(--wq-s)); }
+.wq-l.in .wq-x { color: rgba(17, 17, 17, .6); transition: color calc(.15s * var(--wq-s)) calc(.6s * var(--wq-s)); }
 .wq-replay { margin-top: 24px; }
 /* the end: only the last line stays, bigger, in a slimmer yellow band */
-.wq { --wq-t: .7s; --wq-e: cubic-bezier(.22, 1, .36, 1); transition: padding var(--wq-t) var(--wq-e); overflow-anchor: none; }
+.wq { --wq-t: calc(.7s * var(--wq-s)); --wq-e: cubic-bezier(.22, 1, .36, 1); transition: padding var(--wq-t) var(--wq-e); overflow-anchor: none; }
 .wq-stage { transition: min-height var(--wq-t) var(--wq-e); }
 .wq-lines { transition: padding var(--wq-t) var(--wq-e), gap var(--wq-t) var(--wq-e); }
 .wq-l { transition: height var(--wq-t) var(--wq-e), opacity .25s, margin var(--wq-t) var(--wq-e); }
