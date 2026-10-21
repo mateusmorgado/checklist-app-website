@@ -24,10 +24,13 @@
   // The two struck lines are shoved to the left edge by the big line and wait there. They fall like gravity when the page is scrolled.
   const hero = $('.hero'), canPark = () => innerWidth >= 900 && innerWidth > innerHeight;
   const lot = document.createElement('div'); lot.className = 'lines parking'; lot.setAttribute('aria-hidden', 'true'); hero.appendChild(lot);
-  let parked = [], dropArm = null;
+  let parked = [], dropArm = null, landArm = null;
+  // desktop with a mouse: the lines land beside the video instead of falling out of the page (touch tablets keep the old fall)
+  const canLand = () => matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth >= 1100 && innerWidth > innerHeight;
   function unpark() {
     if (dropArm) { removeEventListener('scroll', dropArm); dropArm = null; }
-    parked.forEach(p => { p.ph.parentNode.insertBefore(p.l, p.ph); p.ph.remove(); }); parked = []; $$('.falling').forEach(f => f.remove());
+    if (landArm) { removeEventListener('scroll', landArm); landArm = null; }
+    parked.forEach(p => { p.ph.parentNode.insertBefore(p.l, p.ph); p.ph.remove(); }); parked = []; $$('.falling').forEach(f => f.remove()); $$('.landing').forEach(f => f.remove());
     lines.slice(0, 2).forEach(l => { l.getAnimations().forEach(x => x.cancel()); l.classList.remove('parked', 'dropping', 'dropped'); l.removeAttribute('style'); }); hero.classList.remove('parked'); lines[2].classList.remove('squash');
   }
   // Three ways for the struck lines to land, and to fall when the page is scrolled. Each page load (and each Replay) takes the next one.
@@ -46,7 +49,8 @@
       { r: 4, at: (e, W, H) => [24 + e.x, H - 10 - e.y], ms: 1300, delay: 120, path: [{ o: .45, x: 420, y: -320, r: 170, ease: 'ease-in' }, { o: .8, x: 0, y: 0, r: -5, ease: 'ease-out' }, { o: .9, x: 0, y: -14, r: 7, ease: 'ease-in' }], drop: { x: -.6, r: -40, delay: 300 } } ] },
   ];
   let fallIdx = 0;
-  const nextFall = () => { try { fallIdx = (parseInt(localStorage.getItem('cp-fall') || '-1', 10) + 1) % FALLS.length; localStorage.setItem('cp-fall', fallIdx); } catch (e) { fallIdx = (fallIdx + 1 + Math.floor(Math.random() * 2)) % FALLS.length; } };
+  const tight = () => innerWidth < 1400; // tablets and small laptops: the phone sits near the right edge and the bottom corners hold the colour picker, so only the 'props' landing, on the left edge, fits
+  const nextFall = () => { try { fallIdx = (parseInt(localStorage.getItem('cp-fall') || '-1', 10) + 1) % FALLS.length; localStorage.setItem('cp-fall', fallIdx); } catch (e) { fallIdx = (fallIdx + 1 + Math.floor(Math.random() * 2)) % FALLS.length; } if (tight()) fallIdx = 0; };
   nextFall();
   function park() {
     lines.slice(0, 2).forEach(l => l.classList.remove('hit'));
@@ -61,7 +65,7 @@
     f.forEach(({ l }, i) => {
       const spec = P.lines[i], k = PX / parseFloat(getComputedStyle(l).fontSize), L = l.offsetWidth * k, h = l.offsetHeight * k;
       const start = { left: l.style.left, top: l.style.top, fontSize: getComputedStyle(l).fontSize, transform: 'rotate(0deg)' };
-      const [cx, cy] = spec.at(ext(L, h, spec.r), W, H), place = (x, y, r) => ({ left: (cx + x - L / 2) + 'px', top: (cy + y - h / 2) + 'px', fontSize: PX + 'px', transform: 'rotate(' + r + 'deg)' });
+      const at = tight() && P.name === 'props' && i === 1 ? (e, W, H) => [10 + e.x, H * .4] : spec.at, [cx, cy] = at(ext(L, h, spec.r), W, H), place = (x, y, r) => ({ left: (cx + x - L / 2) + 'px', top: (cy + y - h / 2) + 'px', fontSize: PX + 'px', transform: 'rotate(' + r + 'deg)' });
       const end = place(0, 0, spec.r);
       l.classList.add('parked'); l.dataset.rot = spec.r; Object.assign(l.style, end);
       if (reduce) return;
@@ -77,13 +81,46 @@
     setTimeout(() => { y0 = scrollY; }, 1500);
   }
   function drop() {
+    if (canLand() && land()) return;
+    fallAway();
+  }
+  // page position of an element, ignoring transforms (the video window is still sliding in when the lines arrive)
+  function pagePos(el) { let x = 0, y = 0; for (; el; el = el.offsetParent) { x += el.offsetLeft; y += el.offsetTop; } return { x, y }; }
+  // the lines fall down the page and land on top of the video window; on the next scroll past it they fall again and vanish
+  function land() {
+    const sec = $('#video'), win = $('#video .win'); if (!sec || !win) return false;
+    const layer = document.createElement('div'); layer.className = 'landing'; layer.setAttribute('aria-hidden', 'true'); sec.appendChild(layer);
+    const sp = pagePos(sec), wp = pagePos(win), W = document.documentElement.clientWidth, P = FALLS[fallIdx];
+    const wl = wp.x, wr = wp.x + win.offsetWidth, wt = wp.y - sp.y;
+    const hp = pagePos(hero); let left = parked.length;
+    parked.forEach(({ l }, i) => {
+      const r = +l.dataset.rot, w = l.offsetWidth, h = l.offsetHeight, rest = i === 0 ? -2 : 3;
+      const sx = parseFloat(l.style.left) + w / 2 + hp.x - sp.x, sy = parseFloat(l.style.top) + h / 2 + hp.y - sp.y; // where it hangs now, in section coordinates
+      // it lands flat on the top edge of the video window, one at each end
+      const cx = i === 0 ? Math.max(wl + 40 + w / 2, w / 2 + 8) : Math.min(wr - 40 - w / 2, W - w / 2 - 8), cy = wt - 18 - h / 2;
+      l.style.left = (cx - w / 2) + 'px'; l.style.top = (cy - h / 2) + 'px'; layer.appendChild(l); l.dataset.rot = rest;
+      const dx = sx - cx, dy = sy - cy, kick = i === 0 ? 1 : -1;
+      const a = l.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px) rotate(' + r + 'deg)', easing: 'cubic-bezier(.5, 0, .9, .55)' },
+        { offset: .66, transform: 'translate(0,0) rotate(' + (rest + 9 * kick) + 'deg)', easing: 'ease-out' }, { offset: .8, transform: 'translate(0,-26px) rotate(' + (rest - 5 * kick) + 'deg)', easing: 'ease-in' },
+        { offset: .92, transform: 'translate(0,0) rotate(' + (rest + 2 * kick) + 'deg)', easing: 'ease-out' }, { transform: 'translate(0,0) rotate(' + rest + 'deg)' }],
+        { duration: 1500, delay: P.lines[i].delay, fill: 'backwards' });
+      l.style.transform = 'rotate(' + rest + 'deg)';
+      a.onfinish = () => { if (--left === 0) armFall(win); };
+    });
+    return true;
+  }
+  function armFall(win) {
+    landArm = () => { if (win.getBoundingClientRect().top > innerHeight * .2) return; removeEventListener('scroll', landArm); landArm = null; fallAway(); };
+    addEventListener('scroll', landArm, { passive: true });
+  }
+  function fallAway() {
     // the lines move to a fixed layer, so they fall through the screen while the page scrolls
     const P = FALLS[fallIdx], fall = document.createElement('div'); fall.className = 'lines falling'; fall.setAttribute('aria-hidden', 'true'); document.body.appendChild(fall);
     const hr = hero.getBoundingClientRect(), away = innerHeight + 700;
     let left = parked.length;
     parked.forEach(({ l }, i) => {
       const d = P.lines[i].drop, r = +l.dataset.rot;
-      l.style.left = (parseFloat(l.style.left) + hr.left) + 'px'; l.style.top = (parseFloat(l.style.top) + hr.top) + 'px';
+      const c = l.getBoundingClientRect(); l.style.left = (c.left + c.width / 2 - l.offsetWidth / 2) + 'px'; l.style.top = (c.top + c.height / 2 - l.offsetHeight / 2) + 'px';
       fall.appendChild(l); l.classList.add('dropping');
       const a = l.animate([{ transform: 'translate(0, 0) rotate(' + r + 'deg)' }, { offset: .1, transform: 'translate(0, -10px) rotate(' + (r + (d.r > r ? -3 : 3)) + 'deg)' }, { transform: 'translate(' + (d.x * away) + 'px, ' + away + 'px) rotate(' + d.r + 'deg)' }],
         { duration: 1500, delay: d.delay, easing: 'cubic-bezier(.45, 0, .9, .5)', fill: 'forwards' });

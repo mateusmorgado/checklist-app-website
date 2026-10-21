@@ -821,6 +821,7 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
   .hero-phone { display: flex !important; position: relative; right: auto; top: auto; transform: rotate(4deg); margin: 34px auto 70px; }
 }
 @media (max-width: 1100px) { .k4, .k5, .k6 { display: none; } }
+@media (min-width: 1001px) and (max-width: 1100px) { .k2 { display: none; } } /* the check would sit on the headline */
 @media (max-width: 700px) { .k2 { display: none; } }
 /* ---------- colour pile: the dots sit stacked on the left; hover or tap fans them out ---------- */
 @media (max-width: 520px) { .nav { gap: 6px; } .nav-cta { gap: 6px; } .nav-cta .btn.icon { min-width: 42px; width: 42px; padding: 0; justify-content: center; } .brand { padding-right: 8px; } }
@@ -1136,3 +1137,7 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 /* phones: he comes in from the right edge instead, mirrored so he still points at the words */
 .peek.right { left: auto; right: 0; transform-origin: 50% 80%; transform: translateX(110%) scaleX(-1) rotate(-14deg); }
 .peek.right.in { transform: translateX(calc(var(--hide, .4) * 100%)) scaleX(-1) rotate(6deg); }
+
+/* desktop: the struck lines land beside the video, then fall again */
+.landing { position: absolute; inset: 0; z-index: 4; pointer-events: none; overflow: visible; }
+.landing .line { letter-spacing: 0; }
