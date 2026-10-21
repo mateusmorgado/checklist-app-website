@@ -63,7 +63,7 @@
     <span>Checklist<b>Pro</b></span>
   </a>
   <nav class="nav-links" aria-label="Sections">
-    <a href="#video">Video</a><a href="#ideas">Ideas</a><a href="#pro">Pro</a><a href="#looks">Looks</a>
+    <a href="#story">Video</a><a href="#pro">Pro</a><a href="#ideas">Ideas</a><a href="#looks">Looks</a>
   </nav>
   <div class="nav-cta">
     <button class="btn white icon lang" id="lang-toggle" type="button" data-no-i18n aria-label="Auf Deutsch wechseln">DE</button>
@@ -73,7 +73,7 @@
     <button class="btn white icon menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="m1" d="M4 7h16"/><path class="m2" d="M4 12h16"/><path class="m3" d="M4 17h16"/></svg></button>
   </div>
   <div class="nav-panel" id="nav-panel" hidden>
-    <a class="np-link" href="#video">Video</a><a class="np-link" href="#ideas">Ideas</a><a class="np-link" href="#pro">Pro</a><a class="np-link" href="#looks">Looks</a><a class="np-link" href="#install">Install</a><a class="np-link" href="#game">Game</a>
+    <a class="np-link" href="#story">Video</a><a class="np-link" href="#pro">Pro</a><a class="np-link" href="#ideas">Ideas</a><a class="np-link" href="#looks">Looks</a><a class="np-link" href="#install">Install</a><a class="np-link" href="#game">Game</a>
     <button class="btn white" id="np-journey" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v8m0 0a3 3 0 1 0 0 6a3 3 0 0 0 0-6Zm0-8a2 2 0 1 0 0 .01M18 4v4a4 4 0 0 1-4 4h-2"/></svg><span>How it was made</span></button>
     <a class="btn yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Open the app</a>
   </div>
@@ -102,11 +102,11 @@
     <p class="sub reveal"><span class="sub-src">Build a list once. Run it whenever you need it. The way pilots and surgeons do, now in your pocket.</span><span class="sub-type" aria-hidden="true" data-no-i18n></span></p>
     <div class="cta-row reveal">
       <a class="btn big yellow" data-app href="https://checklist-app-topaz-six.vercel.app/" target="_blank" rel="noopener">Open the app</a>
-      <a class="btn big white" id="watch-btn" href="#video">Watch the video</a>
+      <a class="btn big white" id="watch-btn" href="#story">Watch the video</a>
       <button class="replay" id="replay" type="button" aria-label="Replay the intro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
     </div>
   </div>
-  <a class="hero-down" id="hero-down" href="#video" aria-label="Down to the video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M5.5 12.5L12 19l6.5-6.5"/></svg></a>
+  <a class="hero-down" id="hero-down" href="#story" aria-label="Down to the video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M5.5 12.5L12 19l6.5-6.5"/></svg></a>
   <div class="hero-phone" id="hero-phone" aria-hidden="true">
     <div class="phone tilt" style="--pw:270px"><div class="screen"><div class="swipe" id="hero-swipe"></div></div></div>
     <div class="swipe-meta"><span class="swipe-name" id="swipe-name">Minimalist</span><span class="swipe-dots" id="swipe-dots"></span></div>
@@ -125,110 +125,21 @@
   </div>
 </aside>
 
-<!-- VIDEO -->
-<section class="section" id="video" aria-labelledby="video-title">
+<!-- THE STORY: the animated ad with Alex and the co-pilot, in the page's language -->
+<section class="section story" id="story" aria-labelledby="story-title">
   <div class="wrap wide">
-    <h2 id="video-title" class="sr-only">Watch the video</h2>
+    <h2 id="story-title" class="sr-only">Meet Alex</h2>
     <div class="win reveal">
-      <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">checklistpro-ad.mp4</span><span class="win-btns" aria-hidden="true">_ ▢ ✕</span></div>
-      <div class="video-box" id="video-box">
-        <video id="teaser" class="teaser" muted loop playsinline preload="auto" poster="img/poster.webp" aria-hidden="true" tabindex="-1">
-          <source src="video/teaser.mp4" type="video/mp4">
+      <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title" data-no-i18n>alex-story.mp4</span><span class="win-btns" aria-hidden="true">_ ▢ ✕</span></div>
+      <div class="video-box story-box" id="story-box">
+        <video id="story-vid" playsinline preload="metadata" poster="img/alex-poster.webp" width="1280" height="720">
+          <source src="video/alex-story-en.mp4" type="video/mp4">
+          <track kind="captions" src="video/alex-story-en.vtt" srclang="en" label="English">
         </video>
-        <video id="ad" class="main" controls playsinline preload="none" poster="img/poster.webp" width="1280" height="720" hidden>
-          <source src="video/ad-720p.mp4" type="video/mp4">
-        </video>
-        <button class="play-btn" id="play-main" type="button" aria-label="Play the full video from the beginning, with sound">
+        <button class="play-btn" id="play-story" type="button" aria-label="Play the animated video with sound">
           <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><b>Play with sound</b>
         </button>
-        <div class="video-missing" id="video-missing">
-          <div class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></div>
-          <p><b>The ad lands here.</b><br>Drop a 720p file at <code>video/ad-720p.mp4</code>.</p>
-        </div>
       </div>
-    </div>
-    <div class="credits reveal">
-      <p><span class="cr-k">Film</span>Made by Mateus Morgado with the Gemini Omni 1.1 API in Google Flow.</p>
-      <p><span class="cr-k">Cast</span>Every face is an AI avatar based on me and people I know.</p>
-    </div>
-  </div>
-</section>
-
-<!-- WHY YOU NEED IT -->
-<aside class="focus-band" aria-label="Why you need it">
-  <div class="wrap focus-in fb-wait">
-    <p class="fb-big">Your phone pulls you in ten directions. <span class="hl">A checklist brings you back to one.</span></p>
-    <p class="fb-small">Make a list once for the things you do again and again. Nothing slips while notifications fight for your attention: less remembering, fewer distractions, more done.</p>
-  </div>
-</aside>
-
-<!-- WHY A CHECKLIST -->
-<section class="section wq" id="why-q" aria-labelledby="wq-title">
-  <div class="wrap">
-    <h2 id="wq-title" class="sr-only">Why a checklist?</h2>
-    <div class="wq-stage" id="wq-stage">
-      <p class="wq-why" aria-hidden="true"><span>Why?</span></p>
-      <ol class="wq-lines">
-        <li class="wq-l">A checklist is not for people who <span class="wq-x">can’t remember</span>.</li>
-        <li class="wq-l">It’s for people who don’t want to waste their <span class="hl">thinking</span> on remembering.</li>
-        <li class="wq-l">Hand the remembering to <b>ChecklistPro</b>.</li>
-        <li class="wq-l">Keep the thinking for <span class="hl">things that matter.</span>
-          <span class="cite-wrap"><button class="cite" id="wq-cite" type="button" aria-expanded="false" aria-describedby="book-pop">Forte, 2022</button><span class="book-pop" id="book-pop" role="tooltip">
-            <span class="book3d" aria-hidden="true"><span class="b-cover"><small>Tiago Forte</small><b>Building a Second Brain</b><i></i></span></span>
-            <span class="book-txt"><small class="book-k">Reference</small><span class="book-ref" data-no-i18n>Forte, T. (2022). <i>Building a second brain: A proven method to organize your digital life and unlock your creative potential</i>. Atria Books.</span><span class="book-note">Capture what you need to remember in a trusted place outside your head, and your mind is free to think.</span></span>
-          </span></span></li>
-      </ol>
-    </div>
-    <button class="replay small wq-replay" id="wq-replay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
-  </div>
-</section>
-
-<!-- IDEAS -->
-<section class="section dark" id="ideas" aria-labelledby="ideas-title">
-  <div class="wrap">
-    <h2 id="ideas-title" class="mega reveal"><span>Lists that</span> <span class="hl">ask first.</span></h2>
-    <p class="lead reveal">Only what applies gets added. That is the Pro part.</p>
-    <div class="ideas-grid">
-      <div class="ideas-small">
-        <article class="idea reveal" data-tick>
-          <h3><span class="ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16v11H4zM9 8V5h6v3M4 13h16"/></svg></span>Trip packing</h3>
-          <ul class="mini"><li><span>Passport</span><i class="bx"></i></li><li><span>Charger</span><i class="bx"></i></li><li><span>Toothbrush</span><i class="bx"></i></li></ul>
-        </article>
-        <article class="idea reveal" data-tick>
-          <h3><span class="ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 10v9h12v-9M10 19v-5h4v5"/></svg></span>Leaving home</h3>
-          <ul class="mini"><li><span>Keys</span><i class="bx"></i></li><li><span>Wallet</span><i class="bx"></i></li><li><span>Stove off</span><i class="bx"></i></li></ul>
-        </article>
-      </div>
-      <article class="idea demo reveal" id="cond-demo" aria-labelledby="demo-title">
-        <header class="d-head">
-          <h3 id="demo-title"><span class="ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg></span>Gym bag</h3>
-          <button class="replay small" id="demo-replay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
-        </header>
-        <div class="d-stage" id="d-stage">
-          <ul class="d-list" id="d-list">
-            <li><span>Armband</span><i class="bx"></i></li>
-            <li><span>Water bottle</span><i class="bx"></i></li>
-            <li><span>Whey</span><i class="bx"></i></li>
-            <li class="add" data-if="sauna"><span>Towel</span><em>Sauna</em><i class="bx"></i></li>
-            <li class="add" data-if="sauna"><span>Flip-flops</span><em>Sauna</em><i class="bx"></i></li>
-            <li class="add" data-if="squat"><span>Squat shoes</span><em>Squat day</em><i class="bx"></i></li>
-          </ul>
-          <div class="d-ask" id="d-ask" aria-hidden="true">
-            <span class="d-ic" id="d-ic"></span>
-            <p class="d-q" id="d-q">Sauna?</p>
-            <div class="d-btns"><span class="yn no" id="d-no">No</span><span class="yn yes" id="d-yes">Yes</span></div>
-          </div>
-          <svg class="d-cursor" id="d-cursor" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3l18 11-8 2 5 9-4 2-5-9-6 5z"/></svg>
-        </div>
-        <div class="d-foot">
-          <span class="d-count" id="d-count" aria-live="polite">3 items</span>
-          <div class="d-toggles" id="d-toggles" aria-label="Try it yourself">
-            <button type="button" id="t-sauna" aria-pressed="false" disabled>Sauna? <b>No</b><span class="d-nudge" aria-hidden="true"><span class="d-tip">Tap to say No</span><svg class="d-hand" viewBox="0 0 40 44"><path d="M14 4.5a3.2 3.2 0 0 1 6.4 0v13.5l.7-3.2a3 3 0 0 1 5.9 1l-.3 2.8a3 3 0 0 1 5.8 1l-.4 2.2a3 3 0 0 1 5.8 1.1L37 31c-1 7-6 10.5-12 10.5h-3.4c-4 0-6.6-1.7-9-5.2L5.3 28a3 3 0 0 1 4.6-3.8L14 28.6z"/></svg></span></button>
-            <button type="button" id="t-squat" aria-pressed="false" disabled>Squat day? <b>No</b></button>
-          </div>
-        </div>
-        <p class="d-hint" id="d-hint">Answer once before you start. A Yes adds its items, a No leaves them out. <b class="d-try">Tap the buttons to try it.</b></p>
-      </article>
     </div>
   </div>
 </section>
@@ -394,6 +305,114 @@
         </div>
         <p class="hint-line">Swipe the cards or tap a power. The co-pilot reads it back.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY YOU NEED IT -->
+<aside class="focus-band" aria-label="Why you need it">
+  <div class="wrap focus-in fb-wait">
+    <p class="fb-big">Your phone pulls you in ten directions. <span class="hl">A checklist brings you back to one.</span></p>
+    <p class="fb-small">Make a list once for the things you do again and again. Nothing slips while notifications fight for your attention: less remembering, fewer distractions, more done.</p>
+  </div>
+</aside>
+
+<!-- IDEAS -->
+<section class="section dark" id="ideas" aria-labelledby="ideas-title">
+  <div class="wrap">
+    <h2 id="ideas-title" class="mega reveal"><span>Lists that</span> <span class="hl">ask first.</span></h2>
+    <p class="lead reveal">Only what applies gets added. That is the Pro part.</p>
+    <div class="ideas-grid">
+      <div class="ideas-small">
+        <article class="idea reveal" data-tick>
+          <h3><span class="ic" style="--c:var(--yellow)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16v11H4zM9 8V5h6v3M4 13h16"/></svg></span>Trip packing</h3>
+          <ul class="mini"><li><span>Passport</span><i class="bx"></i></li><li><span>Charger</span><i class="bx"></i></li><li><span>Toothbrush</span><i class="bx"></i></li></ul>
+        </article>
+        <article class="idea reveal" data-tick>
+          <h3><span class="ic" style="--c:var(--pink)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7M6 10v9h12v-9M10 19v-5h4v5"/></svg></span>Leaving home</h3>
+          <ul class="mini"><li><span>Keys</span><i class="bx"></i></li><li><span>Wallet</span><i class="bx"></i></li><li><span>Stove off</span><i class="bx"></i></li></ul>
+        </article>
+      </div>
+      <article class="idea demo reveal" id="cond-demo" aria-labelledby="demo-title">
+        <header class="d-head">
+          <h3 id="demo-title"><span class="ic" style="--c:var(--mint)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg></span>Gym bag</h3>
+          <button class="replay small" id="demo-replay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
+        </header>
+        <div class="d-stage" id="d-stage">
+          <ul class="d-list" id="d-list">
+            <li><span>Armband</span><i class="bx"></i></li>
+            <li><span>Water bottle</span><i class="bx"></i></li>
+            <li><span>Whey</span><i class="bx"></i></li>
+            <li class="add" data-if="sauna"><span>Towel</span><em>Sauna</em><i class="bx"></i></li>
+            <li class="add" data-if="sauna"><span>Flip-flops</span><em>Sauna</em><i class="bx"></i></li>
+            <li class="add" data-if="squat"><span>Squat shoes</span><em>Squat day</em><i class="bx"></i></li>
+          </ul>
+          <div class="d-ask" id="d-ask" aria-hidden="true">
+            <span class="d-ic" id="d-ic"></span>
+            <p class="d-q" id="d-q">Sauna?</p>
+            <div class="d-btns"><span class="yn no" id="d-no">No</span><span class="yn yes" id="d-yes">Yes</span></div>
+          </div>
+          <svg class="d-cursor" id="d-cursor" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 3l18 11-8 2 5 9-4 2-5-9-6 5z"/></svg>
+        </div>
+        <div class="d-foot">
+          <span class="d-count" id="d-count" aria-live="polite">3 items</span>
+          <div class="d-toggles" id="d-toggles" aria-label="Try it yourself">
+            <button type="button" id="t-sauna" aria-pressed="false" disabled>Sauna? <b>No</b><span class="d-nudge" aria-hidden="true"><span class="d-tip">Tap to say No</span><svg class="d-hand" viewBox="0 0 40 44"><path d="M14 4.5a3.2 3.2 0 0 1 6.4 0v13.5l.7-3.2a3 3 0 0 1 5.9 1l-.3 2.8a3 3 0 0 1 5.8 1l-.4 2.2a3 3 0 0 1 5.8 1.1L37 31c-1 7-6 10.5-12 10.5h-3.4c-4 0-6.6-1.7-9-5.2L5.3 28a3 3 0 0 1 4.6-3.8L14 28.6z"/></svg></span></button>
+            <button type="button" id="t-squat" aria-pressed="false" disabled>Squat day? <b>No</b></button>
+          </div>
+        </div>
+        <p class="d-hint" id="d-hint">Answer once before you start. A Yes adds its items, a No leaves them out. <b class="d-try">Tap the buttons to try it.</b></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- WHY A CHECKLIST -->
+<section class="section wq" id="why-q" aria-labelledby="wq-title">
+  <div class="wrap">
+    <h2 id="wq-title" class="sr-only">Why a checklist?</h2>
+    <div class="wq-stage" id="wq-stage">
+      <p class="wq-why" aria-hidden="true"><span>Why?</span></p>
+      <ol class="wq-lines">
+        <li class="wq-l">A checklist is not for people who <span class="wq-x">can’t remember</span>.</li>
+        <li class="wq-l">It’s for people who don’t want to waste their <span class="hl">thinking</span> on remembering.</li>
+        <li class="wq-l">Hand the remembering to <b>ChecklistPro</b>.</li>
+        <li class="wq-l">Keep the thinking for <span class="hl">things that matter.</span>
+          <span class="cite-wrap"><button class="cite" id="wq-cite" type="button" aria-expanded="false" aria-describedby="book-pop">Forte, 2022</button><span class="book-pop" id="book-pop" role="tooltip">
+            <span class="book3d" aria-hidden="true"><span class="b-cover"><small>Tiago Forte</small><b>Building a Second Brain</b><i></i></span></span>
+            <span class="book-txt"><small class="book-k">Reference</small><span class="book-ref" data-no-i18n>Forte, T. (2022). <i>Building a second brain: A proven method to organize your digital life and unlock your creative potential</i>. Atria Books.</span><span class="book-note">Capture what you need to remember in a trusted place outside your head, and your mind is free to think.</span></span>
+          </span></span></li>
+      </ol>
+    </div>
+    <button class="replay small wq-replay" id="wq-replay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Replay</button>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<section class="section" id="video" aria-labelledby="video-title">
+  <div class="wrap wide">
+    <h2 id="video-title" class="sr-only">Watch the video</h2>
+    <div class="win reveal">
+      <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">checklistpro-ad.mp4</span><span class="win-btns" aria-hidden="true">_ ▢ ✕</span></div>
+      <div class="video-box" id="video-box">
+        <video id="teaser" class="teaser" muted loop playsinline preload="auto" poster="img/poster.webp" aria-hidden="true" tabindex="-1">
+          <source src="video/teaser.mp4" type="video/mp4">
+        </video>
+        <video id="ad" class="main" controls playsinline preload="none" poster="img/poster.webp" width="1280" height="720" hidden>
+          <source src="video/ad-720p.mp4" type="video/mp4">
+        </video>
+        <button class="play-btn" id="play-main" type="button" aria-label="Play the full video from the beginning, with sound">
+          <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><b>Play with sound</b>
+        </button>
+        <div class="video-missing" id="video-missing">
+          <div class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></div>
+          <p><b>The ad lands here.</b><br>Drop a 720p file at <code>video/ad-720p.mp4</code>.</p>
+        </div>
+      </div>
+    </div>
+    <div class="credits reveal">
+      <p><span class="cr-k">Film</span>Made by Mateus Morgado with the Gemini Omni 1.1 API in Google Flow.</p>
+      <p><span class="cr-k">Cast</span>Every face is an AI avatar based on me and people I know.</p>
     </div>
   </div>
 </section>

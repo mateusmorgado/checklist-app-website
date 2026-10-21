@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChecklistPro: Alex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Space+Grotesk:wght@400..700&display=swap">
+<style>
+/* "Alex is a quite distracted person": a 35 s cartoon ad for ChecklistPro with the site's co-pilot.
+   Every frame is a pure function of time, so render.cjs can step through it and write an MP4. */
+:root {
+  --red: #ff4a4a; --ink: #111; --white: #fff; --yellow: #ffe14d; --mint: #6df5b9; --pink: #ffc2c2; --blue: #6db7ff; --navy: #27357a;
+  --skin: #f2c4a0; --hair: #2b1d17;
+  --display: 'Bricolage Grotesque', 'Arial Black', system-ui, sans-serif; --body: 'Space Grotesk', system-ui, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #111; overflow: hidden; }
+#stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; overflow: hidden; background: var(--red); transform-origin: 0 0; font-family: var(--display); }
+#world { position: absolute; inset: 0; transform-origin: 640px 360px; }
+.layer { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; display: none; overflow: visible; }
+.layer.on { display: block; }
+.bg { z-index: 1; } .fg { z-index: 8; }
+svg { overflow: visible; }
+.ink:not([stroke]), .ink *:not([stroke]) { stroke: var(--ink); }
+.ink:not([stroke-width]), .ink *:not([stroke-width]) { stroke-width: 3.5; }
+.ink, .ink * { stroke-linejoin: round; stroke-linecap: round; }
+.grain { position: absolute; inset: 0; pointer-events: none; z-index: 90; opacity: .14; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* actors: (x, y) of the transform is where the feet stand */
+.actor { position: absolute; left: 0; top: 0; z-index: 5; }
+#alex { width: 300px; transform-origin: 150px 352px; }
+#robot { width: 260px; transform-origin: 130px 315px; z-index: 6; }
+.actor svg { display: block; width: 100%; height: auto; }
+
+/* Alex: the same drawing as the character sheet, now with black eyes */
+.alex * { stroke: var(--ink); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; }
+.alex .skin { fill: var(--skin); } .alex .shadow { fill: var(--ink); opacity: .2; stroke: none; }
+.alex .shoe { fill: #fff; } .alex .sole { fill: none; stroke-width: 2.5; }
+.alex .pl, .alex .ps { fill: var(--pants, #3a4f8f); }
+.alex .tbody, .alex .sll, .alex .sls, .alex .tank { fill: var(--shirt, #1d1d1f); }
+.alex .collar { fill: none; stroke: #555; stroke-width: 3; }
+.alex .lg { fill: var(--yellow); stroke-width: 2.5; } .alex .tick { fill: none; stroke-width: 2.6; }
+.alex .ear { fill: none; stroke-width: 2.5; } .alex .stub { fill: #c99a7c; opacity: .45; stroke: none; }
+.alex .fade { fill: #5b4b44; stroke: none; } .alex .hair { fill: var(--hair); } .alex .curl { fill: none; stroke: #6b5248; stroke-width: 2.5; }
+.alex .brow { fill: none; stroke: var(--hair); stroke-width: 5.5; }
+.alex .eye { fill: var(--ink); stroke: none; } .alex .glint { fill: #fff; stroke: none; }
+.alex .spiral path { fill: none; stroke-width: 2.6; }
+.alex .cheek { fill: var(--pink); stroke: none; opacity: .85; }
+.alex .nose { fill: none; stroke-width: 3; } .alex .stache { fill: var(--hair); stroke-width: 2.5; }
+.alex .mline { fill: none; stroke-width: 3; } .alex .mopen { fill: #7a1f2b; stroke-width: 2.6; }
+.alex .helmet path { fill: var(--yellow); } .alex .helmet .rib { fill: none; }
+.alex .glasses rect { fill: #1d1d1f; } .alex .glasses .shine { fill: none; stroke: #fff; stroke-width: 2; }
+.alex .hw circle { stroke-width: 2; } .alex .hw .lapel { fill: #fff; stroke-width: 2.5; }
+.alex .jk .inner { fill: #fff; } .alex .jk .zip { fill: none; stroke-width: 2.5; }
+.alex .vest .panel { fill: #ff8a1f; } .alex .vest .band { fill: var(--yellow); stroke-width: 2.5; }
+.alex .towel { fill: #fff; } .alex .towel .st { fill: none; stroke: var(--blue); stroke-width: 4; }
+.alex .it-tool .h { fill: #ff4a4a; } .alex .it-tool .s { fill: #c9ced8; }
+.alex .it-drink .g { fill: #fff8; } .alex .it-drink .j { fill: #ffb347; stroke: none; } .alex .it-drink .u { fill: var(--pink); } .alex .it-drink .st { fill: none; stroke: var(--red); stroke-width: 3; }
+.alex .it-phone .c { fill: #1d1d1f; } .alex .it-phone .sc { fill: var(--red); stroke: none; } .alex .it-phone .k { fill: var(--yellow); stroke-width: 1.5; }
+/* outfits */
+.alex .tskin, .alex .tank, .alex .sll, .alex .sls, .alex .logo, .alex .hw, .alex .jk, .alex .vest, .alex .pl, .alex .ps, .alex .helmet, .alex .glasses, .alex .towel, .alex .it-tool, .alex .it-drink, .alex .it-phone, .alex .spiral, .alex .collar { display: none; }
+.alex.o-tee { --shirt: #1d1d1f; } .alex.o-tee .sls, .alex.o-tee .logo, .alex.o-tee .collar { display: inline; }
+.alex.o-tank { --shirt: #1d1d1f; } .alex.o-tank .tskin, .alex.o-tank .tank { display: inline; } .alex.o-tank .tbody { display: none; }
+.alex.o-jacket { --shirt: #5b8fd6; } .alex.o-jacket .sll, .alex.o-jacket .jk { display: inline; }
+.alex.o-hawaii { --shirt: #ff9b3d; } .alex.o-hawaii .sls, .alex.o-hawaii .hw { display: inline; }
+.alex.p-jeans { --pants: #3a4f8f; } .alex.p-jeans .pl { display: inline; }
+.alex.p-shorts { --pants: #7d8aa3; } .alex.p-shorts .ps { display: inline; }
+.alex.p-swim { --pants: #2fb7a0; } .alex.p-swim .ps { display: inline; }
+.alex.a-vest .vest, .alex.a-helmet .helmet, .alex.a-glasses .glasses, .alex.a-towel .towel, .alex.h-tool .it-tool, .alex.h-drink .it-drink, .alex.h-phone .it-phone, .alex.e-spiral .spiral { display: inline; }
+.alex.e-spiral .eyes { display: none; }
+
+/* the co-pilot, as on the site */
+.bot * { stroke: var(--ink); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; }
+.b-shadow { fill: var(--ink); opacity: .22; stroke: none !important; }
+.b-leg { fill: #d9dce6; } .b-shoe { fill: var(--ink); }
+.b-sleeve, .b-jacket, .b-crown { fill: var(--navy); }
+.b-cuff { fill: none; stroke: var(--yellow) !important; stroke-width: 3 !important; }
+.b-hand, .b-skull, .b-shirt { fill: var(--white); }
+.b-tie, .b-face, .b-visor { fill: var(--ink); }
+.b-btn, .b-badge { fill: var(--yellow); } .b-wing, .b-badge-w { fill: none; stroke: var(--yellow) !important; stroke-width: 3 !important; }
+.b-neck { fill: #d9dce6; } .b-cup { fill: var(--yellow); }
+.b-band { fill: none; stroke: var(--yellow) !important; stroke-width: 4 !important; }
+.b-eye { fill: var(--mint); stroke: none !important; } .b-glints circle { fill: var(--white); stroke: none !important; }
+.b-cheek { fill: var(--pink); stroke: none !important; opacity: .85; }
+.b-mouth { fill: var(--mint); stroke: none !important; }
+.b-boom { fill: none; } .b-mic { fill: var(--ink); } .b-light { fill: #ff4d6d; } .b-ant { stroke-width: 3 !important; }
+
+/* background people */
+.guy * { stroke: var(--ink); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; }
+
+/* overlays */
+.ov { position: absolute; z-index: 20; left: 0; top: 0; }
+.think { width: 190px; height: 150px; transform-origin: 20% 100%; }
+.think .cl { fill: #fff; stroke: var(--ink); stroke-width: 4; }
+.badge { position: absolute; left: 0; top: 0; z-index: 7; width: 150px; height: 150px; background: #fff; border: 4px solid var(--ink); border-radius: 26px; box-shadow: -8px -8px 0 var(--ink); display: flex; align-items: center; justify-content: center; }
+.badge svg { width: 104px; height: 104px; }
+.badge.wide { width: 330px; font: 800 44px/1 var(--display); color: var(--ink); gap: 12px; }
+.badge.wide b { background: var(--yellow); border: 3px solid var(--ink); border-radius: 8px; padding: 0 10px 6px; }
+#wipe { position: absolute; z-index: 80; left: 0; top: -100px; width: 1700px; height: 920px; transform: skewX(-14deg); background: repeating-linear-gradient(90deg, var(--yellow) 0 120px, var(--ink) 120px 132px, var(--mint) 132px 252px, var(--ink) 252px 264px, var(--white) 264px 384px, var(--ink) 384px 396px); border-left: 8px solid var(--ink); border-right: 8px solid var(--ink); }
+#flash { position: absolute; inset: 0; z-index: 85; background: #fff; opacity: 0; }
+#fx { position: absolute; left: 0; top: 0; z-index: 30; pointer-events: none; }
+
+/* end card */
+.brand { display: flex; align-items: center; gap: 22px; font: 800 112px/1 var(--display); letter-spacing: -.02em; color: var(--ink); }
+.brand svg { width: 104px; height: 104px; }
+.brand b { background: var(--yellow); border: 4px solid var(--ink); box-shadow: -8px -8px 0 var(--ink); padding: 0 16px 10px; margin-left: 16px; border-radius: 8px; }
+.cta { display: inline-flex; align-items: center; min-height: 66px; padding: 0 34px; background: var(--yellow); border: 3px solid var(--ink); border-radius: 10px; box-shadow: -8px -8px 0 var(--ink); font: 800 28px var(--display); color: var(--ink); }
+
+#play { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: rgba(17, 17, 17, .25); border: 0; cursor: pointer; }
+#play span { display: inline-flex; align-items: center; gap: 12px; min-height: 64px; padding: 0 28px; background: var(--yellow); border: 3px solid var(--ink); border-radius: 10px; box-shadow: -8px -8px 0 var(--ink); font: 800 24px 'Bricolage Grotesque', system-ui, sans-serif; color: #111; }
+#lang { position: fixed; right: 16px; top: 16px; z-index: 101; font: 800 18px 'Bricolage Grotesque', system-ui; padding: 8px 14px; border: 3px solid #111; border-radius: 10px; background: #fff; cursor: pointer; }
+.render #play, .render #lang { display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <!-- 1: a German street -->
+    <div class="layer bg" id="s1"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#8fd3ff"/>
+      <g id="s1-clouds"></g>
+      <g id="s1-far" class="ink"></g>
+      <g id="s1-houses" class="ink"></g>
+      <rect y="560" width="1280" height="160" fill="#e8dcc6"/><g id="s1-stones" class="ink"></g>
+      <rect y="556" width="1280" height="12" fill="#c9b79b" class="ink"/>
+    </svg></div>
+
+    <!-- 2: gym locker room -->
+    <div class="layer bg" id="s2"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#d6f2ea"/>
+      <g stroke="#b3dccf" stroke-width="3"><path id="s2-tiles" d=""/></g>
+      <g id="s2-lockers" class="ink"></g>
+      <rect y="600" width="1280" height="120" fill="#8aa0b8" class="ink"/>
+      <g class="ink"><rect x="40" y="520" width="380" height="26" rx="6" fill="#e3a868"/><rect x="70" y="546" width="16" height="56" fill="#9aa3b5"/><rect x="374" y="546" width="16" height="56" fill="#9aa3b5"/></g>
+      <g id="s2-guys"></g>
+    </svg></div>
+    <div class="layer fg" id="s2f"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <g class="ink"><rect x="300" y="628" width="560" height="28" rx="6" fill="#e3a868"/><rect x="330" y="656" width="18" height="70" fill="#9aa3b5"/><rect x="812" y="656" width="18" height="70" fill="#9aa3b5"/></g>
+      <g id="s2-pack" class="ink"></g>
+    </svg></div>
+
+    <!-- 3: front door (also the bounce in the montage) -->
+    <div class="layer bg" id="s3"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#f3d9b1"/>
+      <g stroke="#e2c191" stroke-width="3" fill="none"><path d="M0 250H1280M0 470H1280"/></g>
+      <g id="s3-wins" class="ink"></g>
+      <g class="ink">
+        <path d="M650 600V330Q650 250 800 250Q950 250 950 330V600Z" fill="#e2c191"/>
+        <rect x="672" y="300" width="256" height="300" fill="#3b2a24"/>
+        <g id="s3-door"><rect x="672" y="300" width="256" height="300" rx="4" fill="#2f7d5b"/><rect x="694" y="322" width="90" height="120" rx="8" fill="#bfe6ff"/><rect x="816" y="322" width="90" height="120" rx="8" fill="#bfe6ff"/><rect x="694" y="466" width="90" height="110" rx="8" fill="#38946c"/><rect x="816" y="466" width="90" height="110" rx="8" fill="#38946c"/><path d="M800 300V600"/><circle cx="782" cy="470" r="7" fill="#ffe14d"/><circle cx="818" cy="470" r="7" fill="#ffe14d"/></g>
+        <path d="M672 300Q672 262 800 262Q928 262 928 300Z" fill="#bfe6ff"/>
+        <rect x="960" y="380" width="40" height="64" rx="6" fill="#c9ced8"/><circle cx="980" cy="398" r="5" fill="#fff"/><circle cx="980" cy="420" r="5" fill="#fff"/>
+        <rect x="740" y="218" width="120" height="30" rx="6" fill="#27357a"/>
+        <rect y="600" width="1280" height="120" fill="#c9c2b5"/><rect x="600" y="600" width="400" height="26" fill="#b8b0a2"/><rect x="570" y="626" width="460" height="26" fill="#a9a091"/>
+        <path d="M130 600h70l-8 -60h-54z" fill="#e2553f"/><path d="M165 540q-30 -60 0 -110q30 50 0 110" fill="#6fcf8f"/><path d="M165 540q-50 -40 -40 -90M165 540q50 -40 40 -90" fill="none"/>
+        <path d="M1110 600h70l-8 -60h-54z" fill="#e2553f"/><circle cx="1145" cy="510" r="40" fill="#6fcf8f"/>
+      </g>
+      <text x="800" y="240" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="22" fill="#fff">12</text>
+    </svg></div>
+
+    <!-- 4: airport check-in -->
+    <div class="layer bg" id="s4"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#cfe5fb"/>
+      <g class="ink"><rect x="40" y="40" width="560" height="330" rx="14" fill="#9fdcff"/><path d="M226 40V370M412 40V370" fill="none"/></g>
+      <g id="s4-plane" class="ink"><path d="M0 30L150 20Q176 20 176 28Q176 36 150 36L0 34Z" fill="#fff"/><path d="M60 28L90 0L104 2L92 28Z" fill="#ff4a4a"/><path d="M62 34L90 58L104 56L94 34Z" fill="#ff4a4a"/><path d="M4 30L-2 12L12 12L28 30Z" fill="#6db7ff"/></g>
+      <g class="ink"><rect x="700" y="50" width="520" height="210" rx="12" fill="#1b2440"/></g>
+      <g id="s4-board"></g>
+      <rect y="560" width="1280" height="160" fill="#e9ecf2" class="ink"/>
+      <g stroke="#cfd5e0" stroke-width="3"><path d="M0 610H1280M0 670H1280M200 560L120 720M500 560L460 720M800 560L820 720M1100 560L1160 720"/></g>
+      <g class="ink"><rect x="820" y="400" width="420" height="170" rx="10" fill="#27357a"/><rect x="800" y="380" width="460" height="34" rx="8" fill="#6db7ff"/><rect x="900" y="300" width="260" height="56" rx="10" fill="#ffe14d"/></g>
+      <text x="1030" y="338" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="30" fill="#111">CHECK-IN</text>
+      <g id="s4-guy"></g>
+    </svg></div>
+    <div class="layer fg" id="s4f"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <g class="ink"><rect x="96" y="560" width="14" height="140" fill="#c9ced8"/><rect x="566" y="560" width="14" height="140" fill="#c9ced8"/><ellipse cx="103" cy="702" rx="26" ry="8" fill="#9aa3b5"/><ellipse cx="573" cy="702" rx="26" ry="8" fill="#9aa3b5"/><circle cx="103" cy="560" r="10" fill="#c9ced8"/><circle cx="573" cy="560" r="10" fill="#c9ced8"/><path d="M103 576Q340 610 573 576" fill="none" stroke="#2f6fe0" stroke-width="12"/></g>
+      <g id="s4-case" class="ink"><rect x="0" y="0" width="120" height="150" rx="16" fill="#ff4a4a"/><rect x="40" y="-34" width="40" height="38" rx="8" fill="none"/><path d="M20 30V120M100 30V120" fill="none"/><circle cx="60" cy="60" r="16" fill="#ffe14d"/><rect x="24" y="96" width="44" height="26" rx="5" fill="#6df5b9" transform="rotate(-10 46 109)"/><circle cx="24" cy="158" r="8" fill="#111"/><circle cx="96" cy="158" r="8" fill="#111"/></g>
+    </svg></div>
+
+    <!-- 5: construction site with an old bomb -->
+    <div class="layer bg" id="s5"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#bfe6ff"/>
+      <g class="ink" fill="none"><path d="M1010 470V80H1040V470M1010 80H700V108H1040M1010 110L1040 140M1040 140L1010 170M1010 170L1040 200M1040 200L1010 230M1010 230L1040 260M1040 260L1010 290M1010 290L1040 320M1040 320L1010 350M1010 350L1040 380M1040 380L1010 410M1010 410L1040 440" stroke="#d9a400"/><path d="M760 108V230" stroke="#111" stroke-width="3"/><rect x="740" y="230" width="40" height="30" fill="#c9ced8"/></g>
+      <g class="ink"><rect x="60" y="380" width="260" height="120" fill="#c9ced8"/><circle cx="110" cy="440" r="40" fill="#9aa3b5"/><circle cx="200" cy="440" r="40" fill="#9aa3b5"/><circle cx="110" cy="440" r="22" fill="#6b7280"/><circle cx="200" cy="440" r="22" fill="#6b7280"/></g>
+      <rect y="470" width="1280" height="250" fill="#c99a62" class="ink"/>
+      <path d="M380 560Q640 470 980 560Q1000 640 640 650Q340 640 380 560Z" fill="#8a6440" class="ink"/>
+      <g class="ink"><rect x="40" y="520" width="230" height="44" fill="#fff"/><path d="M60 520l20 44M110 520l20 44M160 520l20 44M210 520l20 44" stroke="#ff4a4a" stroke-width="16"/><rect x="40" y="520" width="230" height="44" fill="none"/><rect x="60" y="564" width="12" height="60" fill="#9aa3b5"/><rect x="238" y="564" width="12" height="60" fill="#9aa3b5"/></g>
+      <g class="ink"><path d="M1140 600l40 -110l40 110z" fill="#ff8a1f"/><path d="M1152 566h56M1164 534h32" stroke="#fff" stroke-width="10"/></g>
+    </svg></div>
+    <div class="layer fg" id="s5f"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <g id="s5-bomb" class="ink">
+        <rect x="770" y="534" width="58" height="108" rx="6" fill="#5e5a3c"/><path d="M770 560h58M770 616h58M799 534v108" fill="none"/>
+        <path d="M466 588Q470 536 545 534L725 536Q760 540 792 566L792 610Q760 636 725 640L545 642Q470 640 466 588Z" fill="#7d7650"/>
+        <path d="M565 536v104M700 537v102M716 537v102" fill="none"/>
+        <ellipse cx="610" cy="566" rx="24" ry="9" fill="#b5643c" stroke="none"/><ellipse cx="660" cy="618" rx="30" ry="9" fill="#b5643c" stroke="none"/><ellipse cx="520" cy="610" rx="14" ry="7" fill="#b5643c" stroke="none"/><ellipse cx="750" cy="590" rx="10" ry="12" fill="#b5643c" stroke="none"/>
+        <path d="M500 556Q520 548 540 550" stroke="#fff" stroke-width="6" fill="none" opacity=".5"/>
+        <path d="M474 570q-14 -24 8 -34" fill="none"/>
+        <circle id="s5-light" cx="484" cy="534" r="9" fill="#ff4d6d"/>
+      </g>
+    </svg></div>
+
+    <!-- 6: falling, then the bedroom -->
+    <div class="layer bg" id="s6"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <defs><linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6db7ff"/><stop offset="1" stop-color="#cfeaff"/></linearGradient></defs>
+      <rect width="1280" height="720" fill="url(#sky6)"/>
+      <g id="s6-clouds"></g>
+      <g id="s6-lines" stroke="#fff" stroke-width="6" stroke-linecap="round"></g>
+    </svg></div>
+    <div class="layer bg" id="s6b"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#d9c8ff"/>
+      <g class="ink"><rect x="120" y="90" width="260" height="220" rx="10" fill="#bfe6ff"/><path d="M250 90V310M120 200H380" fill="none"/><path d="M100 80h300v24H100z" fill="#ffc2c2"/>
+        <rect x="900" y="110" width="200" height="140" rx="6" fill="#fff"/><path d="M930 200L1000 150L1040 180L1070 140" fill="none" stroke="#ff4a4a"/><circle cx="1050" cy="150" r="14" fill="#ffe14d"/>
+        <rect y="600" width="1280" height="120" fill="#b98f6a"/>
+        <rect x="1080" y="420" width="120" height="180" rx="8" fill="#e3a868"/><rect x="1100" y="380" width="80" height="40" rx="6" fill="#fff"/><path d="M1140 380v-50" fill="none"/><path d="M1110 330h60l-14 -40h-32z" fill="#ffe14d"/></g>
+    </svg></div>
+    <div class="layer fg" id="s6f"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <g id="s6-bed" class="ink"><rect x="300" y="520" width="680" height="110" rx="14" fill="#fff"/><path d="M300 540 Q640 500 980 540 V630 H300Z" fill="#6df5b9"/><circle cx="420" cy="590" r="10" fill="#fff"/><circle cx="560" cy="575" r="10" fill="#fff"/><circle cx="720" cy="590" r="10" fill="#fff"/><circle cx="880" cy="575" r="10" fill="#fff"/><rect x="270" y="420" width="40" height="260" rx="10" fill="#e3a868"/><rect x="970" y="480" width="40" height="200" rx="10" fill="#e3a868"/></g>
+    </svg></div>
+    <div class="layer bg" id="s6p"><svg viewBox="0 0 1280 720" width="1280" height="720"><g class="ink"><rect x="290" y="440" width="150" height="70" rx="30" fill="#fff"/></g></svg></div>
+
+    <!-- 7: the co-pilot returns -->
+    <div class="layer bg" id="s7"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#ff4a4a"/>
+      <g id="s7-rays" opacity=".14"></g>
+    </svg></div>
+    <div class="layer fg" id="s7f">
+      <div class="badge wide" id="b1"><svg viewBox="0 0 32 32" style="width:64px;height:64px" class="ink"><rect x="2.5" y="2.5" width="27" height="27" rx="6" fill="#ffe14d" style="stroke-width:3"/><path d="M9 17l5.2 5.2L23.5 10.5" fill="none" style="stroke-width:4"/></svg><span>Checklist<b>Pro</b></span></div>
+      <div class="badge" id="b2"><svg viewBox="0 0 100 100" class="ink"><path d="M24 34q0-16 26-16t26 16v44q0 8-8 8H32q-8 0-8-8z" fill="#6df5b9"/><path d="M38 18q0-10 12-10t12 10" fill="none"/><rect x="34" y="50" width="32" height="22" rx="5" fill="#fff"/><path d="M58 64l8 8 16-18" fill="none" stroke="#111" style="stroke-width:7"/><path d="M58 64l8 8 16-18" fill="none" stroke="#6df5b9" style="stroke-width:3"/></svg></div>
+      <div class="badge" id="b3"><svg viewBox="0 0 100 100" class="ink"><path d="M46 8L18 56h24l-6 36 34-52H46z" fill="#ffe14d"/><text x="62" y="92" font-family="Bricolage Grotesque" font-weight="800" font-size="34" fill="#111" stroke="none">3×</text></svg></div>
+      <div class="badge" id="b4"><svg viewBox="0 0 100 100" class="ink"><rect x="14" y="22" width="72" height="66" rx="10" fill="#fff"/><path d="M14 40h72" fill="none"/><rect x="14" y="22" width="72" height="18" rx="8" fill="#ff4a4a"/><path d="M32 14v16M68 14v16" fill="none"/><path d="M34 64l10 10 22-22" fill="none" style="stroke-width:6"/></svg></div>
+    </div>
+
+    <!-- 8b: gym -->
+    <div class="layer bg" id="s8b"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#ffe14d"/>
+      <g class="ink"><rect x="80" y="80" width="420" height="380" rx="10" fill="#cfeaff"/><path d="M140 120l80 -30M180 200l120 -50" stroke="#fff" stroke-width="10" fill="none"/>
+        <rect x="860" y="140" width="24" height="440" fill="#9aa3b5"/><rect x="1120" y="140" width="24" height="440" fill="#9aa3b5"/><rect x="850" y="300" width="300" height="16" fill="#6b7280"/>
+        <rect x="900" y="520" width="200" height="16" fill="#6b7280"/><circle cx="930" cy="500" r="18" fill="#111"/><circle cx="980" cy="500" r="18" fill="#111"/><circle cx="1030" cy="500" r="18" fill="#111"/><circle cx="1080" cy="500" r="18" fill="#111"/></g>
+      <rect y="590" width="1280" height="130" fill="#2b2d42" class="ink"/>
+    </svg></div>
+    <div class="layer" id="s8bf" style="z-index:3"><svg viewBox="0 0 1280 720" width="1280" height="720"><g id="bar" class="ink">
+      <rect x="-300" y="-8" width="600" height="16" rx="8" fill="#c9ced8"/>
+      <rect x="-290" y="-80" width="40" height="160" rx="10" fill="#ff4a4a"/><rect x="-250" y="-66" width="34" height="132" rx="10" fill="#111"/><rect x="-214" y="-50" width="24" height="100" rx="8" fill="#6db7ff"/>
+      <rect x="250" y="-80" width="40" height="160" rx="10" fill="#ff4a4a"/><rect x="216" y="-66" width="34" height="132" rx="10" fill="#111"/><rect x="190" y="-50" width="24" height="100" rx="8" fill="#6db7ff"/>
+    </g></svg></div>
+
+    <!-- 8c: beach -->
+    <div class="layer bg" id="s8c"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#9fdcff"/>
+      <circle cx="1080" cy="130" r="70" fill="#ffe14d" class="ink"/>
+      <rect y="360" width="1280" height="160" fill="#2fb7c8" class="ink"/>
+      <path id="s8c-wave" d="" fill="#fff" class="ink"/>
+      <rect y="500" width="1280" height="220" fill="#ffe0a3" class="ink"/>
+      <g class="ink"><path d="M180 520Q160 340 220 200" fill="none" stroke="#8a5a2b" stroke-width="22"/><path d="M180 520Q160 340 220 200" fill="none" stroke="#c98a4b" stroke-width="14"/>
+        <path d="M220 200q-90 -20 -150 40q80 -20 150 -40zM220 200q90 -30 160 20q-90 -10 -160 -20zM220 200q-30 -70 -110 -90q60 40 110 90zM220 200q40 -70 120 -80q-70 30 -120 80z" fill="#3fcf6f"/></g>
+      <g class="ink"><path d="M600 486L612 464L760 548L742 588Z" fill="#e8741a"/><path d="M700 560L1000 560L1016 600L690 600Z" fill="#ff8a1f"/><path d="M720 600v60M990 600v60M610 486l-14 174" fill="none"/></g>
+    </svg></div>
+
+    <!-- 9: the phone close-up -->
+    <div class="layer bg" id="s9"><svg viewBox="0 0 1280 720" width="1280" height="720">
+      <rect width="1280" height="720" fill="#ff4a4a"/>
+      <g id="s9-rays" opacity=".14"></g>
+      <g class="ink" id="s9-phone">
+        <rect x="380" y="20" width="520" height="900" rx="70" fill="#111"/>
+        <rect x="402" y="42" width="476" height="856" rx="52" fill="#ff4a4a" style="stroke:none"/>
+        <rect x="580" y="58" width="120" height="30" rx="15" fill="#111"/>
+        <g transform="translate(430 112)"><rect x="0" y="0" width="34" height="34" rx="7" fill="#ffe14d" style="stroke-width:3"/><path d="M8 18l6 6L26 11" fill="none" style="stroke-width:4"/></g>
+        <text x="476" y="140" font-family="Bricolage Grotesque" font-weight="800" font-size="30" fill="#111" stroke="none">Checklist</text>
+        <rect x="610" y="112" width="62" height="38" rx="5" fill="#ffe14d" style="stroke-width:3"/><text x="616" y="141" font-family="Bricolage Grotesque" font-weight="800" font-size="30" fill="#111" stroke="none">Pro</text>
+        <rect x="430" y="176" width="350" height="22" rx="4" fill="#fff"/><rect id="s9-bar" x="430" y="176" width="0" height="22" rx="4" fill="#6df5b9"/><text id="s9-count" x="796" y="196" font-family="Space Grotesk" font-weight="700" font-size="22" fill="#111" stroke="none">0 / 3</text>
+      </g>
+      <g id="s9-items"></g>
+    </svg></div>
+
+    <!-- end card -->
+    <div class="layer bg" id="sE"><svg viewBox="0 0 1280 720" width="1280" height="720"><rect width="1280" height="720" fill="#ff4a4a"/><g id="sE-rays" opacity=".14"></g></svg>
+      <div style="position:absolute;left:0;top:0;width:1280px;height:720px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding-bottom:40px">
+        <div class="brand" id="eBrand"><svg viewBox="0 0 32 32" class="ink"><rect x="2.5" y="2.5" width="27" height="27" rx="6" fill="#ffe14d" style="stroke-width:3"/><path d="M9 17l5.2 5.2L23.5 10.5" fill="none" style="stroke-width:4.2"/></svg><span>Checklist<b>Pro</b></span></div>
+        <div class="cta" id="eCta">Open the app</div>
+      </div>
+    </div>
+
+    <div class="actor" id="alex"></div>
+    <div class="actor" id="robot"></div>
+    <div class="actor" id="alex2" style="width:300px;transform-origin:150px 352px;z-index:4"></div>
+    <svg class="ov" id="butterfly" width="80" height="70" viewBox="-40 -35 80 70" style="z-index:9"><g class="ink"><g id="bfl"><path d="M0 0C-10 -30 -38 -34 -34 -10C-32 4 -12 4 0 0Z" fill="#ff7ab6"/><path d="M0 0C-8 14 -26 26 -26 12C-26 4 -12 2 0 0Z" fill="#ffe14d"/></g><g id="bfr"><path d="M0 0C10 -30 38 -34 34 -10C32 4 12 4 0 0Z" fill="#ff7ab6"/><path d="M0 0C8 14 26 26 26 12C26 4 12 2 0 0Z" fill="#ffe14d"/></g><path d="M0 -10V14" style="stroke-width:5"/><path d="M0 -10q-6 -12 -12 -14M0 -10q6 -12 12 -14" fill="none" style="stroke-width:2"/></g></svg>
+    <svg class="ov" id="think" viewBox="0 0 190 150" width="190" height="150"><g><circle class="cl" cx="16" cy="140" r="7"/><circle class="cl" cx="34" cy="120" r="11"/><path class="cl" d="M60 104Q30 104 34 76Q20 50 50 40Q60 10 96 18Q120 0 146 18Q182 20 178 52Q192 80 160 96Q150 116 116 108Q90 122 60 104Z"/></g><g id="think-ic" transform="translate(70 22) scale(.9)"></g><g id="think-x" transform="translate(70 22) scale(.9)"><path d="M10 10L90 80M90 10L10 80" stroke="#ff4a4a" stroke-width="12" stroke-linecap="round"/></g><g id="think-q"><text x="150" y="70" font-family="Bricolage Grotesque" font-weight="800" font-size="44" fill="#111">?</text></g></svg>
+    <svg class="ov" id="boom" viewBox="-300 -300 600 600" width="600" height="600" style="z-index:12"></svg>
+    <svg class="ov" id="hand" viewBox="0 0 32 32" width="190" height="190" style="z-index:12"><path d="M11.5 4.5a2.4 2.4 0 0 1 4.8 0v9.3l.6-2.2a2.3 2.3 0 0 1 4.4 1.1l-.2 1.6a2.3 2.3 0 0 1 4.4.9l-.2 1.3a2.3 2.3 0 0 1 4.3 1.1l-.6 5.6c-.6 4.6-4 7.3-8.3 7.3h-2.8c-3 0-5-1.3-6.9-3.9L5 20.7a2.3 2.3 0 0 1 3.5-3l3 3.4z" fill="#f2c4a0" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    <div class="ov" id="helm" style="width:120px;height:80px;z-index:9"><svg viewBox="40 10 130 70" width="120" height="70" class="ink"><path d="M46 62Q46 14 100 14Q154 14 154 62Z" fill="#ffe14d"/><path d="M38 60H162V70H38Z" fill="#ffe14d"/><path d="M100 16V60" fill="none"/></svg></div>
+  </div>
+  <canvas id="fx" width="1280" height="720"></canvas>
+  <div id="wipe"></div>
+  <div id="flash"></div>
+  <div class="grain"></div>
+</div>
+<button id="play" type="button"><span>▶ Play with sound</span></button>
+<button id="lang" type="button">EN</button>
+<audio id="vo-en" src="mix-en.m4a" preload="auto"></audio>
+<audio id="vo-de" src="mix-de.m4a" preload="auto"></audio>
+<script src="data.js"></script>
+<script src="story.js"></script>
+</body>
+</html>

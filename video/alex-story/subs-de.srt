@@ -1,0 +1,37 @@
+1
+00:00:00,700 --> 00:00:03,480
+Alex ist ein ziemlich zerstreuter Mensch.
+
+2
+00:00:04,100 --> 00:00:06,970
+Oh nein, ich hab das Handtuch vergessen.
+
+3
+00:00:07,600 --> 00:00:10,430
+Oh... hab ich alle Fenster zugemacht?
+
+4
+00:00:10,750 --> 00:00:12,790
+Oh, mein Reisepass!
+
+5
+00:00:13,500 --> 00:00:15,810
+Oh, ein Schmetterling.
+
+6
+00:00:15,950 --> 00:00:17,500
+Waaaaah!
+
+7
+00:00:19,550 --> 00:00:21,400
+Jetzt hat er Checklist Pro!
+
+8
+00:00:21,400 --> 00:00:26,180
+Nichts wird mehr vergessen, alles geht dreimal schneller,
+und die Routine sitzt.
+
+9
+00:00:30,300 --> 00:00:33,270
+Erledigt, erledigt und erledigt!
+

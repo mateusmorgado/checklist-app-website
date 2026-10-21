@@ -279,6 +279,8 @@ window.I18N_DE = {
 "Run ✓": "Starten ✓",
 "Done ✓": "Erledigt ✓",
 "Play with sound": "Mit Ton abspielen",
+"Meet Alex": "Das ist Alex",
+"Play the animated video with sound": "Das Animationsvideo mit Ton abspielen",
 "The ad lands here.": "Hier landet der Spot.",
 "Drop a 720p file at": "Lege eine 720p-Datei ab unter",
 "Cockpit, operating room, then your pocket.": "Cockpit, Operationssaal, dann deine Tasche.",

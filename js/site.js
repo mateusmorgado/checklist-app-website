@@ -89,7 +89,7 @@
   function pagePos(el) { let x = 0, y = 0; for (; el; el = el.offsetParent) { x += el.offsetLeft; y += el.offsetTop; } return { x, y }; }
   // the lines fall down the page and land on top of the video window; on the next scroll past it they fall again and vanish
   function land() {
-    const sec = $('#video'), win = $('#video .win'); if (!sec || !win) return false;
+    const sec = $('#story'), win = $('#story .win'); if (!sec || !win) return false;
     const layer = document.createElement('div'); layer.className = 'landing'; layer.setAttribute('aria-hidden', 'true'); sec.appendChild(layer);
     const sp = pagePos(sec), wp = pagePos(win), W = document.documentElement.clientWidth, P = FALLS[fallIdx];
     const wl = wp.x, wr = wp.x + win.offsetWidth, wt = wp.y - sp.y;
@@ -324,9 +324,25 @@
   }
   function backToTeaser() { vid.pause(); vid.hidden = true; box.classList.remove('playing'); if (teaserOk) { teaser.hidden = false; playTeaser(); } }
   playBtn.addEventListener('click', startMain); teaser.addEventListener('click', startMain);
-  // the hero's Watch the video button scrolls down and starts the film with sound; the arrow only scrolls down
-  const toVideo = () => box.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
-  $('#watch-btn').addEventListener('click', e => { e.preventDefault(); toVideo(); startMain(); });
+  // ---------- the animated story right under the hero: English or German to match the page ----------
+  const sBox = $('#story-box'), sVid = $('#story-vid');
+  function storyLang() {
+    const l = document.documentElement.lang === 'de' ? 'de' : 'en', src = 'video/alex-story-' + l + '.mp4';
+    if (sVid.dataset.lang === l) return; sVid.dataset.lang = l;
+    const at = sVid.currentTime, playing = !sVid.paused;
+    $('source', sVid).src = src; const tr = $('track', sVid); tr.src = 'video/alex-story-' + l + '.vtt'; tr.srclang = l; tr.label = l === 'de' ? 'Deutsch' : 'English';
+    sVid.load(); if (at) sVid.currentTime = at; if (playing) { const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
+  }
+  storyLang(); new MutationObserver(storyLang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  function startStory() { vid.pause(); sBox.classList.add('playing'); sVid.controls = true; sVid.currentTime = 0; const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
+  $('#play-story').addEventListener('click', startStory);
+  sVid.addEventListener('play', () => { sBox.classList.add('playing'); sVid.controls = true; vid.pause(); });
+  vid.addEventListener('play', () => sVid.pause());
+  sVid.addEventListener('ended', () => { sBox.classList.remove('playing'); sVid.controls = false; });
+
+  // the hero's Watch the video button scrolls down and starts the story with sound; the arrow only scrolls down
+  const toVideo = () => sBox.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  $('#watch-btn').addEventListener('click', e => { e.preventDefault(); toVideo(); startStory(); });
   $('#hero-down').addEventListener('click', e => { e.preventDefault(); toVideo(); });
   const atTop = () => document.body.classList.toggle('at-top', scrollY < 40);
   atTop(); addEventListener('scroll', atTop, { passive: true });
@@ -465,9 +481,9 @@
     }, { passive: true });
   })();
 
-  // ---------- past the video the header folds into just the menu button, top right ----------
+  // ---------- past the first video the header folds into just the menu button, top right ----------
   (function () {
-    const vid = $('#video');
+    const vid = $('#story');
     const check = () => document.body.classList.toggle('compact', !!vid && vid.getBoundingClientRect().bottom < 0);
     check(); addEventListener('scroll', check, { passive: true }); addEventListener('resize', check);
   })();
