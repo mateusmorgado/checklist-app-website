@@ -530,11 +530,11 @@
       const r = ++wr, ok = () => r === wr; document.dispatchEvent(new Event('wq-start'));
       sec.classList.remove('final', 'instant'); st.className = 'wq-stage'; ls.forEach(l => { l.classList.remove('in', 'fin'); l.style.height = ''; });
       if (reduce) { st.classList.add('s-lines', 'done'); ls.forEach(l => l.classList.add('in', 'fin')); focus(true); return; }
-      await wait(200); if (!ok()) return; st.classList.add('s-why');
-      await wait(1700); if (!ok()) return; st.classList.replace('s-why', 's-lines');
-      for (const l of ls) { await wait(650); if (!ok()) return; l.classList.add('in'); setTimeout(() => l.classList.add('fin'), 1000); await wait(1250); if (!ok()) return; }
-      await wait(1800); if (!ok()) return; focus();
-      await wait(900); if (!ok()) return; st.classList.add('done');
+      await wait(100); if (!ok()) return; st.classList.add('s-why');
+      await wait(850); if (!ok()) return; st.classList.replace('s-why', 's-lines');
+      for (const l of ls) { await wait(325); if (!ok()) return; l.classList.add('in'); setTimeout(() => l.classList.add('fin'), 500); await wait(625); if (!ok()) return; }
+      await wait(450); if (!ok()) return; focus();
+      await wait(450); if (!ok()) return; st.classList.add('done');
     }
     $('#wq-replay').addEventListener('click', play);
     // tap opens the book card on touch screens; hover and focus open it everywhere
