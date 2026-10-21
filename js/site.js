@@ -4,6 +4,7 @@
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = ms => new Promise(r => setTimeout(r, ms));
+  const SPEED = 1.5, iwait = ms => wait(ms / SPEED); // the hero intro plays 1.5x faster
 
   // links to the real app
   $$('[data-app]').forEach(a => { a.href = window.APP_URL + '/'; a.target = '_blank'; a.rel = 'noopener'; });
@@ -70,7 +71,7 @@
       l.classList.add('parked'); l.dataset.rot = spec.r; Object.assign(l.style, end);
       if (reduce) return;
       const frames = [Object.assign({ offset: 0, easing: 'ease-out' }, start)].concat(spec.path.map(p => Object.assign({ offset: p.o, easing: p.ease || 'ease-in-out' }, place(p.x, p.y, p.r))), [Object.assign({ offset: 1 }, end)]);
-      l.animate(frames, { duration: spec.ms, delay: spec.delay, fill: 'backwards' });
+      l.animate(frames, { duration: spec.ms / SPEED, delay: spec.delay / SPEED, fill: 'backwards' });
     });
     parked.forEach(({ ph }) => { ph.style.height = '0px'; ph.style.marginBottom = '0px'; });
     if (reduce) return;
@@ -134,12 +135,59 @@
     b.classList.add('typing'); b.classList.remove('intro');
     const txt = src.textContent; out.textContent = '';
     await wait(450);
-    for (let k = 1; k <= txt.length; k++) { if (!ok()) { b.classList.remove('typing'); return; } out.textContent = txt.slice(0, k); await wait(txt[k - 1] === ' ' ? 8 : 16); }
+    for (let k = 0, t0 = performance.now(); k < txt.length;) { if (!ok()) { b.classList.remove('typing'); return; } k = Math.min(txt.length, Math.floor((performance.now() - t0) / 7.25)); out.textContent = txt.slice(0, k); await wait(8); } // about 7ms a letter: twice as fast as before
     await wait(150); if (!ok()) return; b.classList.add('caret-hold'); b.classList.remove('typing');
     setTimeout(() => { b.classList.remove('caret-hold'); out.textContent = ''; }, 2000); // the cursor keeps blinking for two seconds
     // the header comes last, dropping in from the top once the rest is in place
     await wait(900); b.classList.remove('intro-first');
-    if (!peeked) { peeked = true; await wait(4000); if (ok()) peek(); }
+    if (!peeked) { peeked = true; await wait(4000); if (ok()) { if (canHand()) await hand(ok); if (ok()) peek(); } }
+  }
+  // desktop with a mouse: four seconds after the header shows up a hand rises under the hero phone, swipes it,
+  // glides to the colour chips like a mouse pointer and picks the blue one
+  const canHand = () => !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth >= 1100 && innerWidth > innerHeight && scrollY < innerHeight * .3
+    && !(() => { try { return localStorage.getItem('cp-palette'); } catch (e) { return null; } })();
+  const HAND_SVG = '<svg viewBox="-60 -20 120 1700" width="120" height="1700" aria-hidden="true">'
+    + '<rect x="-24" y="150" width="48" height="1540" fill="#111"/>' // the sleeve runs off the bottom of the screen
+    + '<rect x="-30" y="110" width="60" height="44" rx="10" fill="#ffe14d" stroke="#111" stroke-width="5"/>' // cuff
+    + '<rect x="-12" y="0" width="24" height="96" rx="12" fill="#fff" stroke="#111" stroke-width="5"/>' // the pointing finger, its tip is the origin
+    + '<rect x="-34" y="44" width="68" height="74" rx="26" fill="#fff" stroke="#111" stroke-width="5"/>' // the fist
+    + '<path d="M-6 66h26M-6 84h26M-6 102h22" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>' // curled fingers
+    + '<rect x="-48" y="62" width="26" height="44" rx="13" transform="rotate(-24 -35 84)" fill="#fff" stroke="#111" stroke-width="5"/>' // thumb
+    + '</svg>';
+  async function hand(ok) {
+    const phone = $('.hero-phone .phone'), sw = $('#sw-set'), blue = $('#swatches button[data-p="blue"]'); if (!phone || !sw || !blue) return;
+    const el = document.createElement('div'); el.className = 'hand'; el.setAttribute('aria-hidden', 'true'); el.innerHTML = HAND_SVG; document.body.appendChild(el);
+    const ring = document.createElement('i'); ring.className = 'hand-ring'; document.body.appendChild(ring);
+    const pr = phone.getBoundingClientRect(), cx = pr.left + pr.width / 2, anchor = { x: cx - 40, y: innerHeight + 420 }; // the arm always leads back to somewhere under the phone
+    let pos = { x: cx + 70, y: innerHeight + 260 }, press = 0;
+    const draw = () => { // the hand turns so that its arm points back at the anchor, like a pointer being dragged
+      const ux = pos.x - anchor.x, uy = pos.y - anchor.y, a = Math.atan2(ux, -uy) * 180 / Math.PI;
+      el.style.transform = 'translate(' + pos.x + 'px,' + pos.y + 'px) rotate(' + a + 'deg) scale(' + (1 - press * .1) + ')';
+    };
+    const ease = { out: t => 1 - Math.pow(1 - t, 3), io: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, in: t => t * t * t };
+    const tween = (to, ms, e, bend = 0, step) => new Promise(done => { // a curved move: the middle bulges sideways by `bend`
+      const from = { x: pos.x, y: pos.y }, t0 = performance.now(), nx = -(to.y - from.y), ny = to.x - from.x, n = Math.hypot(nx, ny) || 1;
+      const tick = now => { const t = Math.min(1, (now - t0) / ms), k = e(t), b = Math.sin(Math.PI * t) * bend;
+        pos = { x: from.x + (to.x - from.x) * k + nx / n * b, y: from.y + (to.y - from.y) * k + ny / n * b }; draw(); if (step) step(t);
+        if (t < 1 && ok()) requestAnimationFrame(tick); else done(); };
+      requestAnimationFrame(tick);
+    });
+    const tap = (p) => { ring.style.left = p.x + 'px'; ring.style.top = p.y + 'px'; ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go'); };
+    const pressTo = (v, ms) => tween(pos, ms, t => t, 0, t => { press = v ? t : 1 - t; draw(); });
+    draw(); el.style.opacity = 1;
+    const sy = pr.top + pr.height * .62;
+    await tween({ x: cx + 50, y: sy }, 750, ease.out);                                       // rises under the phone
+    if (ok()) { await pressTo(1, 120); window.dispatchEvent(new CustomEvent('cp:swipe', { detail: { phase: 'move', dx: 0 } }));
+      const x0 = pos.x; await tween({ x: x0 - 120, y: sy - 6 }, 520, ease.io, 0, t => window.dispatchEvent(new CustomEvent('cp:swipe', { detail: { phase: 'move', dx: -120 * ease.io(t) } })));
+      window.dispatchEvent(new CustomEvent('cp:swipe', { detail: { phase: 'end', dx: -120 } })); await pressTo(0, 120); }          // swipes the phone to the next look
+    await wait(150);
+    if (ok()) { const b = blue.getBoundingClientRect(); const target = { x: b.left + b.width / 2, y: b.top + b.height / 2 };
+      const a0 = { x: anchor.x, y: anchor.y }, a1 = { x: target.x + 260, y: innerHeight + 520 }; // the arm swings round to come from below the chips
+      await tween(target, 1150, ease.io, -90, t => { const k = ease.io(t); anchor.x = a0.x + (a1.x - a0.x) * k; anchor.y = a0.y + (a1.y - a0.y) * k; }); // glides to the blue chip like a mouse
+      if (ok()) { await wait(120); await pressTo(1, 110); tap(target); window.dispatchEvent(new CustomEvent('cp:pick', { detail: 'blue' })); await wait(140); await pressTo(0, 120); } }
+    await wait(450);
+    await tween({ x: pos.x + 260, y: innerHeight + 300 }, 700, ease.in);                         // and drops away again
+    el.remove(); ring.remove();
   }
   // four seconds after the intro the co-pilot sneaks in from the left (the right on phones), points at "Checklist prompt" and ducks back out
   let peeked = false;
@@ -171,21 +219,21 @@
     unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone', 'hit', 'broke'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
     if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); if (canPark()) park(); else lines.slice(0, 2).forEach(l => l.classList.add('gone')); ($$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')), document.body.classList.remove('intro', 'intro-first')); return; }
     centerLines(true);
-    await wait(300); if (!ok()) return; lines[0].classList.add('show');
-    await wait(900); if (!ok()) return; lines[0].classList.add('struck');
-    await wait(650); if (!ok()) return; lines[1].classList.add('show');
+    await iwait(300); if (!ok()) return; lines[0].classList.add('show');
+    await iwait(900); if (!ok()) return; lines[0].classList.add('struck');
+    await iwait(650); if (!ok()) return; lines[1].classList.add('show');
     // the second line flies up into the first: both knock and stay tilted, each its own way
-    await wait(230); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('hit')); hero.classList.remove('shake'); void hero.offsetWidth; hero.classList.add('shake');
-    await wait(900); if (!ok()) return; lines[1].classList.add('struck');
-    await wait(750); if (!ok()) return; lines[2].classList.add('show'); burst();
-    await wait(240); if (!ok()) return;
+    await iwait(230); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('hit')); hero.classList.remove('shake'); void hero.offsetWidth; hero.classList.add('shake');
+    await iwait(900); if (!ok()) return; lines[1].classList.add('struck');
+    await iwait(750); if (!ok()) return; lines[2].classList.add('show'); burst();
+    await iwait(240); if (!ok()) return;
     // the big line hits the struck ones: it squashes on impact and springs back while they are shoved aside
     // the impact knocks the big line apart for a moment: "Checklist prompt" tips over, "app" lands almost upright, then both snap back
-    lines[2].classList.remove('broke'); void lines[2].offsetWidth; lines[2].classList.add('broke'); setTimeout(() => lines[2].classList.remove('broke'), 1300);
+    lines[2].classList.remove('broke'); void lines[2].offsetWidth; lines[2].classList.add('broke'); setTimeout(() => lines[2].classList.remove('broke'), 1300 / SPEED);
     if (!canPark()) lines.slice(0, 2).forEach(l => l.classList.remove('hit'));
-    if (canPark()) { lines[2].classList.add('squash'); lines[2].addEventListener('animationend', () => lines[2].classList.remove('squash'), { once: true }); park(); } else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await wait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
-    await wait(500); if (!ok()) return; centerLines();
-    await wait(700); if (!ok()) return; if (lift) { liftLines(); await wait(750); if (!ok()) return; } typeSub(ok);
+    if (canPark()) { lines[2].classList.add('squash'); lines[2].addEventListener('animationend', () => lines[2].classList.remove('squash'), { once: true }); park(); } else { lines.slice(0, 2).forEach(l => { l.style.height = l.offsetHeight + 'px'; void l.offsetHeight; l.classList.add('fell'); }); await iwait(450); if (!ok()) return; lines.slice(0, 2).forEach(l => l.classList.add('gone')); }
+    await iwait(500); if (!ok()) return; centerLines();
+    await iwait(700); if (!ok()) return; if (lift) { liftLines(); await iwait(750); if (!ok()) return; } typeSub(ok);
   }
   $('#replay').addEventListener('click', () => { nextFall(); intro(); });
   intro();
@@ -222,6 +270,10 @@
     scr.addEventListener('pointermove', e => { if (x0 == null) return; dx = e.clientX - x0; track.style.transform = 'translateX(' + (-cur * w + dx) + 'px)'; });
     const end = () => { if (x0 == null) return; const moved = dx; x0 = null; track.classList.remove('drag'); scr.classList.remove('drag'); track.style.transform = ''; go(Math.abs(moved) > w * .18 ? cur + (moved < 0 ? 1 : -1) : cur); pause = Date.now() + 6000; };
     scr.addEventListener('pointerup', end); scr.addEventListener('pointercancel', end);
+    // the hand that picks a colour swipes the phone for real
+    addEventListener('cp:swipe', e => { const d = e.detail; pause = Date.now() + 6000; w = scr.offsetWidth;
+      if (d.phase === 'move') { track.classList.add('drag'); track.style.transform = 'translateX(' + (-cur * w + d.dx) + 'px)'; }
+      else { track.classList.remove('drag'); track.style.transform = ''; go(d.dx < -w * .18 ? cur + 1 : cur); } });
   })();
 
   // 3D tilt for phones
@@ -241,11 +293,12 @@
     const stack = p => { let r = 1; btns.forEach((b, k) => { b.style.setProperty('--k', k); b.style.setProperty('--i', b.dataset.p === p ? 0 : r++); }); };
     const paint = p => { stack(p); root.setAttribute('data-palette', p); setIcon(); btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false')); if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--red').trim()); };
     paint(root.getAttribute('data-palette') || 'red');
+    addEventListener('cp:pick', e => paint(e.detail)); // the demo hand: shown, but not saved as the visitor's choice
     $('#to-top').addEventListener('click', () => { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
     // on phones the dots sit in a little pile; the first tap fans them out, the next one picks a colour
     const sw = $('#sw-set'), hover = matchMedia('(hover: hover) and (pointer: fine)'); let fold = 0;
-    // open as a row at the top of the page, folds into the stack once "Lists that ask first" comes up
-    const ideas = $('#ideas'), early = () => sw.classList.toggle('early', !ideas || ideas.getBoundingClientRect().top > innerHeight * .7);
+    // open as a row while the hero is on screen, folds into the stack once it is left
+    const hero = $('.hero'), early = () => sw.classList.toggle('early', !hero || hero.getBoundingClientRect().bottom > innerHeight * .3);
     early(); addEventListener('scroll', early, { passive: true }); addEventListener('resize', early);
     const isOpen = () => sw.classList.contains('early') || sw.classList.contains('open') || (hover.matches && sw.matches(':hover'));
     btns.forEach(b => b.addEventListener('click', () => {
