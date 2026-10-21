@@ -140,54 +140,51 @@
     setTimeout(() => { b.classList.remove('caret-hold'); out.textContent = ''; }, 2000); // the cursor keeps blinking for two seconds
     // the header comes last, dropping in from the top once the rest is in place
     await wait(900); b.classList.remove('intro-first');
-    if (!peeked) { peeked = true; await wait(4000); if (ok()) { if (canHand()) await hand(ok); if (ok()) peek(); } }
+    if (!peeked) { peeked = true; await wait(4000); if (ok()) { if (canPointer()) await pointerDemo(ok); if (ok()) peek(); } }
   }
-  // desktop with a mouse: four seconds after the header shows up a hand rises under the hero phone, swipes it,
-  // glides to the colour chips like a mouse pointer and picks the blue one
-  const canHand = () => !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth >= 1100 && innerWidth > innerHeight && scrollY < innerHeight * .3
-    && !(() => { try { return localStorage.getItem('cp-palette'); } catch (e) { return null; } })();
-  const HAND_SVG = '<svg viewBox="-60 -20 120 1700" width="120" height="1700" aria-hidden="true">'
-    + '<rect x="-24" y="150" width="48" height="1540" fill="#111"/>' // the sleeve runs off the bottom of the screen
-    + '<rect x="-30" y="110" width="60" height="44" rx="10" fill="#ffe14d" stroke="#111" stroke-width="5"/>' // cuff
-    + '<rect x="-12" y="0" width="24" height="96" rx="12" fill="#fff" stroke="#111" stroke-width="5"/>' // the pointing finger, its tip is the origin
-    + '<rect x="-34" y="44" width="68" height="74" rx="26" fill="#fff" stroke="#111" stroke-width="5"/>' // the fist
-    + '<path d="M-6 66h26M-6 84h26M-6 102h22" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>' // curled fingers
-    + '<rect x="-48" y="62" width="26" height="44" rx="13" transform="rotate(-24 -35 84)" fill="#fff" stroke="#111" stroke-width="5"/>' // thumb
-    + '</svg>';
-  async function hand(ok) {
-    const phone = $('.hero-phone .phone'), sw = $('#sw-set'), blue = $('#swatches button[data-p="blue"]'); if (!phone || !sw || !blue) return;
-    const el = document.createElement('div'); el.className = 'hand'; el.setAttribute('aria-hidden', 'true'); el.innerHTML = HAND_SVG; document.body.appendChild(el);
-    const ring = document.createElement('i'); ring.className = 'hand-ring'; document.body.appendChild(ring);
-    const pr = phone.getBoundingClientRect(), cx = pr.left + pr.width / 2, anchor = { x: cx - 40, y: innerHeight + 420 }; // the arm always leads back to somewhere under the phone
-    let pos = { x: cx + 70, y: innerHeight + 260 }, press = 0;
-    const draw = () => { // the hand turns so that its arm points back at the anchor, like a pointer being dragged
-      const ux = pos.x - anchor.x, uy = pos.y - anchor.y, a = Math.atan2(ux, -uy) * 180 / Math.PI;
-      el.style.transform = 'translate(' + pos.x + 'px,' + pos.y + 'px) rotate(' + a + 'deg) scale(' + (1 - press * .1) + ')';
+  // desktop with a mouse: four seconds after the header shows up, the pointer sticker in the hero background leaves its spot,
+  // swipes the hero phone, glides to the colour chips like a real mouse pointer and picks blue, then floats back home
+  const canPointer = () => !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth >= 1101 && innerWidth > innerHeight && scrollY < innerHeight * .3;
+  async function pointerDemo(ok) {
+    const stick = $('.hero .k4'), phone = $('.hero-phone .phone'), blue = $('#swatches button[data-p="blue"]');
+    if (!stick || !phone || !blue || !phone.offsetParent || getComputedStyle(stick).display === 'none') return;
+    const S = 70, TX = 8 * S / 48, TY = 6 * S / 48; // the sticker is 70px; the arrow's tip sits at (8, 6) of its 48 box
+    const el = document.createElement('div'); el.className = 'ptr'; el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<svg viewBox="0 0 48 48" width="' + S + '" height="' + S + '" style="left:' + (-TX) + 'px;top:' + (-TY) + 'px"><path d="M8 6L40 22L26 26L22 40Z"/></svg>';
+    const ring = document.createElement('i'); ring.className = 'ptr-ring'; document.body.appendChild(ring); document.body.appendChild(el);
+    const home = () => { // where the sticker's tip is right now (it floats and tilts a little)
+      const r = stick.getBoundingClientRect(), a = (parseFloat(getComputedStyle(stick).rotate) || 0) * Math.PI / 180, dx = TX - S / 2, dy = TY - S / 2;
+      return { x: r.left + r.width / 2 + dx * Math.cos(a) - dy * Math.sin(a), y: r.top + r.height / 2 + dx * Math.sin(a) + dy * Math.cos(a), rot: a * 180 / Math.PI };
     };
-    const ease = { out: t => 1 - Math.pow(1 - t, 3), io: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, in: t => t * t * t };
-    const tween = (to, ms, e, bend = 0, step) => new Promise(done => { // a curved move: the middle bulges sideways by `bend`
-      const from = { x: pos.x, y: pos.y }, t0 = performance.now(), nx = -(to.y - from.y), ny = to.x - from.x, n = Math.hypot(nx, ny) || 1;
+    const h0 = home(); let pos = { x: h0.x, y: h0.y }, rot = h0.rot, press = 0;
+    const draw = () => { el.style.transform = 'translate(' + pos.x + 'px,' + pos.y + 'px) rotate(' + rot + 'deg) scale(' + (1 - press * .12) + ')'; };
+    draw(); stick.style.visibility = 'hidden'; el.style.opacity = 1;
+    const ease = { io: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out: t => 1 - Math.pow(1 - t, 3) };
+    const live = () => ok() && scrollY < innerHeight * .6;
+    const tween = (to, ms, e, bend = 0, step, rotTo) => new Promise(done => { // a curved move: the middle bulges sideways by `bend`
+      const from = { x: pos.x, y: pos.y }, r0 = rot, t0 = performance.now(), nx = -(to.y - from.y), ny = to.x - from.x, n = Math.hypot(nx, ny) || 1;
       const tick = now => { const t = Math.min(1, (now - t0) / ms), k = e(t), b = Math.sin(Math.PI * t) * bend;
-        pos = { x: from.x + (to.x - from.x) * k + nx / n * b, y: from.y + (to.y - from.y) * k + ny / n * b }; draw(); if (step) step(t);
-        if (t < 1 && ok()) requestAnimationFrame(tick); else done(); };
+        pos = { x: from.x + (to.x - from.x) * k + nx / n * b, y: from.y + (to.y - from.y) * k + ny / n * b }; if (rotTo != null) rot = r0 + (rotTo - r0) * k; draw(); if (step) step(t);
+        if (t < 1 && live()) requestAnimationFrame(tick); else done(); };
       requestAnimationFrame(tick);
     });
-    const tap = (p) => { ring.style.left = p.x + 'px'; ring.style.top = p.y + 'px'; ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go'); };
-    const pressTo = (v, ms) => tween(pos, ms, t => t, 0, t => { press = v ? t : 1 - t; draw(); });
-    draw(); el.style.opacity = 1;
-    const sy = pr.top + pr.height * .62;
-    await tween({ x: cx + 50, y: sy }, 750, ease.out);                                       // rises under the phone
-    if (ok()) { await pressTo(1, 120); window.dispatchEvent(new CustomEvent('cp:swipe', { detail: { phase: 'move', dx: 0 } }));
-      const x0 = pos.x; await tween({ x: x0 - 120, y: sy - 6 }, 520, ease.io, 0, t => window.dispatchEvent(new CustomEvent('cp:swipe', { detail: { phase: 'move', dx: -120 * ease.io(t) } })));
-      window.dispatchEvent(new CustomEvent('cp:swipe', { detail: { phase: 'end', dx: -120 } })); await pressTo(0, 120); }          // swipes the phone to the next look
-    await wait(150);
-    if (ok()) { const b = blue.getBoundingClientRect(); const target = { x: b.left + b.width / 2, y: b.top + b.height / 2 };
-      const a0 = { x: anchor.x, y: anchor.y }, a1 = { x: target.x + 260, y: innerHeight + 520 }; // the arm swings round to come from below the chips
-      await tween(target, 1150, ease.io, -90, t => { const k = ease.io(t); anchor.x = a0.x + (a1.x - a0.x) * k; anchor.y = a0.y + (a1.y - a0.y) * k; }); // glides to the blue chip like a mouse
-      if (ok()) { await wait(120); await pressTo(1, 110); tap(target); window.dispatchEvent(new CustomEvent('cp:pick', { detail: 'blue' })); await wait(140); await pressTo(0, 120); } }
-    await wait(450);
-    await tween({ x: pos.x + 260, y: innerHeight + 300 }, 700, ease.in);                         // and drops away again
-    el.remove(); ring.remove();
+    const pressTo = (v, ms) => tween({ x: pos.x, y: pos.y }, ms, t => t, 0, t => { press = v ? t : 1 - t; draw(); });
+    const fire = (name, detail) => window.dispatchEvent(new CustomEvent(name, { detail }));
+    const pr = phone.getBoundingClientRect(), sy = pr.top + pr.height * .55, sx = pr.left + pr.width * .72;
+    await wait(250);
+    await tween({ x: sx, y: sy }, 800, ease.io, 50, null, 0);                                // leaves its spot and lands on the phone
+    if (live()) { await wait(150); await pressTo(1, 110); fire('cp:swipe', { phase: 'move', dx: 0 });
+      await tween({ x: sx - 130, y: sy - 4 }, 520, ease.io, 0, t => fire('cp:swipe', { phase: 'move', dx: -130 * ease.io(t) }));
+      fire('cp:swipe', { phase: 'end', dx: -130 }); await pressTo(0, 110); }                       // drags the phone to the next look
+    await wait(200);
+    if (live()) { const b = blue.getBoundingClientRect(), target = { x: b.left + b.width / 2 - 2, y: b.top + b.height / 2 - 2 };
+      await tween(target, 1150, ease.io, -80);                                                // glides to the blue chip like a mouse
+      if (live()) { await wait(150); await pressTo(1, 100); ring.style.left = pos.x + 'px'; ring.style.top = pos.y + 'px'; ring.classList.add('go'); fire('cp:pick', 'blue'); await wait(150); await pressTo(0, 110); } }
+    await wait(600);
+    const saved = (() => { try { return localStorage.getItem('cp-palette'); } catch (e) { return null; } })(); // a returning visitor gets their own colour back
+    if (saved && saved !== 'blue') setTimeout(() => fire('cp:pick', saved), 1200);
+    const h1 = home(); await tween({ x: h1.x, y: h1.y }, 900, ease.io, 60, null, h1.rot); // and floats back home
+    stick.style.visibility = ''; el.remove(); ring.remove();
   }
   // four seconds after the intro the co-pilot sneaks in from the left (the right on phones), points at "Checklist prompt" and ducks back out
   let peeked = false;
@@ -270,7 +267,7 @@
     scr.addEventListener('pointermove', e => { if (x0 == null) return; dx = e.clientX - x0; track.style.transform = 'translateX(' + (-cur * w + dx) + 'px)'; });
     const end = () => { if (x0 == null) return; const moved = dx; x0 = null; track.classList.remove('drag'); scr.classList.remove('drag'); track.style.transform = ''; go(Math.abs(moved) > w * .18 ? cur + (moved < 0 ? 1 : -1) : cur); pause = Date.now() + 6000; };
     scr.addEventListener('pointerup', end); scr.addEventListener('pointercancel', end);
-    // the hand that picks a colour swipes the phone for real
+    // the pointer that picks a colour swipes the phone for real
     addEventListener('cp:swipe', e => { const d = e.detail; pause = Date.now() + 6000; w = scr.offsetWidth;
       if (d.phase === 'move') { track.classList.add('drag'); track.style.transform = 'translateX(' + (-cur * w + d.dx) + 'px)'; }
       else { track.classList.remove('drag'); track.style.transform = ''; go(d.dx < -w * .18 ? cur + 1 : cur); } });
@@ -293,7 +290,7 @@
     const stack = p => { let r = 1; btns.forEach((b, k) => { b.style.setProperty('--k', k); b.style.setProperty('--i', b.dataset.p === p ? 0 : r++); }); };
     const paint = p => { stack(p); root.setAttribute('data-palette', p); setIcon(); btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p ? 'true' : 'false')); if (meta) meta.setAttribute('content', getComputedStyle(root).getPropertyValue('--red').trim()); };
     paint(root.getAttribute('data-palette') || 'red');
-    addEventListener('cp:pick', e => paint(e.detail)); // the demo hand: shown, but not saved as the visitor's choice
+    addEventListener('cp:pick', e => paint(e.detail)); // the demo pointer: shown, but not saved as the visitor's choice
     $('#to-top').addEventListener('click', () => { scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
     // on phones the dots sit in a little pile; the first tap fans them out, the next one picks a colour
     const sw = $('#sw-set'), hover = matchMedia('(hover: hover) and (pointer: fine)'); let fold = 0;
