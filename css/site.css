@@ -344,6 +344,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .play-btn .play { transition: transform .2s; }
 .video-box.playing .play-btn { display: none; }
 .story-box { background-image: url(../img/alex-poster.webp); }
+.section.story { background: var(--ink); }
+.section.story .win { box-shadow: -12px -12px 0 var(--yellow); }
+@media (min-width: 1100px) { .section.story .wrap.wide .win { box-shadow: -14px -14px 0 var(--yellow); } }
 .video-box.no-teaser:not(.playing) video.main[hidden] { display: none; }
 .video-box.missing .play-btn { display: none; }
 @media (prefers-reduced-motion: reduce) { .play-btn .play { animation: none; } }
