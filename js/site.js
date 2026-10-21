@@ -140,7 +140,7 @@
     setTimeout(() => { b.classList.remove('caret-hold'); out.textContent = ''; }, 2000); // the cursor keeps blinking for two seconds
     // the header comes last, dropping in from the top once the rest is in place
     await wait(900); b.classList.remove('intro-first');
-    if (!peeked) { peeked = true; await wait(4000); if (ok()) { if (canPointer()) await pointerDemo(ok); if (ok()) peek(); } }
+    if (!peeked) { peeked = true; await wait(1500); if (ok()) { if (canPointer()) await pointerDemo(ok); if (ok()) peek(); } }
   }
   // desktop with a mouse: four seconds after the header shows up, the pointer sticker in the hero background leaves its spot,
   // swipes the hero phone, glides to the colour chips like a real mouse pointer and picks blue, then floats back home
@@ -256,7 +256,8 @@
 
   // ---------- hero phone: every look, swiped through ----------
   (function () {
-    const track = $('#hero-swipe'), scr = track.parentElement, nameEl = $('#swipe-name'), dotsEl = $('#swipe-dots'), L = window.FRAMES.looks;
+    const track = $('#hero-swipe'), scr = track.parentElement, nameEl = $('#swipe-name'), dotsEl = $('#swipe-dots'), L = window.FRAMES.looks.slice();
+    for (let i = L.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [L[i], L[j]] = [L[j], L[i]]; } // a fresh order on every visit
     let cur = 0, timer = 0, x0 = null, dx = 0, w = 1, pause = 0;
     L.forEach((l, i) => { const im = new Image(); im.src = 'img/frames/' + l.img + '.webp'; im.alt = ''; im.width = 780; im.height = 1688; im.draggable = false; track.appendChild(im); const d = document.createElement('i'); dotsEl.appendChild(d); });
     const go = i => { cur = (i + L.length) % L.length; track.style.transform = 'translateX(' + (-cur * 100) + '%)'; nameEl.textContent = L[cur].name === 'Minimalist' || L[cur].name.startsWith('Air') || L[cur].name === 'Boeing' || L[cur].name === 'Embraer' ? L[cur].name : 'Modern ' + L[cur].name; $$('i', dotsEl).forEach((d, k) => d.classList.toggle('on', k === cur)); };
