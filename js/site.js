@@ -648,41 +648,101 @@
     Cream: ['Modern: Cream & mint', 'Peach cream, dark ink, mint buttons.'],
     Red: ['Modern: Bold red', 'This site. Loud, big and happy.'],
   };
-  // a wheel of looks: spin it (drag, swipe, arrow keys or tap a slice) and the look under the pin lands on the phone
-  const lScreen = $('#looks-screen'), wheel = $('#wheel'), wName = $('#wheel-name'), wKind = $('#wheel-kind'); let look = 7, lHold = 0, angle = 0;
+  // a horizontal drum of looks, like a phone's timer wheel on its side: drag, swipe, flick, scroll, arrow keys or tap a chip, and the look in the slot lands on the phone
+  const lScreen = $('#looks-screen'), wheel = $('#wheel'), row = $('#drum-row'), ticks = $('.drum-ticks', wheel), wName = $('#wheel-name'), wKind = $('#wheel-kind'); let look = 7, lHold = 0;
   const SW = { Minimalist: '#ffffff', Airbus: '#0b1e2d', Boeing: '#151515', Embraer: '#2b3138', Mint: '#7be8a4', Blue: '#2f8bff', Cream: '#fdf0e9', Red: '#ff4a4a' };
-  const N = F.looks.length, step = 360 / N;
-  wheel.style.background = 'conic-gradient(from ' + (-step / 2) + 'deg, ' + F.looks.map((l, i) => SW[l.name] + ' ' + (i * step) + 'deg ' + ((i + 1) * step) + 'deg').join(', ') + ')';
-  F.looks.forEach((l, i) => {
+  const ACC = { Minimalist: '#111111', Airbus: '#3fe07a', Boeing: '#3fe07a', Embraer: '#4fd8ff', Mint: '#ff7a6b', Blue: '#ffe14d', Cream: '#2fc98a', Red: '#ffe14d' };
+  const N = F.looks.length, STEP = 24, rad = STEP * Math.PI / 180;   // degrees between chips round the drum
+  const chips = F.looks.map((l, i) => {
     const im = new Image(); im.src = 'img/frames/' + l.img + '.webp'; im.alt = l.name + ' look of the ChecklistPro home screen'; im.width = 780; im.height = 1688; lScreen.appendChild(im);
-    const lab = document.createElement('button'); lab.type = 'button'; lab.className = 'wheel-lab'; lab.textContent = l.name; lab.style.setProperty('--a', (i * step) + 'deg');
-    lab.style.color = ['Airbus', 'Boeing', 'Embraer'].includes(l.name) ? '#fff' : '#111';
-    lab.addEventListener('click', e => { if (moved) return; spinTo(i); lHold = Date.now() + 9000; }); wheel.appendChild(lab);
+    const c = document.createElement('button'); c.type = 'button'; c.tabIndex = -1; c.className = 'drum-chip' + (['Airbus', 'Boeing', 'Embraer'].includes(l.name) ? ' dark' : '');
+    c.style.setProperty('--c', SW[l.name]); c.style.setProperty('--a', ACC[l.name]);
+    c.innerHTML = '<i aria-hidden="true"><b></b><b></b><b></b></i><span></span>'; c.lastChild.textContent = l.name;
+    c.addEventListener('click', () => { if (moved) return; spinTo(i); lHold = Date.now() + 9000; }); row.appendChild(c);
+    return c;
   });
+  let pos = 7, W = 120, R = 300, anim = 0, drag = null, moved = false, userSpin = false;
+  const wrapD = d => ((d % N) + N + N / 2) % N - N / 2;   // -N/2 .. N/2: how far a chip is from the slot
+  const idxAt = p => ((Math.round(p) % N) + N) % N;
+  function measure() { W = chips[0].offsetWidth * 1.14; R = W / Math.sin(rad); ticks.style.setProperty('--tk', (W / 4) + 'px'); }
+  function render() {
+    chips.forEach((c, i) => {
+      const d = wrapD(i - pos), a = d * STEP;
+      if (Math.abs(a) > 95) { c.style.visibility = 'hidden'; return; }
+      const r = a * Math.PI / 180;
+      c.style.visibility = ''; c.style.opacity = (.2 + .8 * Math.cos(r)).toFixed(3);
+      c.style.transform = 'translate3d(' + (R * Math.sin(r)).toFixed(1) + 'px,0,' + (R * (Math.cos(r) - 1)).toFixed(1) + 'px) rotateY(' + a.toFixed(2) + 'deg)';
+      c.classList.toggle('on', Math.abs(d) < .5);
+    });
+    const x = (-pos * W).toFixed(1) + 'px'; ticks.style.backgroundPosition = x + ' 0, ' + x + ' 100%';
+    const i = idxAt(pos); if (i !== look) { pickLook(i); tick(); }
+  }
+  function tick() {
+    wheel.classList.remove('tick'); void wheel.offsetWidth; wheel.classList.add('tick');
+    if (userSpin && navigator.vibrate) try { navigator.vibrate(4); } catch (e) {}   // a little click on Android, like the real thing
+  }
   function pickLook(i) {
     look = i; $$('img', lScreen).forEach((im, k) => im.classList.toggle('on', k === i));
     const n = NOTES[F.looks[i].name][0].split(': '); wKind.textContent = n.length > 1 ? n[0] : ''; wName.textContent = n[n.length - 1];
     wheel.setAttribute('aria-valuenow', i + 1); wheel.setAttribute('aria-valuetext', NOTES[F.looks[i].name][0]);
   }
-  // the slice under the pin (at the top) is the chosen one
-  const idxAt = a => ((Math.round(-a / step) % N) + N) % N;
-  function spinTo(i, turns) {
-    let target = -i * step; const cur = angle;
-    while (target > cur + 1) target -= 360; while (target < cur - 359) target += 360;   // always spin forward, the short way round
-    if (turns) target -= 360 * turns;
-    angle = target; wheel.style.transition = ''; wheel.style.transform = 'rotate(' + angle + 'deg)'; pickLook(i);
+  function land() {
+    pos = ((Math.round(pos) % N) + N) % N; render(); userSpin = false;
     wheel.parentNode.classList.remove('land'); void wheel.offsetWidth; wheel.parentNode.classList.add('land');
   }
-  let drag = null, moved = false;
-  const ang = e => { const r = wheel.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI; };
-  wheel.addEventListener('pointerdown', e => { drag = { a0: ang(e), start: angle, t: performance.now(), last: angle }; moved = false; wheel.style.transition = 'none'; wheel.setPointerCapture(e.pointerId); lHold = Date.now() + 9000; });
-  wheel.addEventListener('pointermove', e => { if (!drag) return; let d = ang(e) - drag.a0; if (d > 180) d -= 360; if (d < -180) d += 360; if (Math.abs(d) > 3) moved = true; drag.last = angle; angle = drag.start + d; drag.v = (angle - drag.last); wheel.style.transform = 'rotate(' + angle + 'deg)'; const i = idxAt(angle); if (i !== look) pickLook(i); });
-  const release = () => { if (!drag) return; const fling = (drag.v || 0) * 6; drag = null; wheel.style.transition = ''; angle += fling; const i = idxAt(angle); angle = -i * step + Math.round((angle + i * step) / 360) * 360; wheel.style.transform = 'rotate(' + angle + 'deg)'; pickLook(i); wheel.parentNode.classList.remove('land'); void wheel.offsetWidth; wheel.parentNode.classList.add('land'); setTimeout(() => { moved = false; }, 50); };
+  // roll to a position, easing out with a small bounce past the slot
+  function rollTo(target, ms) {
+    cancelAnimationFrame(anim); anim = 0;
+    if (reduce) { pos = target; land(); return; }
+    const from = pos, t0 = performance.now(), back = Math.min(1.2, .5 + Math.abs(target - from) * .15);
+    const ease = t => 1 + (back + 1) * Math.pow(t - 1, 3) + back * Math.pow(t - 1, 2);
+    const go = now => { const t = Math.min(1, (now - t0) / ms); pos = from + (target - from) * ease(t); render(); if (t < 1) anim = requestAnimationFrame(go); else { anim = 0; land(); } };
+    anim = requestAnimationFrame(go);
+  }
+  function spinTo(i) { rollTo(pos + wrapD(i - pos), 520); }
+  wheel.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    cancelAnimationFrame(anim); anim = 0; userSpin = true; lHold = Date.now() + 9000;
+    drag = { id: e.pointerId, x0: e.clientX, p0: pos, pts: [[performance.now(), e.clientX]] }; moved = false;
+  });
+  wheel.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x0;
+    if (!moved && Math.abs(dx) > 6) { moved = true; wheel.classList.add('grab'); try { wheel.setPointerCapture(e.pointerId); } catch (er) {} }
+    if (!moved) return;
+    pos = drag.p0 - dx / W; render();
+    const now = performance.now(); drag.pts.push([now, e.clientX]); while (drag.pts.length > 2 && now - drag.pts[0][0] > 90) drag.pts.shift();
+  });
+  const release = e => {
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    const p = drag.pts, a = p[0], b = p[p.length - 1], dt = Math.max(16, performance.now() - a[0]);
+    const v = moved && performance.now() - b[0] < 80 ? -(b[1] - a[1]) / W / dt : 0;   // chips per ms
+    drag = null; wheel.classList.remove('grab');
+    if (!moved) { if (!anim && pos !== Math.round(pos)) rollTo(Math.round(pos), 260); userSpin = false; return; }
+    let target = Math.round(pos + Math.max(-2 * N, Math.min(2 * N, v * 320)));   // a flick keeps it rolling
+    rollTo(target, Math.min(1500, 380 + Math.abs(target - pos) * 110));
+    setTimeout(() => { moved = false; }, 50);
+  };
   wheel.addEventListener('pointerup', release); wheel.addEventListener('pointercancel', release);
-  wheel.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { spinTo((look + 1) % N); lHold = Date.now() + 9000; e.preventDefault(); } if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { spinTo((look + N - 1) % N); lHold = Date.now() + 9000; e.preventDefault(); } });
-  angle = -7 * step; wheel.style.transform = 'rotate(' + angle + 'deg)'; pickLook(7);
+  // trackpads and mouse wheels roll it too; a vertical wheel only when the page is not already scrolling past
+  let lastScroll = 0, wheelSnap = 0; addEventListener('scroll', () => { lastScroll = Date.now(); }, { passive: true });
+  wheel.addEventListener('wheel', e => {
+    const horiz = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    if (!horiz && Date.now() - lastScroll < 350) return;
+    e.preventDefault(); cancelAnimationFrame(anim); anim = 0; lHold = Date.now() + 9000;
+    const d = (horiz ? e.deltaX : e.deltaY) * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1);
+    pos += Math.max(-1, Math.min(1, d / W)); render();
+    clearTimeout(wheelSnap); wheelSnap = setTimeout(() => rollTo(Math.round(pos), 300), 120);
+  }, { passive: false });
+  wheel.addEventListener('keydown', e => {
+    const k = e.key, to = k === 'ArrowRight' || k === 'ArrowDown' ? look + 1 : k === 'ArrowLeft' || k === 'ArrowUp' ? look - 1 : k === 'Home' ? 0 : k === 'End' ? N - 1 : null;
+    if (to === null) return; e.preventDefault(); lHold = Date.now() + 9000;
+    rollTo(Math.round(pos) + wrapD(to - look), 420);
+  });
+  measure(); pickLook(7); render();
+  addEventListener('resize', () => { measure(); render(); });
   let lVis = false; if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { lVis = e.isIntersecting; }), { threshold: .3 }).observe($('#looks-phone'));
-  setInterval(() => { if (lVis && !reduce && Date.now() > lHold && !drag) spinTo((look + 1) % N); }, 2600);
+  setInterval(() => { if (lVis && !reduce && Date.now() > lHold && !drag && !anim) rollTo(Math.round(pos) + 1, 700); }, 2600);
 
 
   // ---------- button click sound: the same quiet, physical click as the app's Modern design ----------
