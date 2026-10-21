@@ -317,6 +317,17 @@
   }
   function backToTeaser() { vid.pause(); vid.hidden = true; box.classList.remove('playing'); if (teaserOk) { teaser.hidden = false; playTeaser(); } }
   playBtn.addEventListener('click', startMain); teaser.addEventListener('click', startMain);
+  // the ad has a German dub: video/ad-720p-de.mp4 plays when the page is in German (only while VIDEO_SRC is the default)
+  function adLang() {
+    if (window.VIDEO_SRC && window.VIDEO_SRC !== 'video/ad-720p.mp4') return;
+    const l = document.documentElement.lang === 'de' ? 'de' : 'en';
+    if (vid.dataset.lang === l) return; const first = !vid.dataset.lang; vid.dataset.lang = l;
+    if (first && l === 'en') return;
+    const at = vid.currentTime, playing = !vid.paused;
+    $('#ad source').src = l === 'de' ? 'video/ad-720p-de.mp4' : 'video/ad-720p.mp4';
+    vid.load(); if (at) vid.currentTime = at; if (playing) { const p = vid.play(); if (p && p.catch) p.catch(() => {}); }
+  }
+  adLang(); new MutationObserver(adLang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   // ---------- the animated story right under the hero: English or German to match the page ----------
   const sBox = $('#story-box'), sVid = $('#story-vid'), sTeaser = $('#story-teaser');
   // a silent loop of the action scenes plays until someone presses play
