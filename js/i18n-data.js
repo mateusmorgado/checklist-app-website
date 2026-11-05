@@ -272,7 +272,7 @@ window.I18N_DE = {
 "Habits": "Gewohnheiten",
 "This is a": "Das ist eine",
 "Checklist prompt": "Checklisten-Prompt",
-"Build a list once. Run it whenever you need it. The way pilots and surgeons do, now in your pocket.": "Erstelle eine Liste einmal. Starte sie, wann immer du sie brauchst. So wie Piloten und Chirurgen es tun, jetzt in deiner Tasche.",
+"Build a list once. Run it whenever you need it.": "Erstelle eine Liste einmal. Starte sie, wann immer du sie brauchst.",
 "Watch the video": "Video ansehen",
 "Replay": "Nochmal",
 "Check ✓": "Prüfen ✓",
