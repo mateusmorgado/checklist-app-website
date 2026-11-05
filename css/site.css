@@ -1175,3 +1175,15 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
   .looks-grid .flow-phone { padding-bottom: 0; }
   .look-side { position: relative; z-index: 3; margin-top: -110px; }
 }
+
+/* English / Deutsch switch under each video */
+.vlang { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin: 22px auto 0; }
+.vlang[hidden] { display: none; }
+.vlang-k { font: 800 12px var(--display); text-transform: uppercase; letter-spacing: .14em; margin-right: 4px; }
+.section.story .vlang-k { color: var(--white); }
+.vlang button { font: 800 15px var(--display); color: var(--ink); background: var(--white); border: var(--b) solid var(--ink); border-radius: 99px; padding: 8px 18px; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); transition: transform .12s, box-shadow .12s, background .12s; }
+.section.story .vlang button { border-color: var(--white); box-shadow: 3px 3px 0 var(--white); }
+.vlang button:hover { transform: translate(-1px, -1px); }
+.vlang button[aria-pressed="true"] { background: var(--yellow); transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.section.story .vlang button[aria-pressed="true"] { box-shadow: 1px 1px 0 var(--white); }
+.vlang button:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
