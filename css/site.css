@@ -166,7 +166,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .steps button[aria-current="step"] { background: var(--yellow); transform: translateX(-10px); box-shadow: -8px -8px 0 var(--ink); }
 .steps button[aria-current="step"]::before { background: var(--ink); color: var(--yellow); }
 .steps .bar { height: 5px; background: var(--ink); width: 0; position: absolute; }
-.hint-line, .muted-line { font-weight: 600; opacity: .8; }
+.hint-line, .muted-line { font-weight: 600; opacity: .85; }
 
 /* looks */
 .look-notes { margin: 26px 0 30px; padding: 16px 20px; background: var(--white); border: var(--b) solid var(--ink); border-radius: 12px; box-shadow: var(--sh); min-height: 7.5em; }
@@ -718,7 +718,7 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .game-bot { flex: none; width: 110px; height: 110px; background: #1e2d5e; border: var(--b) solid var(--ink); border-radius: 24px; padding: 8px; animation: game-bob 2.4s ease-in-out infinite; }
 @keyframes game-bob { 50% { transform: translateY(-6px) rotate(-4deg); } }
 .game-txt { flex: 1 1 280px; }
-.game-k { margin: 0; font: 800 14px var(--display); text-transform: uppercase; letter-spacing: .08em; color: var(--red-d); }
+.game-k { margin: 0; font: 800 14px var(--display); text-transform: uppercase; letter-spacing: .08em; color: #c42a2a; }
 .game-txt h2 { margin: 2px 0 6px; font: 800 clamp(30px, 4vw, 48px)/1 var(--display); text-transform: uppercase; }
 .game-txt p:last-child { margin: 0; font-size: 17px; line-height: 1.4; }
 .game-play svg { width: 22px; height: 22px; fill: currentColor; }
@@ -750,7 +750,7 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 .pw-card.back-in { transition: none; }
 .pw-card header { display: flex; align-items: center; gap: 14px; }
 .pw-card .pw-ic { grid-row: auto; }
-.pw-card h3.pw-name { margin: 0; font: 800 clamp(24px, 2.4vw, 32px)/1 var(--display); text-transform: uppercase; }
+.pw-card h3.pw-name { margin: 0; overflow-wrap: break-word; hyphens: manual; font: 800 clamp(24px, 2.4vw, 32px)/1 var(--display); text-transform: uppercase; }
 .pw-card .pw-sub { margin: 4px 0 0; font-weight: 600; font-size: 17px; }
 .pw-card .pw-more { display: block; margin: 14px 0 0; font-size: 16.5px; line-height: 1.45; animation: none; }
 .pw-label { margin: 14px 0 0; font: 800 13px var(--display); text-transform: uppercase; letter-spacing: .08em; opacity: .6; }
@@ -765,7 +765,7 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 @keyframes tone-pulse { to { transform: scale(1.06); } }
 .pw-card .pw-time { position: absolute; left: 0; bottom: 0; height: 7px; width: 0; background: var(--ink); }
 .pw-card.run .pw-time { animation: fillbar var(--dur, 9s) linear forwards; }
-.pw-card .pw-next { position: absolute; right: 16px; bottom: 14px; font: 800 13px var(--display); opacity: .55; }
+.pw-card .pw-next { position: absolute; right: 16px; bottom: 14px; font: 800 13px var(--display); opacity: .7; }
 @media (max-width: 1020px) { .pw-deck { margin-right: 36px; } }
 @media (max-width: 640px) { .pw-tab > span:not(.pw-ic) { display: none; } .pw-tab { padding: 4px; } .pw-tabs { justify-content: center; } .pw-card { padding: 16px 16px 24px; } }
 @media (prefers-reduced-motion: reduce) { .pw-card, .pw-card.leaving { transition: none; } .tone-btn.playing { animation: none; } }
@@ -987,8 +987,9 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 
 /* film credits under the video */
 .credits { max-width: 720px; margin: 22px auto 0; display: grid; gap: 6px; font: 500 14px/1.45 var(--body); }
-.credits p { margin: 0; display: flex; gap: 12px; align-items: baseline; }
-.cr-k { flex: none; width: 58px; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .14em; text-align: center; padding: 2px 8px; border: 2px solid currentColor; border-radius: 99px; }
+.credits { grid-template-columns: max-content 1fr; column-gap: 12px; }
+.credits p { display: contents; }
+.cr-k { align-self: baseline; min-width: 58px; font: 800 11px var(--display); text-transform: uppercase; letter-spacing: .14em; text-align: center; padding: 2px 8px; border: 2px solid currentColor; border-radius: 99px; }
 @media (max-width: 520px) { .credits { font-size: 13px; } }
 
 /* < > around the power tabs */
@@ -1142,7 +1143,7 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 .drum-read b { font: 800 clamp(20px, 2.4vw, 28px)/1.05 var(--display); text-transform: uppercase; }
 .drum-wrap.land .drum-read { animation: read-pop .45s cubic-bezier(.3, 1.8, .5, 1); }
 @keyframes read-pop { 40% { transform: scale(1.08) rotate(-1.5deg); } }
-.wheel-hint { margin: 20px 0 0; font: 800 14px var(--display); text-transform: uppercase; letter-spacing: .1em; opacity: .7; }
+.wheel-hint { margin: 20px 0 0; font: 800 14px var(--display); text-transform: uppercase; letter-spacing: .1em; opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .drum.tick .drum-window, .drum-wrap.land .drum-read { animation: none; } }
 #looks { overflow-x: clip; } /* the drum’s far chips must not widen the page */
 
@@ -1189,3 +1190,6 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 .vlang button[aria-pressed="true"]:focus-visible { outline-color: var(--yellow); }
 .win-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 520px) { .vlang button { padding: 5px 9px; } .vlang svg { width: 24px; height: 16px; } .win-bar .win-btns { display: none; } }
+
+/* long German card titles (Aufmerksamkeitston) fit a phone card, breaking at the soft hyphen if they must */
+@media (max-width: 520px) { html[lang="de"] .pw-card h3.pw-name { font-size: 21px; } }
