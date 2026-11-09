@@ -143,11 +143,13 @@
     if (!peeked) { peeked = true; await wait(1500); if (ok()) { if (canPointer()) await pointerDemo(ok); if (ok()) peek(); } }
   }
   // desktop with a mouse: four seconds after the header shows up, the pointer sticker in the hero background leaves its spot,
-  // swipes the hero phone, glides to the colour chips like a real mouse pointer and picks blue, then floats back home
+  // swipes the hero phone, glides to the colour chips like a real mouse pointer and picks the opposite colour
+  // (blue while the site is red, red when the site is already blue), then floats back home
   const canPointer = () => !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth >= 1101 && innerWidth > innerHeight && scrollY < innerHeight * .3;
   async function pointerDemo(ok) {
-    const stick = $('.hero .k4'), phone = $('.hero-phone .phone'), blue = $('#swatches button[data-p="blue"]');
-    if (!stick || !phone || !blue || !phone.offsetParent || getComputedStyle(stick).display === 'none') return;
+    const pick = document.documentElement.getAttribute('data-palette') === 'blue' ? 'red' : 'blue';
+    const stick = $('.hero .k4'), phone = $('.hero-phone .phone'), chip = $('#swatches button[data-p="' + pick + '"]');
+    if (!stick || !phone || !chip || !phone.offsetParent || getComputedStyle(stick).display === 'none') return;
     const S = 70, TX = 8 * S / 48, TY = 6 * S / 48; // the sticker is 70px; the arrow's tip sits at (8, 6) of its 48 box
     const el = document.createElement('div'); el.className = 'ptr'; el.setAttribute('aria-hidden', 'true');
     el.innerHTML = '<svg viewBox="0 0 48 48" width="' + S + '" height="' + S + '" style="left:' + (-TX) + 'px;top:' + (-TY) + 'px"><path d="M8 6L40 22L26 26L22 40Z"/></svg>';
@@ -171,9 +173,9 @@
     const pressTo = (v, ms) => tween({ x: pos.x, y: pos.y }, ms, t => t, 0, t => { press = v ? t : 1 - t; draw(); });
     const fire = (name, detail) => window.dispatchEvent(new CustomEvent(name, { detail }));
     await wait(250);
-    if (live()) { const b = blue.getBoundingClientRect(), target = { x: b.left + b.width / 2 - 2, y: b.top + b.height / 2 - 2 };
-      await tween(target, 1150, ease.io, -80);                                                // glides to the blue chip like a mouse
-      if (live()) { await wait(150); await pressTo(1, 100); ring.style.left = pos.x + 'px'; ring.style.top = pos.y + 'px'; ring.classList.add('go'); fire('cp:pick', 'blue'); await wait(150); await pressTo(0, 110); } }
+    if (live()) { const b = chip.getBoundingClientRect(), target = { x: b.left + b.width / 2 - 2, y: b.top + b.height / 2 - 2 };
+      await tween(target, 1150, ease.io, -80);                                                // glides to the chip like a mouse
+      if (live()) { await wait(150); await pressTo(1, 100); ring.style.left = pos.x + 'px'; ring.style.top = pos.y + 'px'; ring.classList.add('go'); fire('cp:pick', pick); await wait(150); await pressTo(0, 110); } }
     await wait(600);
     const h1 = home(); await tween({ x: h1.x, y: h1.y }, 900, ease.io, 60, null, h1.rot); // and floats back home
     stick.style.visibility = ''; el.remove(); ring.remove();
