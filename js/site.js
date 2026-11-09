@@ -318,7 +318,7 @@
   function backToTeaser() { vid.pause(); vid.hidden = true; box.classList.remove('playing'); if (teaserOk) { teaser.hidden = false; playTeaser(); } }
   playBtn.addEventListener('click', startMain); teaser.addEventListener('click', startMain);
   // the ad has a German dub: video/ad-720p-de.mp4 plays when the page is in German (only while VIDEO_SRC is the default)
-  // each video can also be switched on its own with the English / Deutsch buttons under it; changing the page language resets that
+  // each video can also be switched on its own with the flag tabs in its window bar; changing the page language resets that
   const pageLang = () => document.documentElement.lang === 'de' ? 'de' : 'en', vPick = {};
   const vWant = k => vPick[k] || pageLang();
   function adLang() {
