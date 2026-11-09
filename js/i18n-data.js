@@ -1,6 +1,7 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Video language": "Sprache des Videos",
 "Cream & mint": "Creme & Mint",
 "Mint & coral": "Mint & Koralle",
 "Cockpit": "Cockpit",

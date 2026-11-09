@@ -318,16 +318,19 @@
   function backToTeaser() { vid.pause(); vid.hidden = true; box.classList.remove('playing'); if (teaserOk) { teaser.hidden = false; playTeaser(); } }
   playBtn.addEventListener('click', startMain); teaser.addEventListener('click', startMain);
   // the ad has a German dub: video/ad-720p-de.mp4 plays when the page is in German (only while VIDEO_SRC is the default)
+  // each video can also be switched on its own with the flag tabs in its window bar; changing the page language resets that
+  const pageLang = () => document.documentElement.lang === 'de' ? 'de' : 'en', vPick = {};
+  const vWant = k => vPick[k] || pageLang();
   function adLang() {
     if (window.VIDEO_SRC && window.VIDEO_SRC !== 'video/ad-720p.mp4') return;
-    const l = document.documentElement.lang === 'de' ? 'de' : 'en';
+    const l = vWant('ad');
     if (vid.dataset.lang === l) return; const first = !vid.dataset.lang; vid.dataset.lang = l;
     if (first && l === 'en') return;
     const at = vid.currentTime, playing = !vid.paused;
     $('#ad source').src = l === 'de' ? 'video/ad-720p-de.mp4' : 'video/ad-720p.mp4';
     vid.load(); if (at) vid.currentTime = at; if (playing) { const p = vid.play(); if (p && p.catch) p.catch(() => {}); }
   }
-  adLang(); new MutationObserver(adLang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  adLang();
   // ---------- the animated story right under the hero: English or German to match the page ----------
   const sBox = $('#story-box'), sVid = $('#story-vid'), sTeaser = $('#story-teaser');
   // a silent loop of the action scenes plays until someone presses play
@@ -335,13 +338,20 @@
   if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playStoryTeaser(); else sTeaser.pause(); }), { threshold: .25 }).observe(sBox);
   sTeaser.addEventListener('click', () => startStory());
   function storyLang() {
-    const l = document.documentElement.lang === 'de' ? 'de' : 'en', src = 'video/alex-story-' + l + '.mp4';
+    const l = vWant('story'), src = 'video/alex-story-' + l + '.mp4';
     if (sVid.dataset.lang === l) return; sVid.dataset.lang = l;
     const at = sVid.currentTime, playing = !sVid.paused;
     $('source', sVid).src = src; const tr = $('track', sVid); tr.src = 'video/alex-story-' + l + '.vtt'; tr.srclang = l; tr.label = l === 'de' ? 'Deutsch' : 'English';
     sVid.load(); if (at) sVid.currentTime = at; if (playing) { const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
   }
-  storyLang(); new MutationObserver(storyLang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  storyLang();
+  const vSet = { ad: adLang, story: storyLang };
+  const vMark = () => $$('[data-vlang]').forEach(g => $$('button', g).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.l === vWant(g.dataset.vlang)))));
+  if (window.VIDEO_SRC && window.VIDEO_SRC !== 'video/ad-720p.mp4') $$('[data-vlang="ad"]').forEach(g => { g.hidden = true; });
+  $$('[data-vlang]').forEach(g => $$('button', g).forEach(b => b.addEventListener('click', () => { const k = g.dataset.vlang; vPick[k] = b.dataset.l; vSet[k](); vMark(); })));
+  // a change of the page language makes both videos follow it again
+  new MutationObserver(() => { delete vPick.ad; delete vPick.story; adLang(); storyLang(); vMark(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  vMark();
   function startStory() { vid.pause(); sTeaser.pause(); sTeaser.hidden = true; sVid.hidden = false; sBox.classList.add('playing'); sVid.controls = true; sVid.currentTime = 0; const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
   $('#play-story').addEventListener('click', startStory);
   sVid.addEventListener('play', () => { sBox.classList.add('playing'); sVid.controls = true; vid.pause(); });

@@ -1175,3 +1175,17 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
   .looks-grid .flow-phone { padding-bottom: 0; }
   .look-side { position: relative; z-index: 3; margin-top: -110px; }
 }
+
+/* language tabs (UK and German flag) in the window bar of each video; the flags are drawn, because Windows shows no flag emoji */
+.vlang { flex: none; display: flex; background: var(--white); border: var(--b) solid var(--ink); border-radius: 99px; overflow: hidden; }
+.vlang[hidden] { display: none; }
+.vlang button { display: grid; place-items: center; background: transparent; border: 0; padding: 5px 11px; cursor: pointer; transition: background .15s; }
+.vlang button + button { border-left: var(--b) solid var(--ink); }
+.vlang svg { display: block; width: 27px; height: 18px; border-radius: 4px; box-shadow: 0 0 0 2px var(--ink); opacity: .45; filter: saturate(.6); transition: opacity .15s, filter .15s, transform .15s; }
+.vlang button:hover { background: var(--mint); } .vlang button:hover svg { opacity: 1; filter: none; }
+.vlang button[aria-pressed="true"] { background: var(--ink); }
+.vlang button[aria-pressed="true"] svg { opacity: 1; filter: none; box-shadow: 0 0 0 2px var(--yellow); transform: scale(1.08); }
+.vlang button:focus-visible { outline: 3px solid var(--ink); outline-offset: -6px; }
+.vlang button[aria-pressed="true"]:focus-visible { outline-color: var(--yellow); }
+.win-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 520px) { .vlang button { padding: 5px 9px; } .vlang svg { width: 24px; height: 16px; } .win-bar .win-btns { display: none; } }
