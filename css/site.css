@@ -1197,3 +1197,18 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 /* the install section sits on paper, so the long run of red sections gets a break */
 .section.paper { background: #f6f1e7; border-top: var(--b) solid var(--ink); border-bottom: var(--b) solid var(--ink); }
 .foot-ai { opacity: .75; font-size: .92em; }
+
+/* ---------- "Not just a list." falls onto the phone when it scrolls half out of view ---------- */
+#pro-title.dropped > span { opacity: 0; }
+.drop-layer { position: absolute; left: 0; top: 0; width: 0; height: 0; margin: 0; z-index: 7; pointer-events: none; }
+.drop-layer > span { position: absolute; left: 0; top: 0; display: block; white-space: nowrap; will-change: transform; }
+.drop-layer > .drop-bonk { width: auto; font: 800 22px var(--display); letter-spacing: 0; color: var(--ink); background: var(--yellow); border: 3px solid var(--ink); border-radius: 10px; padding: 2px 10px; translate: -50% -100%; transform: rotate(-8deg) scale(0); animation: bonk .7s cubic-bezier(.3, 1.8, .5, 1) forwards; }
+.pw-phonewrap.thud .phone { animation: thud .45s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes thud { 0% { transform: none; } 25% { transform: translateY(14px) rotate(-1.5deg); } 60% { transform: translateY(-4px) rotate(.6deg); } 100% { transform: none; } }
+/* the co-pilot jumps out of his skin */
+.pilot.scared .bot { animation: scared 1s cubic-bezier(.3, .6, .4, 1); transform-origin: 50% 100%; }
+@keyframes scared { 0% { transform: none; } 10% { transform: translateY(6px) scale(1.08, .88); } 28% { transform: translateY(-80px) scale(.94, 1.1) rotate(-7deg); } 42% { transform: translateY(-86px) rotate(6deg); } 60% { transform: translateY(0) scale(1.1, .88); } 68% { transform: translateX(-4px) rotate(-4deg); } 76% { transform: translateX(4px) rotate(4deg); } 84% { transform: translateX(-3px) rotate(-2deg); } 92% { transform: translateX(2px) rotate(1deg); } 100% { transform: none; } }
+.pilot.scared .b-arm-l { animation: scare-l 1s ease-out; } .pilot.scared .b-arm-r { animation: scare-r 1s ease-out; }
+@keyframes scare-l { 15%, 70% { transform: rotate(155deg); } } @keyframes scare-r { 15%, 70% { transform: rotate(-155deg); } }
+.pilot.scared .b-eyes { animation: eyes-big 1.3s ease-out; } @keyframes eyes-big { 10%, 75% { transform: scale(1.45); } }
+.pilot.scared .b-mouth { animation: gasp 1.3s ease-out; } @keyframes gasp { 10%, 75% { transform: scale(1.3, 3.6); } }
