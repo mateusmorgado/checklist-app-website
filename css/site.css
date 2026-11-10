@@ -1193,3 +1193,7 @@ body.caret-hold .hero .sub-type::after { content: ''; display: inline-block; wid
 
 /* long German card titles (Aufmerksamkeitston) fit a phone card, breaking at the soft hyphen if they must */
 @media (max-width: 520px) { html[lang="de"] .pw-card h3.pw-name { font-size: 21px; } }
+
+/* the install section sits on paper, so the long run of red sections gets a break */
+.section.paper { background: #f6f1e7; border-top: var(--b) solid var(--ink); border-bottom: var(--b) solid var(--ink); }
+.foot-ai { opacity: .75; font-size: .92em; }

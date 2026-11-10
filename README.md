@@ -10,22 +10,31 @@ python3 -m http.server 8000   # then open http://localhost:8000
 
 ## What is on the page
 
-1. **Hero**: "This is not a To-Do app. This is not a habits app. This is a checklist prompt app." Each line slams in, the first two get struck through, the last one lands with confetti. (`Replay` runs it again.)
-2. **Video**: a silent teaser (`video/teaser.mp4`, 6-10 s, no audio, about 1-2 MB) loops in the window until someone presses *Play with sound*, which starts the full ad from the beginning; when it ends the teaser loops again. The teaser is paused off screen and with reduced motion. Without a teaser file the poster is shown. Addresses can be changed in `js/config.js` (`TEASER_SRC`, `VIDEO_SRC`). 
-3. **Lists that ask first**: the Pro part. Two simple lists tick themselves, then a Gym bag shows conditionals: a cursor answers Yes to "Sauna?" and "Squat day?", and towel, flip-flops and squat shoes join the list. Afterwards you can flip each answer yourself.
-4. **See how it flows**: an iPhone mockup that plays four real flows (run, ask, say it, build it) from screenshots of the real app, with a tap indicator.
-5. **Make it yours**: the eight looks of the app (Minimalist, three cockpit styles, four Modern colours).
-6. **Try the real thing**: the live app in a phone, loaded on tap. Set the address in `js/config.js` (`APP_URL`).
-7. **From cockpits to your pocket**: why checklists matter.
-8. **How it was made**: the button in the top bar opens a *work tree* of the whole conversation: ideas, decisions, features, bugs, parked branches and what shipped. Filter it by type. Link straight to it with `#journey`.
+Live at **https://checklist.morgado.tech**; the app itself is at https://app.checklist.morgado.tech.
+
+1. **Hero**: "This is not a To-Do app. This is not a habits app. This is a checklist prompt app." Each line slams in, the first two get struck through, the last one lands with confetti. A pointer then picks a colour set for the page. The phone swipes through the app's eight looks. (`Replay` runs it again.)
+2. **The story**: an animated ad with Alex and the co-pilot (`video/alex-story-en.mp4` / `-de.mp4`, captions in `.vtt`). A silent teaser loops until someone presses *Play with sound*; flag tabs in the window bar switch the language. Sources and render steps are in `video/alex-story/`.
+3. **Not just a list**: four Pro powers (attention tone, research, AI quick list, stored on the device), each played in a phone and read back by the co-pilot. Tap a tone to hear it; the study chips open a book or paper card.
+4. **Lists that ask first**: two simple lists tick themselves, then a Gym bag shows conditionals: a cursor answers Yes to "Sauna?" and "Squat day?", and towel, flip-flops and squat shoes join the list. Afterwards you can flip each answer yourself.
+5. **Why a checklist** and **Inspiration**: the Forte quote and The Checklist Manifesto.
+6. **The film**: the real-life ad (`video/ad-720p.mp4` / `ad-720p-de.mp4`) behind a silent teaser that only loads when it scrolls into view. Addresses can be changed in `js/config.js` (`TEASER_SRC`, `VIDEO_SRC`).
+7. **Make it yours**: spin the drum to see the eight looks of the app (Minimalist, three cockpit styles, four Modern colours). The phone links to the live app.
+8. **Put it on your device**: install steps for iPhone, Android, Windows and Mac.
+9. **Land the plane**: a small 3D landing game (`game/`), loaded only when someone presses Play.
+10. **How it was made**: the button in the top bar opens a *work tree* of the whole conversation: ideas, decisions, features, bugs, parked branches and what shipped, for the app and for this website (with a stop-motion of the site, one screenshot per commit, in `img/evo/`). Filter it by type. Link straight to it with `#journey`.
 
 ## Files
 
 - `index.html`, `css/site.css`
 - `js/site.js`: animations and interactions
 - `js/journey.js`: the work tree (edit the `ROWS` list to add or change entries)
-- `js/frames.js`, `img/frames/*.webp`: screenshots of the app and where the finger taps
-- `js/config.js`: the app's address
+- `js/evo.js`, `img/evo/*.webp`: the website's stop-motion in the work tree
+- `js/frames.js`, `img/frames/*.webp`: screenshots of the app's looks
+- `js/i18n.js`, `js/i18n-data.js`: the German version
+- `js/config.js`: the app's address and the video files
+- `api/report.js`: the Report a bug form
+- `game/`: the landing game
+- `video/`: the videos, captions and the story's sources
 
 ## Report a bug
 
