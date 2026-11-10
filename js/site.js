@@ -140,9 +140,9 @@
     setTimeout(() => { b.classList.remove('caret-hold'); out.textContent = ''; }, 2000); // the cursor keeps blinking for two seconds
     // the header comes last, dropping in from the top once the rest is in place
     await wait(900); b.classList.remove('intro-first');
-    if (!peeked) { peeked = true; await wait(1500); if (ok()) { if (canPointer()) await pointerDemo(ok); if (ok()) peek(); } }
+    if (!peeked) { peeked = true; await wait(800); if (ok()) { if (canPointer()) await pointerDemo(ok); else await wait(700); if (ok()) peek(); } } // the pointer sets off 0.7s sooner, so the colour changes sooner; phones keep the robot's 1.5s
   }
-  // desktop with a mouse: four seconds after the header shows up, the pointer sticker in the hero background leaves its spot,
+  // desktop with a mouse: 0.8 seconds after the header shows up, the pointer sticker in the hero background leaves its spot,
   // swipes the hero phone, glides to the colour chips like a real mouse pointer and picks the opposite colour
   // (blue while the site is red, red when the site is already blue), then floats back home
   const canPointer = () => !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth >= 1101 && innerWidth > innerHeight && scrollY < innerHeight * .3;
