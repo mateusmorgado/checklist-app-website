@@ -310,7 +310,7 @@
   $('#ad source').addEventListener('error', () => { mainOk = false; if (vid.hidden === false) { vid.hidden = true; box.classList.remove('playing'); } box.classList.add('main-missing'); checkMissing(); });
   const wantsMotion = !reduce && !(navigator.connection && navigator.connection.saveData);
   const playTeaser = () => { if (!teaserOk || box.classList.contains('playing') || !wantsMotion) return; const p = teaser.play(); if (p && p.catch) p.catch(() => {}); };
-  if (wantsMotion) { teaser.autoplay = true; playTeaser(); }
+  // the film is far down the page, so its teaser only loads once it scrolls into view (the observer below starts it)
   if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playTeaser(); else teaser.pause(); }), { threshold: .25 }).observe(box);
   function startMain() {
     if (!mainOk) { box.classList.add('missing', 'main-missing'); return; }
@@ -654,7 +654,7 @@
         items.forEach(li => li.classList.remove('on')); bar.style.width = '0'; count.textContent = '0 / 4'; s.classList.remove('done');
         if (reduce) { items.forEach(li => li.classList.add('on')); bar.style.width = '100%'; count.textContent = '4 / 4'; s.classList.add('done'); return; }
         stage.classList.add('tone-on'); notes(true);
-        const name = $('.pw-pt[data-scene="tone"] .pw-name').textContent.trim() + '. Check!';
+        const name = $('.pw-pt[data-scene="tone"] .pw-name').textContent.replace(/\u00ad/g, '').trim() + '. Check!';
         await nap(1300, r); buzz(r, name); await nap(1700, r);
         for (let k = 0; k < items.length; k++) {
           tapOn($('.a-box', items[k])); await nap(320, r);
@@ -760,7 +760,7 @@
       layDeck(i, from); nameNext(); const c = cards[i]; c.style.setProperty('--dur', DUR[key] + 'ms'); void c.offsetWidth; if (!reduce) c.classList.add('run');
       Object.values(scenes).forEach(x => x.classList.toggle('on', x === s)); stage.classList.remove('tone-on'); notes(false); tapEl.classList.remove('go');
       if (pilot.classList.contains('dive')) { pilot.classList.remove('dive'); pilot.classList.add('home'); setTimeout(() => pilot.classList.remove('home'), 700); }
-      gesture('salute'); speak($('.pw-name', c).textContent.trim() + '. Check!');
+      gesture('salute'); speak($('.pw-name', c).textContent.replace(/\u00ad/g, '').trim() + '. Check!');
       try { await SCENES[key](r, s); } catch (e) { return; }
       if (live(r) && visible && !reduce) select((cur + 1) % n);
     }
@@ -1050,7 +1050,8 @@
   const flip = (function () {
     const img = $('#jw-img'), time = $('#jw-time'), fill = $('#jw-fill'), tabs = $$('.jw-tab'), dds = $$('.jw-stats dd'), E = window.EVO || {};
     const order = ['hero', 'page']; let c = 'hero', i = 0, t = 0, alive = false, counted = false;
-    Object.values(E).forEach(list => list.forEach(([f]) => { const im = new Image(); im.src = 'img/evo/' + f; }));
+    // warm the cache only when the work tree opens, not on every page load (about 2 MB of screenshots)
+    let warmed = false; const warm = () => { if (warmed) return; warmed = true; Object.values(E).forEach(list => list.forEach(([f]) => { const im = new Image(); im.src = 'img/evo/' + f; })); };
     const show = () => { const list = E[c], [f, tm] = list[i]; img.src = 'img/evo/' + f; const isColour = !/\d:\d/.test(tm); time.textContent = isColour ? tm : ''; time.hidden = !isColour; fill.style.width = ((i + 1) / list.length * 100) + '%'; };
     function step() {
       if (!alive) return; show(); const list = E[c];
@@ -1060,7 +1061,7 @@
     }
     function pick(k) { c = k; i = 0; tabs.forEach(b => b.setAttribute('aria-pressed', b.dataset.c === k ? 'true' : 'false')); clearTimeout(t); if (reduce) { i = E[c].length - 1; show(); return; } step(); }
     tabs.forEach(b => b.addEventListener('click', () => { alive = true; pick(b.dataset.c); }));
-    return { start() { if (alive) return; alive = true; counted = false; pick('hero'); }, stop() { alive = false; clearTimeout(t); } };
+    return { start() { warm(); if (alive) return; alive = true; counted = false; pick('hero'); }, stop() { alive = false; clearTimeout(t); } };
   })();
   function openJourney(push) {
     if (window.Journey.set === 'web') flip.start(); else film.start();
