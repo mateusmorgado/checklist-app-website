@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChecklistPro: Alex (3D)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Space+Grotesk:wght@400..700&display=swap">
+<style>
+html, body { margin: 0; height: 100%; background: #111; overflow: hidden; display: flex; align-items: center; }
+#play { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; background: rgba(17, 17, 17, .25); border: 0; cursor: pointer; }
+#play[hidden] { display: none; }
+#play span { display: inline-flex; align-items: center; min-height: 64px; padding: 0 28px; background: #ffe14d; border: 3px solid #111; border-radius: 10px; box-shadow: -8px -8px 0 #111; font: 800 24px 'Bricolage Grotesque', system-ui, sans-serif; color: #111; }
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body>
+<button id="play" type="button"><span>▶ Play with sound</span></button>
+<audio id="vo-en" src="../alex-story/mix-en.m4a" preload="auto"></audio>
+<audio id="vo-de" src="../alex-story/mix-de.m4a" preload="auto"></audio>
+<script src="../alex-story/data.js"></script>
+<script type="module" src="film.js"></script>
+</body>
+</html>

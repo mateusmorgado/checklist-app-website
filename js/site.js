@@ -140,9 +140,9 @@
     setTimeout(() => { b.classList.remove('caret-hold'); out.textContent = ''; }, 2000); // the cursor keeps blinking for two seconds
     // the header comes last, dropping in from the top once the rest is in place
     await wait(900); b.classList.remove('intro-first');
-    if (!peeked) { peeked = true; await wait(1500); if (ok()) { if (canPointer()) await pointerDemo(ok); if (ok()) peek(); } }
+    if (!peeked) { peeked = true; await wait(800); if (ok()) { if (canPointer()) await pointerDemo(ok); else await wait(700); if (ok()) peek(); } } // the pointer sets off 0.7s sooner, so the colour changes sooner; phones keep the robot's 1.5s
   }
-  // desktop with a mouse: four seconds after the header shows up, the pointer sticker in the hero background leaves its spot,
+  // desktop with a mouse: 0.8 seconds after the header shows up, the pointer sticker in the hero background leaves its spot,
   // swipes the hero phone, glides to the colour chips like a real mouse pointer and picks the opposite colour
   // (blue while the site is red, red when the site is already blue), then floats back home
   const canPointer = () => !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches && innerWidth >= 1101 && innerWidth > innerHeight && scrollY < innerHeight * .3;
@@ -774,6 +774,69 @@
     // start when the stage comes into view, pause when it leaves
     const onView = v => { visible = v; if (v) select(cur); else { run++; notes(false); cards.forEach(p => p.classList.remove('run')); stage.classList.remove('tone-on'); } };
     if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting !== visible) onView(e.isIntersecting); }), { threshold: .35 }).observe(stage); else onView(true);
+
+    // "Not just a list." falls off its line once half of it has scrolled out of view: the words drop onto the phone, bounce off to the left and scare the co-pilot
+    (function () {
+      const sec = $('#pro'), title = $('#pro-title'); if (!sec || !title || reduce) return;
+      const words = $$(':scope > span', title), G = 2600; // gravity in px/s²
+      let gone = false, lastY = scrollY, layer = null;
+      function bonk(x, y) {
+        const b = document.createElement('span'); b.className = 'drop-bonk'; b.textContent = de() ? 'RUMMS!' : 'THUD!';
+        b.style.left = x + 'px'; b.style.top = y + 'px'; layer.appendChild(b); setTimeout(() => b.remove(), 800);
+      }
+      function scare() {
+        wrap.classList.remove('thud'); void wrap.offsetWidth; wrap.classList.add('thud'); setTimeout(() => wrap.classList.remove('thud'), 500);
+        if (pilot.classList.contains('dive')) return; // he is inside the phone right now
+        gesture('scared'); speak(de() ? 'Huch!' : 'Eek!');
+      }
+      function fall() {
+        gone = true; const sr = sec.getBoundingClientRect(), ph = $('#pw-phone').getBoundingClientRect();
+        const pl = ph.left - sr.left, pr = ph.right - sr.left, pt = ph.top - sr.top, fs = getComputedStyle(title).fontSize;
+        if (!layer) { layer = document.createElement('div'); layer.className = 'mega drop-layer'; layer.setAttribute('aria-hidden', 'true'); sec.appendChild(layer); }
+        let scared = false;
+        const bodies = words.map((s, i) => {
+          const r = s.getBoundingClientRect(), c = s.cloneNode(true); c.style.fontSize = fs; c.style.width = r.width + 'px'; layer.appendChild(c);
+          const w = r.width, h = r.height, x = r.left - sr.left + w / 2, y = r.top - sr.top + h / 2;
+          const to = Math.min(Math.max(x, pl + 30), pr - 30), t = Math.sqrt(Math.max(2 * (pt - y - h / 2), 1) / G);
+          return { c, w, h, x, y, vx: (to - x) / t, vy: 0, a: 0, va: (i ? 14 : -10), hits: 0, wait: i * .2, last: null };
+        });
+        title.classList.add('dropped');
+        let t0 = null;
+        const step = now => {
+          if (t0 == null) t0 = now; const T = (now - t0) / 1000; let alive = false;
+          bodies.forEach(b => {
+            if (!b.c.isConnected) return;
+            const dt = b.last == null ? 0 : Math.min(.034, (now - b.last) / 1000); b.last = now;
+            if (T < b.wait) { b.c.style.transform = 'translate(' + (b.x - b.w / 2) + 'px,' + (b.y - b.h / 2) + 'px)'; alive = true; return; }
+            b.vy += G * dt; b.x += b.vx * dt; b.y += b.vy * dt; b.a += b.va * dt;
+            // the top edge of the phone: the first hit throws the word up and to the left, a second one only rattles it
+            const over = b.hits ? b.x > pl && b.x < pr : b.x > pl - b.w * .35 && b.x < pr + b.w * .35;
+            if (b.vy > 0 && b.hits < 2 && over && b.y + b.h / 2 >= pt) {
+              b.y = pt - b.h / 2;
+              if (!b.hits) { bonk(b.x, pt - 6); if (!scared) { scared = true; scare(); } b.vy *= -.4; b.vx = -(420 + Math.random() * 140); b.va = -(260 + Math.random() * 160); }
+              else b.vy *= -.25;
+              b.hits++;
+            }
+            if (b.x + b.w / 2 < -60 || b.y - b.h > pt + innerHeight || T - b.wait > 3) { b.c.remove(); return; }
+            alive = true;
+            b.c.style.transform = 'translate(' + (b.x - b.w / 2) + 'px,' + (b.y - b.h / 2) + 'px) rotate(' + b.a + 'deg)';
+            b.c.style.opacity = T - b.wait > 2.4 ? Math.max(0, 1 - (T - b.wait - 2.4) / .6) : '';
+          });
+          if (alive) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+      // scrolling back up: the words drop back into their line
+      function back() {
+        gone = false; title.classList.remove('dropped');
+        words.forEach((s, i) => s.animate([{ transform: 'translateY(-160%) rotate(' + (i ? 6 : -6) + 'deg)', opacity: 0, easing: 'cubic-bezier(.5, 0, .9, .5)' }, { offset: .55, transform: 'none', opacity: 1, easing: 'ease-out' }, { offset: .75, transform: 'translateY(-14%)', easing: 'ease-in' }, { transform: 'none' }], { duration: 750, delay: i * 110, fill: 'backwards' }));
+      }
+      addEventListener('scroll', () => {
+        const y = scrollY, down = y > lastY; lastY = y; const r = title.getBoundingClientRect();
+        if (!gone && down && r.top + r.height / 2 < 0 && r.bottom > 0) fall();
+        else if (gone && !down && r.bottom > -20) back();
+      }, { passive: true });
+    })();
   })();
 
   // ---------- looks ----------
