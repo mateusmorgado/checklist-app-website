@@ -341,14 +341,22 @@
   const playStoryTeaser = () => { if (sBox.classList.contains('playing') || !wantsMotion) return; const p = sTeaser.play(); if (p && p.catch) p.catch(() => {}); };
   if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playStoryTeaser(); else { sTeaser.pause(); pauseOffscreen(sVid); } }), { threshold: .25 }).observe(sBox);
   sTeaser.addEventListener('click', () => startStory());
+  let capsWanted = false, capsSettled = false; // subtitles, see below
   function storyLang() {
     const l = vWant('story'), src = 'video/alex-story-' + l + '.mp4';
     if (sVid.dataset.lang === l) return; sVid.dataset.lang = l;
     const at = sVid.currentTime, playing = !sVid.paused;
     $('source', sVid).src = src; const tr = $('track', sVid); tr.src = 'video/alex-story-' + l + '.vtt'; tr.srclang = l; tr.label = l === 'de' ? 'Deutsch' : 'English';
-    sVid.load(); if (at) sVid.currentTime = at; if (playing) { const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
+    capsSettled = false; sVid.load(); if (at) sVid.currentTime = at; if (playing) { const p = sVid.play(); if (p && p.catch) p.catch(() => {}); }
   }
   storyLang();
+  // subtitles stay off unless someone turns them on in the player: some browsers (Safari when the audio isn't in the
+  // device's language, or with captions on in the system settings) switch them on by themselves when the film loads
+  const capsApply = () => { for (const t of sVid.textTracks) t.mode = capsWanted ? 'showing' : 'disabled'; };
+  sVid.addEventListener('loadedmetadata', () => { capsSettled = false; capsApply(); });
+  sVid.addEventListener('playing', () => { if (capsSettled) return; capsApply(); setTimeout(() => { capsSettled = true; }, 300); });
+  sVid.textTracks.addEventListener('change', () => { if (capsSettled) capsWanted = [...sVid.textTracks].some(t => t.mode === 'showing'); });
+  capsApply();
   const vSet = { ad: adLang, story: storyLang };
   const vMark = () => $$('[data-vlang]').forEach(g => $$('button', g).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.l === vWant(g.dataset.vlang)))));
   if (window.VIDEO_SRC && window.VIDEO_SRC !== 'video/ad-720p.mp4') $$('[data-vlang="ad"]').forEach(g => { g.hidden = true; });
