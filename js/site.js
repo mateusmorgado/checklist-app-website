@@ -309,9 +309,11 @@
   $('#teaser source').addEventListener('error', () => { teaserOk = false; teaser.hidden = true; box.classList.add('no-teaser'); checkMissing(); });
   $('#ad source').addEventListener('error', () => { mainOk = false; if (vid.hidden === false) { vid.hidden = true; box.classList.remove('playing'); } box.classList.add('main-missing'); checkMissing(); });
   const wantsMotion = !reduce && !(navigator.connection && navigator.connection.saveData);
+  // a film that is playing pauses once most of it has scrolled off screen (not while it is fullscreen or picture-in-picture)
+  const pauseOffscreen = v => { if (v.paused || document.fullscreenElement || document.webkitFullscreenElement || v.webkitDisplayingFullscreen || document.pictureInPictureElement === v) return; v.pause(); };
   const playTeaser = () => { if (!teaserOk || box.classList.contains('playing') || !wantsMotion) return; const p = teaser.play(); if (p && p.catch) p.catch(() => {}); };
   // the film is far down the page, so its teaser only loads once it scrolls into view (the observer below starts it)
-  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playTeaser(); else teaser.pause(); }), { threshold: .25 }).observe(box);
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playTeaser(); else { teaser.pause(); pauseOffscreen(vid); } }), { threshold: .25 }).observe(box);
   function startMain() {
     if (!mainOk) { box.classList.add('missing', 'main-missing'); return; }
     teaser.pause(); teaser.hidden = true; vid.hidden = false; box.classList.add('playing');
@@ -337,7 +339,7 @@
   const sBox = $('#story-box'), sVid = $('#story-vid'), sTeaser = $('#story-teaser');
   // a silent loop of the action scenes plays until someone presses play
   const playStoryTeaser = () => { if (sBox.classList.contains('playing') || !wantsMotion) return; const p = sTeaser.play(); if (p && p.catch) p.catch(() => {}); };
-  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playStoryTeaser(); else sTeaser.pause(); }), { threshold: .25 }).observe(sBox);
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) playStoryTeaser(); else { sTeaser.pause(); pauseOffscreen(sVid); } }), { threshold: .25 }).observe(sBox);
   sTeaser.addEventListener('click', () => startStory());
   function storyLang() {
     const l = vWant('story'), src = 'video/alex-story-' + l + '.mp4';
