@@ -140,7 +140,26 @@
     setTimeout(() => { b.classList.remove('caret-hold'); out.textContent = ''; }, 2000); // the cursor keeps blinking for two seconds
     // the header comes last, dropping in from the top once the rest is in place
     await wait(900); b.classList.remove('intro-first');
-    if (!peeked) { peeked = true; await wait(800); if (ok()) { if (canPointer()) await pointerDemo(ok); else await wait(700); if (ok()) peek(); } } // the pointer sets off 0.7s sooner, so the colour changes sooner; phones keep the robot's 1.5s
+    await wait(450); if (!ok()) return; await showPhone(); // the phone comes last, once the header is in
+    if (!peeked) { peeked = true; await wait(500); if (ok()) { if (canPointer()) await pointerDemo(ok); else await wait(700); if (ok()) peek(); } } // the pointer sets off 0.7s sooner, so the colour changes sooner; phones keep the robot's 1.5s
+  }
+  // the hero phone stays out of sight until everything else in the hero is in, then slides in from the right.
+  // On small screens it sits below the fold, so it waits until it is scrolled into view.
+  let phoneShown = false;
+  function showPhone() {
+    const hp = $('#hero-phone'), b = document.body;
+    if (phoneShown || !b.classList.contains('phone-wait')) { phoneShown = true; b.classList.remove('phone-wait'); return Promise.resolve(); }
+    phoneShown = true;
+    return new Promise(done => {
+      const go = () => {
+        removeEventListener('scroll', check); removeEventListener('resize', check);
+        b.classList.remove('phone-wait'); if (!hp.offsetParent) return done(); hp.classList.add('slide-in');
+        hp.addEventListener('animationend', () => { hp.classList.remove('slide-in'); done(); }, { once: true });
+      };
+      // the hidden phone is pushed off to the right, so only its height on screen counts
+      const check = () => { const r = hp.getBoundingClientRect(); if (!hp.offsetParent || (r.top < innerHeight * .85 && r.bottom > 0)) go(); };
+      check(); if (b.classList.contains('phone-wait')) { addEventListener('scroll', check, { passive: true }); addEventListener('resize', check); done(); }
+    });
   }
   // desktop with a mouse: 0.8 seconds after the header shows up, the pointer sticker in the hero background leaves its spot,
   // swipes the hero phone, glides to the colour chips like a real mouse pointer and picks the opposite colour
@@ -206,7 +225,7 @@
   async function intro() {
     const run = ++introRun; const ok = () => run === introRun;
     // the text, buttons, arrow and colour chips wait until the headline has landed
-    document.body.classList.remove('typing', 'caret-hold'); document.body.classList.add('intro'); document.documentElement.classList.remove('booting'); if (run === 1) document.body.classList.add('intro-first');
+    document.body.classList.remove('typing', 'caret-hold'); document.body.classList.add('intro'); document.documentElement.classList.remove('booting'); if (run === 1) { document.body.classList.add('intro-first'); if (!reduce) document.body.classList.add('phone-wait'); }
     unpark(); lines.forEach(l => { l.classList.remove('show', 'struck', 'fell', 'gone', 'hit', 'broke'); l.style.height = ''; }); $$('.hero .sub, .hero .cta-row').forEach(e => e.classList.remove('in'));
     if (reduce) { lines.forEach(l => l.classList.add('show', 'struck')); lines[2].classList.remove('struck'); if (canPark()) park(); else lines.slice(0, 2).forEach(l => l.classList.add('gone')); ($$('.hero .sub, .hero .cta-row').forEach(e => e.classList.add('in')), document.body.classList.remove('intro', 'intro-first')); return; }
     centerLines(true);
