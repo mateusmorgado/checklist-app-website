@@ -93,6 +93,7 @@ function render(t) {
   }
   if (sc === 2 || sc === 7) { // ---- 3: the front door (and the happy exit in the montage)
     const swing = shut => { const a = (1 - shut) * 84 * DEG; S.leaves[0].rotation.y = a; S.leaves[1].rotation.y = -a; };
+    S.winOpen.visible = sc === 2; S.winShut.visible = sc !== 2; // Alex never forgets the window once he has the app
     S.curtain.rotation.set(-(.45 + Math.sin(t * 6) * .3), 0, Math.sin(t * 6 + 1) * .12);
     if (sc === 2) {
       swing(t < 7.15 ? .12 : Math.min(1.04, back(p(t, 7.15, 7.3))));

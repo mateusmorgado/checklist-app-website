@@ -128,16 +128,17 @@ export function buildDoor() {
   });
   add(scene, box(3.8, .32, .6), M('#b8b0a2', { roughness: .9 }), [1.5, .16, Z + .3]); add(scene, box(4.4, .16, 1.1), M('#a9a091', { roughness: .9 }), [1.5, .08, Z + .55]);
   // windows: one upstairs is open, its curtain flapping
-  const win = (x, y, w, h, open) => {
+  const win = (x, y, w, h, open) => { const twin = open === 'twin'; if (twin) open = false;
     const g = grp(scene, [x, y, Z]); add(g, box(w + .16, h + .16, .1), frame, [0, 0, .02]); add(g, box(w + .3, .13, .28), trim, [0, -h / 2 - .12, .1]);
-    if (!open) { add(g, box(w, h, .04), glass, [0, 0, .06]); add(g, box(.05, h, .06), frame, [0, 0, .08]); add(g, box(w, .05, .06), frame, [0, 0, .08]); return null; }
+    if (!open) { add(g, box(w, h, .04), glass, [0, 0, .06]); add(g, box(.05, h, .06), frame, [0, 0, .08]); add(g, box(w, .05, .06), frame, [0, 0, .08]); return twin ? g : null; }
     add(g, box(w, h, .04), flat('#2a1d18'), [0, 0, .06]);
     const sash = grp(g, [w / 2, 0, .1]); sash.rotation.y = -1.15; add(sash, box(w * .5, h, .05), frame, [w * .25, 0, 0]); add(sash, box(w * .5 - .12, h - .12, .06), glass, [w * .25, 0, 0]);
     const cur = grp(g, [-w * .1, h / 2, .12]); add(cur, rbox(w * .75, h * .95, .05, .02, 2), fabric('#ffb5c0', WEAVE, 6), [0, -h * .47, 0]); return cur;
   };
-  let curtain = null; [-4.18, -1.92, 3.15, 5.12].forEach((x, i) => { const c = win(x, 4.35, 1.41, 1.5, i === 2); if (c) curtain = c; }); win(-4.18, 1.82, 1.41, 1.69); win(5.12, 1.82, 1.41, 1.69);
+  // the open one also gets a shut twin: open when he rushes out (scene 3), shut on the happy exit (montage)
+  let curtain = null, winOpen = null, winShut = null; [-4.18, -1.92, 3.15, 5.12].forEach((x, i) => { const c = win(x, 4.35, 1.41, 1.5, i === 2); if (c) { curtain = c; winOpen = c.parent; winShut = win(x, 4.35, 1.41, 1.5, 'twin'); winShut.visible = false; } }); win(-4.18, 1.82, 1.41, 1.69); win(5.12, 1.82, 1.41, 1.69);
   pot(scene, [-4.4, 0, -1.5], 1.2, 1); pot(scene, [4.65, 0, -1.5], 1.2, 0);
-  return { scene, leaves, curtain };
+  return { scene, leaves, curtain, winOpen, winShut };
 }
 
 // ---------- 4: airport check-in ----------
