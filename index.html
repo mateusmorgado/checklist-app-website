@@ -9,7 +9,7 @@
 <script>
 /* Colour set and language are applied before the first paint, so there is no flash. ?palette=blue and ?lang=de also work. */
 (function () {
-  var P = ['red', 'blue', 'mint', 'cream'], L = ['en', 'de'], q = {}, d = document.documentElement;
+  var P = ['red', 'blue', 'cream'], L = ['en', 'de'], q = {}, d = document.documentElement;
   try { var u = new URLSearchParams(location.search); q.palette = u.get('palette'); q.lang = u.get('lang'); } catch (e) {}
   var pal = q.palette, lang = q.lang;
   try { pal = pal || localStorage.getItem('cp-palette'); lang = lang || localStorage.getItem('cp-lang'); } catch (e) {}
@@ -49,7 +49,6 @@
   <div class="sw-set" id="sw-set" role="group" aria-label="Colours">
     <button type="button" data-p="red" style="--sw:#ff4a4a" aria-label="Bold red" title="Bold red" aria-pressed="true"></button>
     <button type="button" data-p="blue" style="--sw:#2f8bff" aria-label="Electric blue" title="Electric blue" aria-pressed="false"></button>
-    <button type="button" data-p="mint" style="--sw:#7be8a4" aria-label="Mint and coral" title="Mint and coral" aria-pressed="false"></button>
     <button type="button" data-p="cream" style="--sw:#fdf0e9" aria-label="Cream and mint" title="Cream and mint" aria-pressed="false"></button>
   </div>
   <button type="button" class="to-top" id="to-top" aria-label="Back to the top" title="Back to the top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5"/></svg></button>
@@ -131,6 +130,59 @@
           <span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><b>Play with sound</b>
         </button>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- SAVED LISTS: the core idea. Make a list once, it stays saved, pick it whenever you need it. Alex dresses for each one. -->
+<section class="section lists" id="lists" aria-labelledby="lists-title">
+  <div class="wrap">
+    <div class="ls-grid">
+    <div class="ls-copy">
+      <h2 id="lists-title" class="mega reveal"><span>Save it once.</span> <span class="hl">Pick it anytime.</span></h2>
+      <p class="lead reveal">Your lists stay saved in the app. The gym, a holiday, leaving the apartment, even a visit from your mother-in-law: pick the one you need, right when you need it.</p>
+      <ol class="ls-steps reveal">
+        <li><b>1</b><span>Make a list once.</span></li>
+        <li><b>2</b><span>It stays saved in the app.</span></li>
+        <li><b>3</b><span>Pick it whenever you need it. Again and again.</span></li>
+      </ol>
+    </div>
+    <div class="ls-stage" id="ls-stage">
+      <div class="ls-phone-wrap reveal">
+        <div class="phone" id="ls-phone" style="--pw:min(300px, 60vw)">
+          <div class="screen pw-screen ls-screen" id="ls-screen" data-no-i18n data-view="home">
+            <div class="ls-p ls-home">
+              <span class="ai-logo"><i></i>Checklist<b>Pro</b></span>
+              <p class="ls-hi" id="ls-hi"></p>
+              <p class="ls-h" id="ls-h">My lists</p>
+              <ul class="ls-more" id="ls-more" aria-hidden="true"></ul>
+              <ul class="ls-rows" id="ls-rows"></ul>
+            </div>
+            <div class="ls-p ls-run" aria-live="polite">
+              <h4 class="a-title"><span id="ls-title"></span></h4>
+              <div class="a-prog-row"><span class="a-prog"><i class="a-bar" id="ls-bar"></i></span><b class="a-count" id="ls-count"></b></div>
+              <p class="ls-saved" id="ls-saved"></p>
+              <span class="ls-big" id="ls-big"></span>
+              <ul class="a-items" id="ls-items"></ul>
+              <div class="a-btns"><button type="button" class="a-btn" id="ls-back"></button></div>
+            </div>
+            <i class="pw-tap" id="ls-tap"></i>
+          </div>
+        </div>
+      </div>
+      <div class="ls-alex reveal" aria-hidden="true">
+        <div class="ls-bubble" id="ls-bubble" data-no-i18n><small>Alex</small><span id="ls-say"></span><i class="caret"></i></div>
+        <div class="ls-fig" id="ls-fig">
+          <i class="ls-puff" id="ls-puff"></i>
+          <img src="img/lists/alex-idle.webp" data-k="idle" class="on" alt="" width="720" height="880" loading="lazy" decoding="async">
+          <img src="img/lists/alex-gym.webp" data-k="gym" alt="" width="720" height="880" loading="lazy" decoding="async">
+          <img src="img/lists/alex-holiday.webp" data-k="holiday" alt="" width="720" height="880" loading="lazy" decoding="async">
+          <img src="img/lists/alex-leave.webp" data-k="leave" alt="" width="720" height="880" loading="lazy" decoding="async">
+          <img src="img/lists/alex-mil.webp" data-k="mil" alt="" width="720" height="880" loading="lazy" decoding="async">
+          <img src="img/lists/alex-mil-ok.webp" data-k="mil-ok" alt="" width="720" height="880" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
     </div>
   </div>
 </section>
@@ -605,5 +657,6 @@
 <script src="js/i18n-data.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/site.js"></script>
+<script src="js/lists.js"></script>
 </body>
 </html>

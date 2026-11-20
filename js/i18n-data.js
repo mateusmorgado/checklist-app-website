@@ -1,6 +1,12 @@
 // German translation. The English text on the page is the key; the swap happens in the browser, for text nodes and a few attributes.
 // Add a line here when you add English text. User quotes in the work tree stay in the original English.
 window.I18N_DE = {
+"Save it once.": "Einmal anlegen.",
+"Pick it anytime.": "Immer parat.",
+"Your lists stay saved in the app. The gym, a holiday, leaving the apartment, even a visit from your mother-in-law: pick the one you need, right when you need it.": "Deine Listen bleiben in der App gespeichert. Gym, Urlaub, Wohnung verlassen, sogar der Besuch der Schwiegermutter: Wähl die, die du gerade brauchst.",
+"Make a list once.": "Leg eine Liste einmal an.",
+"It stays saved in the app.": "Sie bleibt in der App gespeichert.",
+"Pick it whenever you need it. Again and again.": "Wähl sie, wann immer du sie brauchst. Immer wieder.",
 "Video language": "Sprache des Videos",
 "Cream & mint": "Creme & Mint",
 "Mint & coral": "Mint & Koralle",
