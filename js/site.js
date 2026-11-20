@@ -804,7 +804,7 @@
     const onView = v => { visible = v; if (v) select(cur); else { run++; notes(false); cards.forEach(p => p.classList.remove('run')); stage.classList.remove('tone-on'); } };
     if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting !== visible) onView(e.isIntersecting); }), { threshold: .35 }).observe(stage); else onView(true);
 
-    // "Not just a list." falls off its line once half of it has scrolled out of view: the words drop onto the phone, bounce off to the left and scare the co-pilot
+    // "Not just a list." falls off its line once it reaches the top of the screen: the words drop onto the phone, bounce off to the left and scare the co-pilot
     (function () {
       const sec = $('#pro'), title = $('#pro-title'); if (!sec || !title || reduce) return;
       const words = $$(':scope > span', title), G = 2600; // gravity in px/s²
@@ -862,8 +862,9 @@
       }
       addEventListener('scroll', () => {
         const y = scrollY, down = y > lastY; lastY = y; const r = title.getBoundingClientRect();
-        if (!gone && down && r.top + r.height / 2 < 0 && r.bottom > 0) fall();
-        else if (gone && !down && r.bottom > -20) back();
+        // falls as soon as the headline reaches the top of the screen, while the phone below it is in view
+        if (!gone && down && r.top < innerHeight * .12 && r.bottom > 0) fall();
+        else if (gone && !down && r.top > innerHeight * .3) back();
       }, { passive: true });
     })();
   })();
