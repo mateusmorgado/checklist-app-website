@@ -17,6 +17,7 @@ window.I18N_DE = {
 "Pilots do it.": "Piloten machen’s.",
 "Doctors do it.": "Ärzte machen’s.",
 "Your turn.": "Du bist dran.",
+"Checklist your life.": "Checkliste dein Leben.",
 "A two-minute checklist nearly halved deaths after surgery. The same idea, now for your day.": "Eine Zwei-Minuten-Checkliste hat die Todesfälle nach Operationen fast halbiert. Dieselbe Idee, jetzt für deinen Alltag.",
 "Previous power": "Vorherige Funktion",
 "Next power": "Nächste Funktion",

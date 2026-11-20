@@ -1120,3 +1120,15 @@
   let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (ov.classList.contains('open')) window.Journey.draw(false); }, 150); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (ov.classList.contains('open')) window.Journey.draw(false); });
 })();
+
+// Film headline: "Your turn." flips to "Checklist your life." once it is on screen.
+(function () {
+  const h = document.getElementById('video-title');
+  if (!h || !h.querySelector('.ft') || !('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) { if (h) h.classList.add('flipped'); return; }
+  const io = new IntersectionObserver(es => {
+    if (!es.some(e => e.isIntersecting)) return;
+    io.disconnect();
+    setTimeout(() => { h.classList.add('flipping'); setTimeout(() => { h.classList.add('flipped'); h.classList.remove('flipping'); }, 200); }, 1700);
+  }, { threshold: .6 });
+  io.observe(h);
+})();
