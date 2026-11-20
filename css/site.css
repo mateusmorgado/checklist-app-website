@@ -986,6 +986,8 @@ body:not(.at-top) .hero-down { opacity: 0; pointer-events: none; }
 }
 
 /* film credits under the video */
+.film-lead { max-width: 40ch; margin: 0 auto clamp(30px, 3.4vw, 48px); text-align: center; text-wrap: balance; }
+.film-lead .hl { display: table; margin: .5em auto 0; transform: rotate(-1deg); }
 .credits { max-width: 720px; margin: 22px auto 0; display: grid; gap: 6px; font: 500 14px/1.45 var(--body); }
 .credits { grid-template-columns: max-content 1fr; column-gap: 12px; }
 .credits p { display: contents; }
