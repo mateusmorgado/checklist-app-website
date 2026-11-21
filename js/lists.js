@@ -94,7 +94,7 @@
     const sz = W * (kind === 'pizza' ? .5 : .4); el.style.width = el.style.height = sz + 'px';
     let from; if (li) { const r = li.getBoundingClientRect(); from = [r.left + r.width * .3 - B.left, r.top + r.height / 2 - B.top]; } else from = [-W * .4, H * .4];
     const dir = from[0] < head[0] ? 1 : -1; let pts, hit = 0, dur = 1150;
-    if (kind === 'wallet') { // falls from above onto his head
+    if (kind === 'wallet' || kind === 'headphones') { // falls from above onto his head
       pts = [...curve([head[0] + W * .05, -H * .9], [head[0], -H * .3], head, 8), ...curve(head, [head[0] - dir * W * .3, head[1] - H * .2], [head[0] - dir * W * .42, H * .9], 8).slice(1)]; hit = 8; dur = 1300;
     } else if (kind === 'pizza') { // the boxes sail over him and away
       pts = curve(from, [head[0], -H * .55], [head[0] + dir * W * 1.4, -H * .05], 16); dur = 1500;
