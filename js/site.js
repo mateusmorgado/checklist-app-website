@@ -581,25 +581,26 @@
     let glide = false; ['wheel', 'touchstart', 'keydown'].forEach(t => addEventListener(t, () => { glide = false; }, { passive: true }));
     // at the end everything but the last line folds away and the yellow band shrinks around it
     function focus(now) {
-      const last = ls[ls.length - 1], mid = () => { const r = last.getBoundingClientRect(); return r.top + r.height / 2; }, m0 = mid(), y0 = scrollY;
+      const last = ls[ls.length - 1], mid = () => { const r = last.getBoundingClientRect(); return r.top + r.height / 2; }, m0 = mid();
       ls.slice(0, -1).forEach(l => { l.style.height = l.offsetHeight + 'px'; });
       void st.offsetHeight; sec.classList.add('final'); st.classList.add('final');
       ls.slice(0, -1).forEach(l => { l.style.height = '0px'; });
       if (now) sec.classList.add('instant');
-      // the band's top edge is pushed down as its content shrinks, so it closes in from above and below while the line stays put on the page;
-      // meanwhile the page glides so the line ends in the middle of the screen (only if it is on screen and nobody is scrolling)
-      const dy = !now && m0 > 0 && m0 < innerHeight ? m0 - innerHeight / 2 : 0; glide = !!dy;
+      // the band closes in from above and below while the line stays put on the page: instead of pushing the band down with a margin
+      // (that left a gap showing the red page behind it), the page scrolls up by as much as the band shrinks above the line.
+      // meanwhile the page glides so the line ends in the middle of the screen (only if the band is on screen and nobody is scrolling)
+      const onScreen = sec.getBoundingClientRect().top < innerHeight;
+      const dy = !now && m0 > 0 && m0 < innerHeight ? m0 - innerHeight / 2 : 0; glide = onScreen;
       const t0 = performance.now(), run = n => {
-        sec.style.marginTop = Math.max(0, (parseFloat(sec.style.marginTop) || 0) + m0 + y0 - mid() - scrollY) + 'px';
         const p = Math.min(1, (n - t0) / FOLD);
-        if (glide) window.scrollTo({ top: y0 + dy * (1 - Math.pow(1 - p, 3)), behavior: 'instant' });
+        if (glide) window.scrollTo({ top: mid() + scrollY - (m0 - dy * (1 - Math.pow(1 - p, 3))), behavior: 'instant' });
         if (!now && n - t0 < FOLD + 200) requestAnimationFrame(run);
       };
       run(t0);
     }
     async function play() {
       glide = false; const r = ++wr, ok = () => r === wr; document.dispatchEvent(new Event('wq-start'));
-      sec.classList.add('instant'); sec.style.marginTop = ''; sec.classList.remove('final'); st.className = 'wq-stage'; ls.forEach(l => { l.classList.remove('in', 'fin'); l.style.height = ''; });
+      sec.classList.add('instant'); sec.classList.remove('final'); st.className = 'wq-stage'; ls.forEach(l => { l.classList.remove('in', 'fin'); l.style.height = ''; });
       void sec.offsetHeight; if (!reduce) sec.classList.remove('instant');
       if (reduce) { st.classList.add('s-lines', 'done'); ls.forEach(l => l.classList.add('in', 'fin')); focus(true); return; }
       await nap(100); if (!ok()) return; st.classList.add('s-why');
