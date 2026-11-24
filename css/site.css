@@ -14,6 +14,9 @@ input, textarea, [contenteditable], .selectable, .selectable * { -webkit-user-se
 html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 body { margin: 0; background: var(--red); color: var(--ink); font: 500 18px/1.5 var(--body); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 body.lock { overflow: hidden; }
+/* no sideways drag on phones: body’s overflow-x reaches the viewport, but mobile browsers still let you pan
+   to content past the edge (tilted cards, shadows). Clip it at the page sides; clip keeps sticky working. */
+main, .foot { overflow-x: clip; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--white); padding: 8px 14px; border: var(--b) solid var(--ink); font-weight: 700; }
 .skip:focus { top: 8px; }
@@ -1302,7 +1305,7 @@ html.booting .hero-phone, body.phone-wait .hero-phone { visibility: hidden; tran
 .ls-puff.go { animation: ls-puff .55s ease-out; }
 @keyframes ls-puff { 0% { opacity: .95; transform: translateY(-50%) scale(.3); } 45% { opacity: .95; transform: translateY(-50%) scale(1); } 100% { opacity: 0; transform: translateY(-50%) scale(1.25); } }
 .ls-bubble { position: absolute; z-index: 3; left: 50%; translate: -50% 0; top: -6%; min-width: 150px; max-width: 250px; width: max-content; background: var(--white); color: var(--ink); border: var(--b) solid var(--ink); border-radius: 18px; box-shadow: -5px -5px 0 var(--ink); padding: 8px 14px 10px; font: 800 19px/1.15 var(--display); transform-origin: 20% 120%; }
-.ls-bubble::after { content: ''; position: absolute; left: 50%; bottom: -11px; width: 18px; height: 18px; background: var(--white); border: solid var(--ink); border-width: 0 var(--b) var(--b) 0; transform: rotate(45deg) skew(10deg, 10deg); margin-left: -9px; }
+.ls-bubble::after { content: ''; position: absolute; z-index: -1; left: 50%; bottom: -11px; width: 18px; height: 18px; background: var(--white); border: solid var(--ink); border-width: 0 var(--b) var(--b) 0; transform: rotate(45deg) skew(10deg, 10deg); margin-left: -9px; }
 .ls-bubble small { display: block; font: 700 11px var(--body); text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-bottom: 2px; }
 .ls-bubble .caret { display: inline-block; width: 3px; height: 18px; margin-left: 2px; vertical-align: -2px; background: var(--ink); animation: blink 1s steps(2) infinite; }
 .ls-bubble.pop { animation: bpop .4s cubic-bezier(.3, 1.7, .5, 1); }
@@ -1312,7 +1315,7 @@ html.booting .hero-phone, body.phone-wait .hero-phone { visibility: hidden; tran
   .ls-stage { position: relative; justify-content: flex-end; padding-top: 70px; }
   #ls-phone { --pw: min(280px, 56vw) !important; }
   .ls-alex { position: absolute; left: -2vw; bottom: -6px; width: 44vw; margin: 0; pointer-events: none; }
-  .ls-bubble { left: 4%; translate: none; top: -30%; min-width: 0; max-width: 46vw; font-size: 15px; padding: 6px 10px 8px; }
+  .ls-bubble { left: 4%; translate: none; top: -30%; min-width: 0; max-width: 46vw; font-size: 15px; padding: 6px 10px 10px; }
   .ls-bubble::after { left: 46px; }
   .ls-copy { display: contents; }
   .ls-steps { order: 3; margin-top: 44px; }
