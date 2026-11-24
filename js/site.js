@@ -800,7 +800,8 @@
     let sx = null;
     deck.addEventListener('pointerdown', e => { if (e.target.closest('button, a')) return; sx = e.clientX; });
     deck.addEventListener('pointerup', e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 50) select((cur + (dx < 0 ? 1 : n - 1)) % n); });
-    layDeck(0); fitDeck(); addEventListener('resize', fitDeck); if ('ResizeObserver' in window) { const ro = new ResizeObserver(fitDeck); cards.forEach(c => ro.observe(c)); }
+    layDeck(0); fitDeck(); addEventListener('resize', fitDeck); if ('ResizeObserver' in window) { const ro = new ResizeObserver(fitDeck); cards.forEach(c => { ro.observe(c); [...c.children].forEach(k => ro.observe(k)); }); } /* children too: the German text and late fonts re-wrap them without resizing the card */
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitDeck);
     // start when the stage comes into view, pause when it leaves
     const onView = v => { visible = v; if (v) select(cur); else { run++; notes(false); cards.forEach(p => p.classList.remove('run')); stage.classList.remove('tone-on'); } };
     if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting !== visible) onView(e.isIntersecting); }), { threshold: .35 }).observe(stage); else onView(true);
